@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oriontec Dozera Group - Official Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
         
@@ -213,7 +217,7 @@
                             </text>
                         </svg>
                     </div>
-                    <div>
+                    <div onclick="secretAdminAccess()" style="cursor: default;">
                         <h1 class="text-xl font-bold text-gray-900">Oriontec Dozera Group</h1>
                         <p class="text-sm text-gray-600">Official Government Portal</p>
                     </div>
@@ -234,8 +238,10 @@
                 <li><a href="#" class="block px-3 py-2 hover:bg-blue-800 rounded" onclick="showPage('about')">About</a></li>
                 <li><a href="#" class="block px-3 py-2 hover:bg-blue-800 rounded" onclick="showPage('services')">Services</a></li>
                 <li><a href="#" class="block px-3 py-2 hover:bg-blue-800 rounded" onclick="showPage('data')">Data & Statistics</a></li>
+                <li><a href="#" class="block px-3 py-2 hover:bg-blue-800 rounded" onclick="showPage('articles')">Articles</a></li>
                 <li><a href="#" class="block px-3 py-2 hover:bg-blue-800 rounded" onclick="showPage('resources')">Resources</a></li>
                 <li><a href="#" class="block px-3 py-2 hover:bg-blue-800 rounded" onclick="showPage('contact')">Contact</a></li>
+                <li id="admin-nav" style="display: none;"><a href="#" class="block px-3 py-2 hover:bg-blue-800 rounded" onclick="showPage('admin')">Admin Panel</a></li>
             </ul>
         </div>
     </nav>
@@ -418,6 +424,21 @@
             </div>
         </div>
 
+        <!-- Articles Page -->
+        <div id="articles" class="page-content">
+            <div class="usa-card">
+                <h2 class="text-3xl font-bold mb-6">Government Articles & Updates</h2>
+                
+                <div id="articles-list" class="space-y-6">
+                    <div class="usa-alert usa-alert--info">
+                        <div class="usa-alert__body">
+                            <p class="usa-alert__text">Loading latest government articles and updates...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Resources Page -->
         <div id="resources" class="page-content">
             <div class="usa-card">
@@ -453,6 +474,86 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel (Hidden) -->
+        <div id="admin" class="page-content">
+            <div class="usa-card">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold">Admin Panel</h2>
+                    <button onclick="adminLogout()" class="usa-button usa-button--secondary">Logout</button>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Publish New Article</h3>
+                        <form id="article-form" class="space-y-4" onsubmit="publishArticle(event)">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Article Title *</label>
+                                <input type="text" id="article-title" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                <select id="article-category" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option>Government Updates</option>
+                                    <option>Policy Changes</option>
+                                    <option>Public Announcements</option>
+                                    <option>Data Reports</option>
+                                    <option>Press Releases</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Article Content *</label>
+                                <textarea id="article-content" rows="8" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter the full article content here..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Priority Level</label>
+                                <select id="article-priority" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="normal">Normal</option>
+                                    <option value="high">High Priority</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="usa-button w-full">Publish Article</button>
+                        </form>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Published Articles Management</h3>
+                        <div id="admin-articles-list" class="space-y-3 max-h-96 overflow-y-auto">
+                            <div class="text-gray-500 text-center py-8">Loading articles...</div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h4 class="font-semibold mb-2">Quick Actions</h4>
+                            <div class="space-y-2">
+                                <button onclick="refreshArticles()" class="usa-button usa-button--secondary w-full">Refresh Articles</button>
+                                <button onclick="clearAllArticles()" class="usa-button w-full bg-red-600 hover:bg-red-700 border-red-600">Clear All Articles</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden Admin Login Modal -->
+        <div id="admin-login-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
+            <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
+                <h3 class="text-xl font-bold mb-4">System Access</h3>
+                <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Access Code</label>
+                            <input type="password" id="admin-password" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter system access code">
+                        </div>
+                        <div class="flex space-x-3">
+                            <button type="submit" class="usa-button flex-1">Access System</button>
+                            <button type="button" onclick="closeAdminModal()" class="usa-button usa-button--secondary flex-1">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+                <p class="text-xs text-gray-500 mt-4">Authorized personnel only. All access attempts are logged.</p>
             </div>
         </div>
 
@@ -583,6 +684,249 @@
     </div>
 
     <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCCWB4adPUSrSW2cSd9I3oqYIw65ZnStj4",
+            authDomain: "twitter-1903a.firebaseapp.com",
+            databaseURL: "https://twitter-1903a-default-rtdb.firebaseio.com",
+            projectId: "twitter-1903a",
+            storageBucket: "twitter-1903a.firebasestorage.app",
+            messagingSenderId: "37758914989",
+            appId: "1:37758914989:web:6c364d74288a8b08f8d124"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        // Admin state
+        let isAdminLoggedIn = false;
+        let adminClickCount = 0;
+        
+        // Secret Admin Access (Click on logo 5 times)
+        function secretAdminAccess() {
+            adminClickCount++;
+            if (adminClickCount >= 5) {
+                adminClickCount = 0;
+                document.getElementById('admin-login-modal').style.display = 'flex';
+            }
+            // Reset counter after 3 seconds
+            setTimeout(() => {
+                if (adminClickCount < 5) adminClickCount = 0;
+            }, 3000);
+        }
+        
+        // Handle Admin Login
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            const password = document.getElementById('admin-password').value;
+            
+            // Simple password check (in real app, use proper authentication)
+            if (password === 'admin123' || password === 'oriontec2024') {
+                isAdminLoggedIn = true;
+                document.getElementById('admin-nav').style.display = 'block';
+                document.getElementById('admin-login-modal').style.display = 'none';
+                showPage('admin');
+                loadAdminArticles();
+                
+                // Show success message
+                alert('Admin access granted. Welcome to the admin panel.');
+            } else {
+                alert('Invalid access code. Access denied.');
+            }
+            
+            document.getElementById('admin-password').value = '';
+        }
+        
+        // Close Admin Modal
+        function closeAdminModal() {
+            document.getElementById('admin-login-modal').style.display = 'none';
+            document.getElementById('admin-password').value = '';
+        }
+        
+        // Admin Logout
+        function adminLogout() {
+            isAdminLoggedIn = false;
+            document.getElementById('admin-nav').style.display = 'none';
+            showPage('home');
+            alert('Admin session ended.');
+        }
+        
+        // Publish Article
+        function publishArticle(event) {
+            event.preventDefault();
+            
+            if (!isAdminLoggedIn) {
+                alert('Access denied.');
+                return;
+            }
+            
+            const title = document.getElementById('article-title').value;
+            const category = document.getElementById('article-category').value;
+            const content = document.getElementById('article-content').value;
+            const priority = document.getElementById('article-priority').value;
+            
+            const article = {
+                title: title,
+                category: category,
+                content: content,
+                priority: priority,
+                timestamp: Date.now(),
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString()
+            };
+            
+            // Save to Firebase
+            const articleRef = database.ref('articles').push();
+            articleRef.set(article).then(() => {
+                alert('Article published successfully!');
+                document.getElementById('article-form').reset();
+                loadArticles();
+                loadAdminArticles();
+            }).catch((error) => {
+                alert('Error publishing article: ' + error.message);
+            });
+        }
+        
+        // Load Articles for Public View
+        function loadArticles() {
+            database.ref('articles').orderByChild('timestamp').once('value', (snapshot) => {
+                const articles = [];
+                snapshot.forEach((childSnapshot) => {
+                    const article = childSnapshot.val();
+                    article.id = childSnapshot.key;
+                    articles.unshift(article); // Newest first
+                });
+                
+                displayArticles(articles);
+            });
+        }
+        
+        // Display Articles
+        function displayArticles(articles) {
+            const articlesDiv = document.getElementById('articles-list');
+            
+            if (articles.length === 0) {
+                articlesDiv.innerHTML = `
+                    <div class="usa-alert usa-alert--info">
+                        <div class="usa-alert__body">
+                            <p class="usa-alert__text">No articles available at this time.</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let articlesHTML = '';
+            articles.forEach(article => {
+                const priorityClass = article.priority === 'urgent' ? 'border-red-500 bg-red-50' : 
+                                   article.priority === 'high' ? 'border-yellow-500 bg-yellow-50' : 
+                                   'border-blue-500 bg-blue-50';
+                
+                const priorityBadge = article.priority === 'urgent' ? '<span class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">URGENT</span>' :
+                                    article.priority === 'high' ? '<span class="bg-yellow-600 text-white px-2 py-1 rounded text-xs font-bold">HIGH PRIORITY</span>' : '';
+                
+                articlesHTML += `
+                    <article class="border-l-4 ${priorityClass} p-6 rounded-r-lg">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">${article.category}</span>
+                                ${priorityBadge}
+                            </div>
+                            <span class="text-xs text-gray-500">${article.date} at ${article.time}</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-900">${article.title}</h3>
+                        <div class="text-gray-700 leading-relaxed">
+                            ${article.content.replace(/\n/g, '<br>')}
+                        </div>
+                    </article>
+                `;
+            });
+            
+            articlesDiv.innerHTML = articlesHTML;
+        }
+        
+        // Load Articles for Admin Panel
+        function loadAdminArticles() {
+            if (!isAdminLoggedIn) return;
+            
+            database.ref('articles').orderByChild('timestamp').once('value', (snapshot) => {
+                const articles = [];
+                snapshot.forEach((childSnapshot) => {
+                    const article = childSnapshot.val();
+                    article.id = childSnapshot.key;
+                    articles.unshift(article);
+                });
+                
+                displayAdminArticles(articles);
+            });
+        }
+        
+        // Display Articles in Admin Panel
+        function displayAdminArticles(articles) {
+            const adminArticlesDiv = document.getElementById('admin-articles-list');
+            
+            if (articles.length === 0) {
+                adminArticlesDiv.innerHTML = '<div class="text-gray-500 text-center py-8">No articles published yet.</div>';
+                return;
+            }
+            
+            let adminHTML = '';
+            articles.forEach(article => {
+                adminHTML += `
+                    <div class="border border-gray-200 p-3 rounded">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <h4 class="font-medium text-sm">${article.title}</h4>
+                                <p class="text-xs text-gray-500">${article.category} • ${article.date}</p>
+                            </div>
+                            <button onclick="deleteArticle('${article.id}')" class="text-red-600 hover:text-red-800 text-xs ml-2">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            adminArticlesDiv.innerHTML = adminHTML;
+        }
+        
+        // Delete Article
+        function deleteArticle(articleId) {
+            if (!isAdminLoggedIn) return;
+            
+            if (confirm('Are you sure you want to delete this article?')) {
+                database.ref('articles/' + articleId).remove().then(() => {
+                    alert('Article deleted successfully.');
+                    loadArticles();
+                    loadAdminArticles();
+                }).catch((error) => {
+                    alert('Error deleting article: ' + error.message);
+                });
+            }
+        }
+        
+        // Refresh Articles
+        function refreshArticles() {
+            loadArticles();
+            if (isAdminLoggedIn) {
+                loadAdminArticles();
+            }
+        }
+        
+        // Clear All Articles
+        function clearAllArticles() {
+            if (!isAdminLoggedIn) return;
+            
+            if (confirm('Are you sure you want to delete ALL articles? This action cannot be undone.')) {
+                database.ref('articles').remove().then(() => {
+                    alert('All articles have been deleted.');
+                    loadArticles();
+                    loadAdminArticles();
+                }).catch((error) => {
+                    alert('Error clearing articles: ' + error.message);
+                });
+            }
+        }
+
         // Page Navigation System
         function showPage(pageId) {
             // Hide all pages
@@ -599,8 +943,10 @@
                 'about': 'About Us',
                 'services': 'Services',
                 'data': 'Data & Statistics',
+                'articles': 'Articles & Updates',
                 'resources': 'Resources',
-                'contact': 'Contact'
+                'contact': 'Contact',
+                'admin': 'Admin Panel'
             };
             document.getElementById('current-page').textContent = pageNames[pageId] || 'Dashboard';
             
@@ -802,6 +1148,7 @@
             setTimeout(() => {
                 loadCensusData();
                 loadCongressionalData();
+                loadArticles(); // Load articles on page load
             }, 2000);
             
             // Add some dynamic updates to the home page
@@ -818,6 +1165,5 @@
             }, 5000);
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'968d08c7e3f27143',t:'MTc1NDEzMjAzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'968e177ff4ba5478',t:'MTc1NDE0MzEyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
