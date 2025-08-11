@@ -4,794 +4,972 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oriontec H1B Visa Application System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
-        .fade-in { animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .progress-bar { transition: width 0.3s ease; }
-        .session-warning { animation: pulse 2s infinite; }
+        /* Government-style CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .form-section {
+            padding: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #1e3c72;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'Times New Roman', serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1e3c72;
+            box-shadow: 0 0 5px rgba(30, 60, 114, 0.3);
+        }
+
+        .required {
+            color: #d32f2f;
+        }
+
+        .btn {
+            background: #1e3c72;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #2a5298;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .step-indicator {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .acknowledgment-box {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .acknowledgment-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin: 10px 0;
+            letter-spacing: 2px;
+        }
+
+        .session-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            text-align: center;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .document-checklist {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .document-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .document-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+
+        .appointment-info {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .payment-info {
+            background: #fff8e1;
+            border: 2px solid #ff9800;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* PDF Document Styles */
+        .pdf-document {
+            background: white;
+            max-width: 900px;
+            margin: 20px auto;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+        }
+
+        .pdf-header {
+            background: #f8f9fa;
+            padding: 30px;
+            border-bottom: 3px solid #1e3c72;
+            text-align: center;
+        }
+
+        .pdf-header h1 {
+            color: #1e3c72;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .pdf-header .seal {
+            width: 80px;
+            height: 80px;
+            border: 3px solid #1e3c72;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .pdf-content {
+            padding: 40px;
+        }
+
+        .pdf-section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+
+        .pdf-section h3 {
+            color: #1e3c72;
+            font-size: 18px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #1e3c72;
+            padding-bottom: 5px;
+        }
+
+        .pdf-field {
+            display: flex;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+
+        .pdf-field .label {
+            font-weight: bold;
+            width: 200px;
+            flex-shrink: 0;
+        }
+
+        .pdf-field .value {
+            flex: 1;
+            color: #333;
+        }
+
+        .pdf-footer {
+            background: #f8f9fa;
+            padding: 30px;
+            border-top: 3px solid #1e3c72;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        .signature-box {
+            text-align: center;
+            width: 200px;
+        }
+
+        .signature-line {
+            border-bottom: 2px solid #333;
+            margin-bottom: 10px;
+            height: 50px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .status-submitted {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+        }
+
+        .auth-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container, .pdf-document {
+                margin: 20px;
+                border-radius: 0;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .pdf-field {
+                flex-direction: column;
+            }
+
+            .pdf-field .label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .header, .btn, .progress-bar, .step-indicator {
+                display: none;
+            }
+            
+            .pdf-document {
+                box-shadow: none;
+                border: none;
+                margin: 0;
+            }
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-    <!-- Header -->
-    <header class="bg-white shadow-lg border-b-4 border-blue-600">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold text-xl">O</span>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-800">Oriontec</h1>
-                        <p class="text-sm text-gray-600">H1B Visa Application Portal</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div id="userInfo" class="hidden text-sm text-gray-600"></div>
-                    <button id="logoutBtn" class="hidden bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
-                        Logout
-                    </button>
-                </div>
+<body>
+    <div class="header">
+        <h1>Oriontec H1B Visa Application System</h1>
+        <p>United States Department of Homeland Security - USCIS Form I-129</p>
+    </div>
+
+    <div class="container">
+
+
+        <!-- Session Warning -->
+        <div id="sessionWarning" class="session-warning">
+            Your session will expire in <span id="sessionTimer">30</span> seconds due to inactivity.
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <!-- Progress Bar -->
+        <div id="progressSection" class="hidden">
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="step-indicator">
+                Step <span id="currentStep">1</span> of 8
             </div>
         </div>
-    </header>
 
-    <!-- Progress Bar -->
-    <div id="progressContainer" class="hidden bg-white shadow-sm">
-        <div class="container mx-auto px-6 py-3">
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium text-gray-700">Progress</span>
-                <span id="progressText" class="text-sm text-gray-600">Step 1 of 8</span>
+        <!-- Step 1: Initial Registration -->
+        <div id="step1" class="form-section">
+            <h2 class="section-title">Initial Registration</h2>
+            <p style="margin-bottom: 20px; color: #666;">Please provide your basic information to generate your acknowledgment number.</p>
+            
+            <div class="form-group">
+                <label for="initialName">Full Name <span class="required">*</span></label>
+                <input type="text" id="initialName" required>
             </div>
-            <div class="w-full bg-gray-200 rounded-full h-2">
-                <div id="progressBar" class="progress-bar bg-blue-600 h-2 rounded-full" style="width: 12.5%"></div>
+            
+            <div class="form-group">
+                <label for="initialEmail">Email Address <span class="required">*</span></label>
+                <input type="email" id="initialEmail" required readonly>
+            </div>
+            
+            <button type="button" class="btn" onclick="generateAcknowledgment()">Generate Acknowledgment Number</button>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                <h3 style="color: #1e3c72; margin-bottom: 15px;">Already have an acknowledgment number?</h3>
+                <div class="form-group">
+                    <label for="existingAck">Enter Acknowledgment Number</label>
+                    <input type="text" id="existingAck" placeholder="ACK-XXXXXXXX">
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="loadExistingApplication()">Continue Application</button>
+            </div>
+            
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                <h3 style="color: #1e3c72; margin-bottom: 15px;">Forgot your acknowledgment number?</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="retrieveName">Full Name</label>
+                        <input type="text" id="retrieveName">
+                    </div>
+                    <div class="form-group">
+                        <label for="retrieveDOB">Date of Birth</label>
+                        <input type="date" id="retrieveDOB">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="retrieveEmail">Email Address</label>
+                    <input type="email" id="retrieveEmail" readonly>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="retrieveAcknowledgment()">Retrieve Acknowledgment Number</button>
+            </div>
+        </div>
+
+        <!-- Acknowledgment Display -->
+        <div id="acknowledgmentDisplay" class="acknowledgment-box hidden">
+            <h3>Acknowledgment Number Generated</h3>
+            <div class="acknowledgment-number" id="ackNumber"></div>
+            <p>Please save this number. It has been sent to your email address.</p>
+            <p style="margin-top: 15px;"><strong>Important:</strong> You will need this number to continue your application.</p>
+            <button type="button" class="btn" onclick="startApplication()">Start H1B Application</button>
+        </div>
+
+        <!-- Step 2: Personal Information -->
+        <div id="step2" class="form-section hidden">
+            <h2 class="section-title">Personal Information</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">First Name <span class="required">*</span></label>
+                    <input type="text" id="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name <span class="required">*</span></label>
+                    <input type="text" id="lastName" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="dateOfBirth">Date of Birth <span class="required">*</span></label>
+                    <input type="date" id="dateOfBirth" required>
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender <span class="required">*</span></label>
+                    <select id="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="nationality">Nationality <span class="required">*</span></label>
+                <select id="nationality" required>
+                    <option value="">Select Nationality</option>
+                    <option value="indian">Indian</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="maritalStatus">Marital Status <span class="required">*</span></label>
+                <select id="maritalStatus" required>
+                    <option value="">Select Status</option>
+                    <option value="single">Single</option>
+                    <option value="married">Married</option>
+                    <option value="divorced">Divorced</option>
+                    <option value="widowed">Widowed</option>
+                </select>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="fatherName">Father's Name <span class="required">*</span></label>
+                    <input type="text" id="fatherName" required>
+                </div>
+                <div class="form-group">
+                    <label for="motherName">Mother's Name <span class="required">*</span></label>
+                    <input type="text" id="motherName" required>
+                </div>
+            </div>
+            
+            <div class="form-group" id="spouseField" style="display: none;">
+                <label for="spouseName">Spouse's Name</label>
+                <input type="text" id="spouseName">
+            </div>
+            
+            <button type="button" class="btn btn-secondary" onclick="previousStep()">Previous</button>
+            <button type="button" class="btn" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 3: Contact Information -->
+        <div id="step3" class="form-section hidden">
+            <h2 class="section-title">Contact Information</h2>
+            
+            <div class="form-group">
+                <label for="email">Email Address <span class="required">*</span></label>
+                <input type="email" id="email" required readonly>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="phone">Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="phone" required placeholder="+91-XXXXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label for="alternatePhone">Alternate Phone</label>
+                    <input type="tel" id="alternatePhone" placeholder="+91-XXXXXXXXXX">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="currentAddress">Current Address <span class="required">*</span></label>
+                <textarea id="currentAddress" rows="3" required></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="city">City <span class="required">*</span></label>
+                    <input type="text" id="city" required>
+                </div>
+                <div class="form-group">
+                    <label for="state">State <span class="required">*</span></label>
+                    <input type="text" id="state" required>
+                </div>
+                <div class="form-group">
+                    <label for="pincode">PIN Code <span class="required">*</span></label>
+                    <input type="text" id="pincode" required pattern="[0-9]{6}">
+                </div>
+            </div>
+            
+            <button type="button" class="btn btn-secondary" onclick="previousStep()">Previous</button>
+            <button type="button" class="btn" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 4: Passport Information -->
+        <div id="step4" class="form-section hidden">
+            <h2 class="section-title">Passport Information</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="passportNumber">Passport Number <span class="required">*</span></label>
+                    <input type="text" id="passportNumber" required>
+                </div>
+                <div class="form-group">
+                    <label for="passportIssueDate">Issue Date <span class="required">*</span></label>
+                    <input type="date" id="passportIssueDate" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="passportExpiryDate">Expiry Date <span class="required">*</span></label>
+                    <input type="date" id="passportExpiryDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="placeOfIssue">Place of Issue <span class="required">*</span></label>
+                    <input type="text" id="placeOfIssue" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="previousVisaHistory">Previous US Visa History</label>
+                <select id="previousVisaHistory">
+                    <option value="">Select Option</option>
+                    <option value="never">Never applied</option>
+                    <option value="approved">Previously approved</option>
+                    <option value="denied">Previously denied</option>
+                </select>
+            </div>
+            
+            <button type="button" class="btn btn-secondary" onclick="previousStep()">Previous</button>
+            <button type="button" class="btn" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 5: Employment Information -->
+        <div id="step5" class="form-section hidden">
+            <h2 class="section-title">Employment Information</h2>
+            
+            <div class="form-group">
+                <label for="currentEmployer">Current Employer <span class="required">*</span></label>
+                <input type="text" id="currentEmployer" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="jobTitle">Current Job Title <span class="required">*</span></label>
+                    <input type="text" id="jobTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="workExperience">Total Work Experience (Years) <span class="required">*</span></label>
+                    <input type="number" id="workExperience" required min="0" max="50">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="currentSalary">Current Annual Salary (INR) <span class="required">*</span></label>
+                    <input type="number" id="currentSalary" required>
+                </div>
+                <div class="form-group">
+                    <label for="proposedSalary">Proposed US Salary (USD) <span class="required">*</span></label>
+                    <input type="number" id="proposedSalary" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="education">Highest Education <span class="required">*</span></label>
+                <select id="education" required>
+                    <option value="">Select Education</option>
+                    <option value="bachelors">Bachelor's Degree</option>
+                    <option value="masters">Master's Degree</option>
+                    <option value="phd">PhD</option>
+                    <option value="diploma">Diploma</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="fieldOfStudy">Field of Study <span class="required">*</span></label>
+                <input type="text" id="fieldOfStudy" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="university">University/Institution <span class="required">*</span></label>
+                    <input type="text" id="university" required>
+                </div>
+                <div class="form-group">
+                    <label for="graduationYear">Graduation Year <span class="required">*</span></label>
+                    <input type="number" id="graduationYear" required min="1980" max="2030">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="responsibilities">Key Responsibilities <span class="required">*</span></label>
+                <textarea id="responsibilities" rows="3" required placeholder="Describe your key responsibilities and achievements..."></textarea>
+            </div>
+            
+            <button type="button" class="btn btn-secondary" onclick="previousStep()">Previous</button>
+            <button type="button" class="btn" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 6: US Employer Information -->
+        <div id="step6" class="form-section hidden">
+            <h2 class="section-title">US Employer Information</h2>
+            
+            <div class="form-group">
+                <label for="usEmployer">US Employer Name <span class="required">*</span></label>
+                <input type="text" id="usEmployer" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="usEmployerAddress">US Employer Address <span class="required">*</span></label>
+                <textarea id="usEmployerAddress" rows="3" required></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="usJobTitle">US Job Title <span class="required">*</span></label>
+                    <input type="text" id="usJobTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="startDate">Proposed Start Date <span class="required">*</span></label>
+                    <input type="date" id="startDate" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="contractDuration">Contract Duration (Years) <span class="required">*</span></label>
+                    <select id="contractDuration" required>
+                        <option value="">Select Duration</option>
+                        <option value="1">1 Year</option>
+                        <option value="2">2 Years</option>
+                        <option value="3">3 Years</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="workLocation">Work Location <span class="required">*</span></label>
+                    <input type="text" id="workLocation" required>
+                </div>
+            </div>
+            
+            <button type="button" class="btn btn-secondary" onclick="previousStep()">Previous</button>
+            <button type="button" class="btn" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 7: Document Checklist -->
+        <div id="step7" class="form-section hidden">
+            <h2 class="section-title">Required Documents</h2>
+            <p style="margin-bottom: 20px; color: #666;">Please confirm that you have the following documents ready for submission:</p>
+            
+            <div class="document-checklist">
+                <div class="document-item">
+                    <input type="checkbox" id="doc1" required>
+                    <label for="doc1">Valid Passport (with at least 6 months validity)</label>
+                </div>
+                <div class="document-item">
+                    <input type="checkbox" id="doc2" required>
+                    <label for="doc2">Recent Passport-size Photograph (2x2 inches, white background)</label>
+                </div>
+                <div class="document-item">
+                    <input type="checkbox" id="doc3" required>
+                    <label for="doc3">Bank Statements (Last 6 months)</label>
+                </div>
+                <div class="document-item">
+                    <input type="checkbox" id="doc4" required>
+                    <label for="doc4">Employment Letter from Current Employer</label>
+                </div>
+                <div class="document-item">
+                    <input type="checkbox" id="doc5" required>
+                    <label for="doc5">Educational Certificates and Transcripts</label>
+                </div>
+                <div class="document-item">
+                    <input type="checkbox" id="doc6" required>
+                    <label for="doc6">Form I-129 (Petition for Nonimmigrant Worker)</label>
+                </div>
+                <div class="document-item">
+                    <input type="checkbox" id="doc7" required>
+                    <label for="doc7">Labor Condition Application (LCA)</label>
+                </div>
+                <div class="document-item">
+                    <input type="checkbox" id="doc8" required>
+                    <label for="doc8">Resume/CV</label>
+                </div>
+            </div>
+            
+            <button type="button" class="btn btn-secondary" onclick="previousStep()">Previous</button>
+            <button type="button" class="btn" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 8: Review and Submit -->
+        <div id="step8" class="form-section hidden">
+            <h2 class="section-title">Review and Submit</h2>
+            
+            <div class="appointment-info">
+                <h3>Embassy Appointment Information</h3>
+                <p><strong>Embassy:</strong> US Consulate General, Mumbai</p>
+                <p><strong>Scheduled Date:</strong> <span id="appointmentDate"></span></p>
+                <p><strong>Address:</strong> C-49, G Block, Bandra Kurla Complex, Bandra East, Mumbai, Maharashtra 400051</p>
+                <p style="margin-top: 10px; color: #666;"><em>Your appointment is automatically scheduled for 6 months from submission date.</em></p>
+            </div>
+            
+            <div class="payment-info">
+                <h3>Visa Application Fee</h3>
+                <p><strong>Amount:</strong> USD $340</p>
+                <p><strong>Payment Method:</strong> Online payment to US Department of State</p>
+                <a href="https://cgifederal.secure.force.com/" target="_blank" class="btn" style="display: inline-block; margin-top: 10px; text-decoration: none;">
+                    Pay Visa Fee (Official US Portal)
+                </a>
+                <p style="margin-top: 10px; color: #666; font-size: 12px;"><em>You will be redirected to the official US government payment portal.</em></p>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 4px; margin: 20px 0;">
+                <h3>Application Summary</h3>
+                <div id="applicationSummary"></div>
+            </div>
+            
+            <div style="margin: 30px 0; padding: 20px; border: 2px solid #1e3c72; border-radius: 4px;">
+                <input type="checkbox" id="finalConfirmation" required style="width: auto; margin-right: 10px;">
+                <label for="finalConfirmation" style="display: inline;">
+                    I hereby declare that all information provided is true and accurate to the best of my knowledge. I understand that providing false information may result in denial of my visa application and potential legal consequences.
+                </label>
+            </div>
+            
+            <button type="button" class="btn btn-secondary" onclick="previousStep()">Previous</button>
+            <button type="button" class="btn" onclick="submitApplication()">Submit Application</button>
+        </div>
+
+        <!-- Final Confirmation -->
+        <div id="finalConfirmationPage" class="form-section hidden">
+            <div style="text-align: center; padding: 40px;">
+                <h2 style="color: #4caf50; margin-bottom: 20px;">Application Submitted Successfully!</h2>
+                <div class="acknowledgment-box">
+                    <p><strong>Your Acknowledgment Number:</strong></p>
+                    <div class="acknowledgment-number" id="finalAckNumber"></div>
+                    <p>Application submitted on: <span id="submissionDate"></span></p>
+                    <p>Embassy appointment: <span id="finalAppointmentDate"></span></p>
+                </div>
+                <p style="margin: 20px 0; color: #666;">
+                    A confirmation email has been sent to your registered email address with all the details.
+                    Please keep your acknowledgment number safe for future reference.
+                </p>
+                <button type="button" class="btn" onclick="viewApplicationDocument()">View Application Document</button>
+                <button type="button" class="btn btn-success" onclick="downloadPDF()">Download PDF</button>
+                <button type="button" class="btn btn-secondary" onclick="signOut()">Sign Out</button>
+            </div>
+        </div>
+
+        <!-- PDF Document View -->
+        <div id="pdfDocumentView" class="pdf-document hidden">
+            <div class="pdf-header">
+                <div class="seal">
+                    USCIS<br>
+                    OFFICIAL<br>
+                    SEAL
+                </div>
+                <h1>H1B VISA APPLICATION</h1>
+                <p><strong>Form I-129 - Petition for Nonimmigrant Worker</strong></p>
+                <p>United States Citizenship and Immigration Services</p>
+                <p>Department of Homeland Security</p>
+            </div>
+
+            <div class="pdf-content">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <span class="status-badge status-submitted">Application Submitted</span>
+                    <p style="margin-top: 10px;"><strong>Acknowledgment Number:</strong> <span id="pdfAckNumber"></span></p>
+                    <p><strong>Submission Date:</strong> <span id="pdfSubmissionDate"></span></p>
+                </div>
+
+                <div class="pdf-section">
+                    <h3>Personal Information</h3>
+                    <div id="pdfPersonalInfo"></div>
+                </div>
+
+                <div class="pdf-section">
+                    <h3>Family Information</h3>
+                    <div id="pdfFamilyInfo"></div>
+                </div>
+
+                <div class="pdf-section">
+                    <h3>Contact Information</h3>
+                    <div id="pdfContactInfo"></div>
+                </div>
+
+                <div class="pdf-section">
+                    <h3>Passport Information</h3>
+                    <div id="pdfPassportInfo"></div>
+                </div>
+
+                <div class="pdf-section">
+                    <h3>Education Information</h3>
+                    <div id="pdfEducationInfo"></div>
+                </div>
+
+                <div class="pdf-section">
+                    <h3>Employment Information</h3>
+                    <div id="pdfEmploymentInfo"></div>
+                </div>
+
+                <div class="pdf-section">
+                    <h3>US Employer Information</h3>
+                    <div id="pdfUSEmployerInfo"></div>
+                </div>
+
+                <div class="pdf-section">
+                    <h3>Embassy Appointment</h3>
+                    <div id="pdfAppointmentInfo"></div>
+                </div>
+
+                <div class="signature-section">
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                        <p><strong>Applicant Signature</strong></p>
+                        <p>Date: <span id="pdfSignatureDate"></span></p>
+                    </div>
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                        <p><strong>USCIS Officer</strong></p>
+                        <p>Date: ___________</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pdf-footer">
+                <p><strong>IMPORTANT NOTICE:</strong> This is an official document generated by the USCIS H1B Application System.</p>
+                <p>Please bring this document along with all required supporting documents to your embassy appointment.</p>
+                <p>For questions or concerns, contact USCIS at 1-800-375-5283 or visit www.uscis.gov</p>
+                <p style="margin-top: 20px;">Document ID: <span id="pdfDocumentId"></span> | Generated: <span id="pdfGeneratedDate"></span></p>
+            </div>
+
+            <div style="text-align: center; padding: 20px; background: #f8f9fa;">
+                <button type="button" class="btn" onclick="printDocument()">Print Document</button>
+                <button type="button" class="btn btn-success" onclick="downloadPDF()">Download PDF</button>
+                <button type="button" class="btn btn-secondary" onclick="backToApplication()">Back to Application</button>
             </div>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-6 py-8">
-        <!-- Initial Form for Acknowledgment Number -->
-        <div id="initialForm" class="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 fade-in">
-            <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-2">H1B Visa Application</h2>
-                <p class="text-gray-600">Enter your basic details to get started</p>
-            </div>
-
-            <form id="ackForm" class="space-y-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
-                    <input type="text" name="user_name" id="initialName" required 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
-                    <input type="email" name="email" id="initialEmail" required 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                </div>
-                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                    Get Acknowledgment Number
-                </button>
-            </form>
-
-            <div class="text-center mt-6">
-                <span class="text-gray-500">Already have an acknowledgment number?</span>
-                <button id="showResumeForm" class="text-blue-600 hover:text-blue-800 font-medium ml-2">
-                    Resume Application
-                </button>
-            </div>
-        </div>
-
-        <!-- Resume Form -->
-        <div id="resumeForm" class="hidden max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 fade-in">
-            <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-2">Resume Application</h2>
-                <p class="text-gray-600">Enter your acknowledgment number to continue</p>
-            </div>
-
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Acknowledgment Number</label>
-                    <input type="text" id="ackNumber" placeholder="Enter your acknowledgment number" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    <button id="resumeBtn" class="w-full mt-3 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-medium">
-                        Resume Application
-                    </button>
-                </div>
-
-                <div class="text-center">
-                    <button id="backToInitial" class="text-blue-600 hover:text-blue-800 font-medium">
-                        ← Back to Start New Application
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Application Form Container -->
-        <div id="applicationForm" class="hidden max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 fade-in">
-            <!-- Page 1: Personal Info -->
-            <div id="page1" class="form-page">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6">Personal Information</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
-                        <input type="text" id="fullName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Age *</label>
-                        <input type="number" id="age" required min="18" max="65" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
-                        <input type="email" id="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
-                        <input type="tel" id="phone" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth *</label>
-                        <input type="date" id="dob" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Gender *</label>
-                        <select id="gender" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                            <option value="">Select Gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nationality *</label>
-                        <select id="nationality" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                            <option value="">Select Nationality</option>
-                            <option value="indian">Indian</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Place of Birth *</label>
-                        <input type="text" id="placeOfBirth" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Current Address *</label>
-                        <textarea id="address" required rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
-                        <input type="text" id="city" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">State *</label>
-                        <input type="text" id="state" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">PIN Code *</label>
-                        <input type="text" id="pinCode" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Passport Number *</label>
-                        <input type="text" id="passportNumber" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Passport Issue Date *</label>
-                        <input type="date" id="passportIssue" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Passport Expiry Date *</label>
-                        <input type="date" id="passportExpiry" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Passport Issuing Authority *</label>
-                        <input type="text" id="passportAuthority" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Page 2: Family Background & Travel History -->
-            <div id="page2" class="form-page hidden">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6">Family Background & Travel History</h3>
-                
-                <!-- Family Information -->
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <h4 class="text-lg font-semibold text-blue-800 mb-4">Family Information</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Father's Name *</label>
-                            <input type="text" id="fatherName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Mother's Name *</label>
-                            <input type="text" id="motherName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Marital Status *</label>
-                            <select id="maritalStatus" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Status</option>
-                                <option value="single">Single</option>
-                                <option value="married">Married</option>
-                                <option value="divorced">Divorced</option>
-                                <option value="widowed">Widowed</option>
-                            </select>
-                        </div>
-                        <div id="spouseField" class="hidden">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Spouse's Name</label>
-                            <input type="text" id="spouseName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Number of Children</label>
-                            <input type="number" id="children" min="0" max="10" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Contact Name *</label>
-                            <input type="text" id="emergencyContact" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Contact Phone *</label>
-                            <input type="tel" id="emergencyPhone" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Relationship to Emergency Contact *</label>
-                            <input type="text" id="emergencyRelation" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Travel History -->
-                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <h4 class="text-lg font-semibold text-green-800 mb-4">Travel History</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Have you traveled outside India? *</label>
-                            <select id="traveledAbroad" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Option</option>
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                            </select>
-                        </div>
-                        <div id="travelCountField" class="hidden">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Number of Countries Visited</label>
-                            <input type="number" id="countriesVisited" min="0" max="50" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div id="usaTravelField" class="hidden">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Have you visited USA before?</label>
-                            <select id="visitedUSA" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Option</option>
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                            </select>
-                        </div>
-                        <div id="usaVisaField" class="hidden">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Previous US Visa Type</label>
-                            <select id="previousUSAVisa" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Visa Type</option>
-                                <option value="tourist">Tourist (B1/B2)</option>
-                                <option value="student">Student (F1)</option>
-                                <option value="work">Work (H1B/L1)</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div id="travelDetailsField" class="hidden md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Travel Details (Countries, Dates, Purpose)</label>
-                            <textarea id="travelDetails" rows="4" placeholder="Please provide details of your international travel history..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Page 3: Education -->
-            <div id="page3" class="form-page hidden">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6">Educational Background</h3>
-                
-                <!-- Highest Education -->
-                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
-                    <h4 class="text-lg font-semibold text-purple-800 mb-4">Highest Education</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Highest Degree *</label>
-                            <select id="highestDegree" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Degree</option>
-                                <option value="10th">10th Standard</option>
-                                <option value="12th">12th Standard</option>
-                                <option value="diploma">Diploma</option>
-                                <option value="bachelor">Bachelor's Degree</option>
-                                <option value="master">Master's Degree</option>
-                                <option value="phd">PhD</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Field of Study *</label>
-                            <select id="fieldOfStudy" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Field</option>
-                                <option value="computer_science">Computer Science</option>
-                                <option value="information_technology">Information Technology</option>
-                                <option value="engineering">Engineering</option>
-                                <option value="business">Business Administration</option>
-                                <option value="finance">Finance</option>
-                                <option value="mathematics">Mathematics</option>
-                                <option value="science">Science</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">University/Institution *</label>
-                            <input type="text" id="university" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Graduation Year *</label>
-                            <input type="number" id="graduationYear" required min="1980" max="2024" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">GPA/Percentage *</label>
-                            <input type="text" id="gpa" required placeholder="e.g., 8.5 CGPA or 85%" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Country of Education *</label>
-                            <select id="educationCountry" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Country</option>
-                                <option value="india">India</option>
-                                <option value="usa">United States</option>
-                                <option value="uk">United Kingdom</option>
-                                <option value="canada">Canada</option>
-                                <option value="australia">Australia</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Additional Education -->
-                <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6">
-                    <h4 class="text-lg font-semibold text-indigo-800 mb-4">Additional Education (if any)</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Second Degree</label>
-                            <select id="secondDegree" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Degree</option>
-                                <option value="diploma">Diploma</option>
-                                <option value="bachelor">Bachelor's Degree</option>
-                                <option value="master">Master's Degree</option>
-                                <option value="phd">PhD</option>
-                                <option value="certificate">Certificate Course</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Second Field of Study</label>
-                            <input type="text" id="secondField" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Second Institution</label>
-                            <input type="text" id="secondUniversity" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Second Graduation Year</label>
-                            <input type="number" id="secondGradYear" min="1980" max="2024" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Professional Certifications -->
-                <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                    <h4 class="text-lg font-semibold text-orange-800 mb-4">Professional Certifications & Skills</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Technical Skills *</label>
-                            <textarea id="technicalSkills" required rows="3" placeholder="List your technical skills (e.g., Java, Python, AWS, etc.)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Professional Certifications</label>
-                            <textarea id="certifications" rows="3" placeholder="List any relevant certifications (e.g., AWS Certified, PMP, etc.)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">English Proficiency Test</label>
-                            <select id="englishTest" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Test</option>
-                                <option value="ielts">IELTS</option>
-                                <option value="toefl">TOEFL</option>
-                                <option value="pte">PTE</option>
-                                <option value="none">None</option>
-                                <option value="native">Native Speaker</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Test Score</label>
-                            <input type="text" id="englishScore" placeholder="e.g., 7.5 IELTS or 100 TOEFL" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Page 4: Work Experience & Financial Information -->
-            <div id="page4" class="form-page hidden">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6">Work Experience & Financial Information</h3>
-                
-                <!-- Current Employment -->
-                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                    <h4 class="text-lg font-semibold text-green-800 mb-4">Current Employment Status</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Employment Status *</label>
-                            <select id="employmentStatus" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Status</option>
-                                <option value="employed">Currently Employed</option>
-                                <option value="unemployed">Unemployed</option>
-                                <option value="student">Student</option>
-                                <option value="self_employed">Self Employed</option>
-                                <option value="business_owner">Business Owner</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Total Work Experience *</label>
-                            <select id="totalExperience" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Experience</option>
-                                <option value="0-1">0-1 Years</option>
-                                <option value="1-3">1-3 Years</option>
-                                <option value="3-5">3-5 Years</option>
-                                <option value="5-10">5-10 Years</option>
-                                <option value="10+">10+ Years</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Work Experience -->
-                <div id="workExperienceContainer">
-                    <div class="work-experience-item bg-blue-50 border border-blue-200 rounded-lg p-6 mb-4">
-                        <h4 class="text-lg font-semibold text-blue-800 mb-4">Current/Most Recent Position</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Company Name *</label>
-                                <input type="text" name="companyName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Job Title *</label>
-                                <input type="text" name="jobTitle" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Industry *</label>
-                                <select name="industry" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                    <option value="">Select Industry</option>
-                                    <option value="information_technology">Information Technology</option>
-                                    <option value="software">Software Development</option>
-                                    <option value="consulting">Consulting</option>
-                                    <option value="finance">Finance & Banking</option>
-                                    <option value="healthcare">Healthcare</option>
-                                    <option value="manufacturing">Manufacturing</option>
-                                    <option value="education">Education</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Company Size</label>
-                                <select name="companySize" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                    <option value="">Select Size</option>
-                                    <option value="startup">Startup (1-50)</option>
-                                    <option value="small">Small (51-200)</option>
-                                    <option value="medium">Medium (201-1000)</option>
-                                    <option value="large">Large (1000+)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Start Date *</label>
-                                <input type="date" name="startDate" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
-                                <input type="date" name="endDate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <label class="flex items-center mt-2">
-                                    <input type="checkbox" name="currentJob" class="mr-2"> Currently working here
-                                </label>
-                            </div>
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Job Responsibilities *</label>
-                                <textarea name="responsibilities" required rows="3" placeholder="Describe your key responsibilities and achievements..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Annual Salary (INR) *</label>
-                                <select name="salaryRange" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                    <option value="">Select Salary Range</option>
-                                    <option value="0-3">0-3 Lakhs</option>
-                                    <option value="3-6">3-6 Lakhs</option>
-                                    <option value="6-10">6-10 Lakhs</option>
-                                    <option value="10-15">10-15 Lakhs</option>
-                                    <option value="15-25">15-25 Lakhs</option>
-                                    <option value="25-50">25-50 Lakhs</option>
-                                    <option value="50+">50+ Lakhs</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Work Location</label>
-                                <select name="workLocation" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                    <option value="">Select Location</option>
-                                    <option value="office">Office</option>
-                                    <option value="remote">Remote</option>
-                                    <option value="hybrid">Hybrid</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button type="button" id="addWorkExperience" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors mb-6">
-                    + Add Previous Experience
-                </button>
-
-                <!-- Financial Information -->
-                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <h4 class="text-lg font-semibold text-yellow-800 mb-4">Financial Information</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Bank Account Balance (INR) *</label>
-                            <select id="bankBalance" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Range</option>
-                                <option value="0-1">0-1 Lakh</option>
-                                <option value="1-5">1-5 Lakhs</option>
-                                <option value="5-10">5-10 Lakhs</option>
-                                <option value="10-25">10-25 Lakhs</option>
-                                <option value="25-50">25-50 Lakhs</option>
-                                <option value="50+">50+ Lakhs</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Property Ownership *</label>
-                            <select id="propertyOwnership" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Option</option>
-                                <option value="own_house">Own House</option>
-                                <option value="own_apartment">Own Apartment</option>
-                                <option value="own_land">Own Land</option>
-                                <option value="multiple">Multiple Properties</option>
-                                <option value="rented">Living in Rented Property</option>
-                                <option value="family">Living with Family</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Property Value (if owned)</label>
-                            <select id="propertyValue" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Range</option>
-                                <option value="10-25">10-25 Lakhs</option>
-                                <option value="25-50">25-50 Lakhs</option>
-                                <option value="50-1cr">50 Lakhs - 1 Crore</option>
-                                <option value="1-2cr">1-2 Crores</option>
-                                <option value="2cr+">2+ Crores</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Other Investments</label>
-                            <select id="investments" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select Option</option>
-                                <option value="stocks">Stocks/Mutual Funds</option>
-                                <option value="fd">Fixed Deposits</option>
-                                <option value="gold">Gold/Jewelry</option>
-                                <option value="multiple">Multiple Investments</option>
-                                <option value="none">None</option>
-                            </select>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Financial Sponsor (if any)</label>
-                            <input type="text" id="financialSponsor" placeholder="Name and relationship of person sponsoring your trip" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Page 5: Document Selection -->
-            <div id="page5" class="form-page hidden">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6">Required Documents</h3>
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <p class="text-blue-800 font-medium">Please confirm you have the following mandatory documents ready:</p>
-                </div>
-                <div class="space-y-4">
-                    <div class="flex items-center p-4 border border-gray-200 rounded-lg">
-                        <input type="checkbox" id="doc_passport" required class="mr-4 h-5 w-5 text-blue-600">
-                        <div>
-                            <label for="doc_passport" class="font-medium text-gray-800">Valid Passport</label>
-                            <p class="text-sm text-gray-600">Must be valid for at least 6 months beyond intended stay</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center p-4 border border-gray-200 rounded-lg">
-                        <input type="checkbox" id="doc_photo" required class="mr-4 h-5 w-5 text-blue-600">
-                        <div>
-                            <label for="doc_photo" class="font-medium text-gray-800">Passport-style Photograph</label>
-                            <p class="text-sm text-gray-600">2x2 inches, taken within last 6 months</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center p-4 border border-gray-200 rounded-lg">
-                        <input type="checkbox" id="doc_i129" required class="mr-4 h-5 w-5 text-blue-600">
-                        <div>
-                            <label for="doc_i129" class="font-medium text-gray-800">Form I-129 (Petition)</label>
-                            <p class="text-sm text-gray-600">Filed by your US employer</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center p-4 border border-gray-200 rounded-lg">
-                        <input type="checkbox" id="doc_education" required class="mr-4 h-5 w-5 text-blue-600">
-                        <div>
-                            <label for="doc_education" class="font-medium text-gray-800">Educational Certificates</label>
-                            <p class="text-sm text-gray-600">Degree certificates and transcripts</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center p-4 border border-gray-200 rounded-lg">
-                        <input type="checkbox" id="doc_experience" required class="mr-4 h-5 w-5 text-blue-600">
-                        <div>
-                            <label for="doc_experience" class="font-medium text-gray-800">Work Experience Letters</label>
-                            <p class="text-sm text-gray-600">From previous employers</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center p-4 border border-gray-200 rounded-lg">
-                        <input type="checkbox" id="doc_bank" required class="mr-4 h-5 w-5 text-blue-600">
-                        <div>
-                            <label for="doc_bank" class="font-medium text-gray-800">Bank Statements</label>
-                            <p class="text-sm text-gray-600">Last 6 months statements</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Page 6: Embassy Appointment -->
-            <div id="page6" class="form-page hidden">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6">Embassy Appointment Information</h3>
-                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-6">
-                    <h4 class="text-lg font-semibold text-blue-800 mb-3">US Consulate General - Mumbai</h4>
-                    <div class="space-y-2 text-blue-700">
-                        <p><strong>Address:</strong> C-49, G Block, Bandra Kurla Complex, Mumbai 400051</p>
-                        <p><strong>Appointment Availability:</strong> Approximately 6 months from application date</p>
-                        <p><strong>Estimated Appointment Date:</strong> <span id="appointmentDate" class="font-semibold"></span></p>
-                    </div>
-                </div>
-                
-                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                    <h5 class="font-semibold text-yellow-800 mb-2">Important Notes:</h5>
-                    <ul class="text-yellow-700 text-sm space-y-1">
-                        <li>• Appointment dates are subject to availability and may vary</li>
-                        <li>• You will receive appointment scheduling instructions via email</li>
-                        <li>• Bring all original documents to your appointment</li>
-                        <li>• Arrive 15 minutes before your scheduled time</li>
-                    </ul>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Time Slot</label>
-                        <select id="preferredTime" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                            <option value="morning">Morning (9:00 AM - 12:00 PM)</option>
-                            <option value="afternoon">Afternoon (1:00 PM - 4:00 PM)</option>
-                            <option value="any">Any Available Time</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Special Requirements</label>
-                        <select id="specialRequirements" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                            <option value="none">None</option>
-                            <option value="wheelchair">Wheelchair Access</option>
-                            <option value="interpreter">Interpreter Required</option>
-                            <option value="other">Other (specify in comments)</option>
-                        </select>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Additional Comments</label>
-                        <textarea id="appointmentComments" rows="3" placeholder="Any special requests or additional information" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Page 7: Payment Instructions -->
-            <div id="page7" class="form-page hidden">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6">Payment Information</h3>
-                
-                <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-                    <h4 class="text-xl font-semibold text-green-800 mb-3">H1B Visa Application Fee</h4>
-                    <div class="text-3xl font-bold text-green-700 mb-2">$340 USD</div>
-                    <p class="text-green-600">This fee is payable to the US Department of State</p>
-                </div>
-
-                <div class="space-y-6">
-                    <div class="border border-gray-200 rounded-lg p-6">
-                        <h5 class="font-semibold text-gray-800 mb-3">Payment Instructions:</h5>
-                        <ol class="list-decimal list-inside space-y-2 text-gray-700">
-                            <li>Complete your application form submission</li>
-                            <li>You will receive an email with your unique application ID</li>
-                            <li>Visit the official US visa payment portal</li>
-                            <li>Enter your application ID and make payment</li>
-                            <li>Save your payment receipt for the interview</li>
-                        </ol>
-                    </div>
-
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h5 class="font-semibold text-blue-800 mb-2">Official Payment Portal:</h5>
-                        <a href="https://cgifederal.secure.force.com/" target="_blank" 
-                           class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
-                            🔗 CGI Federal - US Visa Payment Portal
-                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                            </svg>
-                        </a>
-                    </div>
-
-                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                        <h5 class="font-semibold text-yellow-800 mb-2">Important Notes:</h5>
-                        <ul class="text-yellow-700 text-sm space-y-1">
-                            <li>• Payment must be made before your embassy appointment</li>
-                            <li>• Fees are non-refundable, even if visa is denied</li>
-                            <li>• Keep payment receipt as proof of payment</li>
-                            <li>• Additional fees may apply for expedited processing</li>
-                        </ul>
-                    </div>
-
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <label class="flex items-center">
-                            <input type="checkbox" id="paymentAcknowledged" required class="mr-3 h-5 w-5 text-blue-600">
-                            <span class="text-gray-700">I understand the payment requirements and will complete payment through the official portal</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Page 8: Review & Submit -->
-            <div id="page8" class="form-page hidden">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6">Review & Submit Application</h3>
-                
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <p class="text-blue-800">Please review all information carefully before submitting. You can edit any section by clicking the "Edit" button.</p>
-                </div>
-
-                <div id="reviewSections" class="space-y-6">
-                    <!-- Review sections will be populated by JavaScript -->
-                </div>
-
-                <div class="border-t pt-6 mt-8">
-                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
-                        <label class="flex items-start">
-                            <input type="checkbox" id="finalDeclaration" required class="mr-3 mt-1 h-5 w-5 text-blue-600">
-                            <span class="text-gray-700 text-sm">
-                                I declare that all information provided in this application is true and accurate to the best of my knowledge. 
-                                I understand that providing false information may result in denial of my visa application and may affect future applications.
-                            </span>
-                        </label>
-                    </div>
-                    
-                    <button type="button" id="submitApplication" class="w-full bg-green-600 text-white py-4 rounded-lg hover:bg-green-700 transition-colors font-semibold text-lg">
-                        Submit H1B Visa Application
-                    </button>
-                </div>
-            </div>
-
-            <!-- Navigation Buttons -->
-            <div class="flex justify-between mt-8 pt-6 border-t">
-                <button type="button" id="prevBtn" class="hidden bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors">
-                    ← Previous
-                </button>
-                <div class="flex-1"></div>
-                <button type="button" id="nextBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                    Next →
-                </button>
-            </div>
-        </div>
-
-        <!-- Success Message -->
-        <div id="successMessage" class="hidden max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 text-center fade-in">
-            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-800 mb-4">Application Submitted Successfully!</h3>
-            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                <p class="text-green-800 font-medium">Your Acknowledgment Number:</p>
-                <p id="finalAckNumber" class="text-2xl font-bold text-green-700 mt-2"></p>
-            </div>
-            <p class="text-gray-600 mb-6">
-                A confirmation email has been sent to your registered email address with further instructions. 
-                Please save your acknowledgment number for future reference.
-            </p>
-            <button onclick="location.reload()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                Submit New Application
-            </button>
-        </div>
-    </main>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <script>
         // Firebase Configuration
@@ -809,259 +987,238 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // Initialize EmailJS
-        emailjs.init("QI1aOpAqKdm9d4BkT");
+        // EmailJS Configuration
+        emailjs.init('QI1aOpAqKdm9d4BkT');
 
-        // Global variables
-        let currentPage = 1;
-        let totalPages = 8;
-        let sessionTimer;
-        let sessionTimeLeft = 60;
-        let currentUser = null;
-        let acknowledgmentNumber = null;
+        // Application State
+        let currentStep = 1;
         let applicationData = {};
+        let acknowledgmentNumber = '';
+        let currentUser = null;
 
-        // DOM elements
-        const applicationForm = document.getElementById('applicationForm');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const progressText = document.getElementById('progressText');
+        // Session Management
+        let inactivityTimer;
 
-        // Initialize application
-        document.addEventListener('DOMContentLoaded', function() {
-            setupEventListeners();
-            updateAppointmentDate();
-        });
-
-        function setupEventListeners() {
-            // Initial form submission
-            document.getElementById('ackForm').addEventListener('submit', handleInitialSubmission);
+        function resetTimer() {
+            clearTimeout(inactivityTimer);
+            document.getElementById('sessionWarning').style.display = 'none';
             
-            // Form navigation
-            document.getElementById('showResumeForm').addEventListener('click', showResumeForm);
-            document.getElementById('backToInitial').addEventListener('click', showInitialForm);
-            document.getElementById('resumeBtn').addEventListener('click', resumeApplication);
-            
-            // Navigation buttons
-            document.getElementById('nextBtn').addEventListener('click', nextPage);
-            document.getElementById('prevBtn').addEventListener('click', prevPage);
-            document.getElementById('submitApplication').addEventListener('click', submitApplication);
-            
-            // Form inputs - auto-save on change
-            document.addEventListener('input', debounce(autoSave, 1000));
-            document.addEventListener('change', autoSave);
-            
-            // Work experience
-            document.getElementById('addWorkExperience').addEventListener('click', addWorkExperience);
-            
-            // Conditional field toggles
-            document.getElementById('maritalStatus').addEventListener('change', toggleSpouseField);
-            document.getElementById('traveledAbroad').addEventListener('change', toggleTravelFields);
-            document.getElementById('visitedUSA').addEventListener('change', toggleUSAFields);
-            
-            // Logout
-            document.getElementById('logoutBtn').addEventListener('click', logout);
+            inactivityTimer = setTimeout(() => {
+                saveProgress();
+                alert('Session expired due to inactivity. Your progress has been saved.');
+                signOut();
+            }, 30000); // 30 seconds
         }
 
-        async function handleInitialSubmission(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('initialName').value.trim();
-            const email = document.getElementById('initialEmail').value.trim();
-            
-            if (!name || !email) {
-                alert('Please fill in all required fields');
+        // Initialize session management
+        function initializeSession() {
+            ['click', 'keypress', 'input', 'change', 'focus'].forEach(evt =>
+                document.addEventListener(evt, resetTimer)
+            );
+            resetTimer();
+        }
+
+        // Authentication Functions
+        function showSignUp() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.remove('hidden');
+        }
+
+        function showSignIn() {
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        async function signUp() {
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!email || !password || !confirmPassword) {
+                showError('Please fill in all fields.');
                 return;
             }
-            
-            if (!isValidEmail(email)) {
-                alert('Please enter a valid email address');
+
+            if (password !== confirmPassword) {
+                showError('Passwords do not match.');
                 return;
             }
-            
-            // Generate acknowledgment number
-            generateAcknowledgmentNumber();
-            
-            // Pre-fill form data
-            document.getElementById('fullName').value = name;
-            document.getElementById('email').value = email;
-            
-            // Send acknowledgment email
-            await sendAcknowledgmentEmail(name, email);
-            
-            // Show application form
-            startApplication();
-        }
 
-        function showResumeForm() {
-            document.getElementById('initialForm').classList.add('hidden');
-            document.getElementById('resumeForm').classList.remove('hidden');
-        }
-
-        function showInitialForm() {
-            document.getElementById('resumeForm').classList.add('hidden');
-            document.getElementById('initialForm').classList.remove('hidden');
-        }
-
-        function startApplication() {
-            document.getElementById('initialForm').classList.add('hidden');
-            document.getElementById('resumeForm').classList.add('hidden');
-            document.getElementById('applicationForm').classList.remove('hidden');
-            document.getElementById('progressContainer').classList.remove('hidden');
-            startSession();
-            updateProgress();
-        }
-
-        function resumeApplication() {
-            const ackNum = document.getElementById('ackNumber').value.trim();
-            if (!ackNum) {
-                alert('Please enter your acknowledgment number');
+            if (password.length < 6) {
+                showError('Password must be at least 6 characters long.');
                 return;
             }
-            
-            loadApplicationData(ackNum);
-        }
 
-        async function loadApplicationData(ackNum) {
             try {
-                const doc = await db.collection('applications').doc(ackNum).get();
-                if (doc.exists) {
-                    applicationData = doc.data();
-                    acknowledgmentNumber = ackNum;
-                    populateFormData();
-                    startNewApplication();
-                } else {
-                    alert('Invalid acknowledgment number. Please check and try again.');
-                }
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                currentUser = userCredential.user;
+                showSuccess('Account created successfully!');
+                initializeApplication();
             } catch (error) {
-                console.error('Error loading application:', error);
-                alert('Error loading application. Please try again.');
+                console.error('Sign up error:', error);
+                showError(error.message);
             }
         }
 
-        function populateFormData() {
-            // Populate personal info
-            if (applicationData.personal_info) {
-                const personal = applicationData.personal_info;
-                document.getElementById('fullName').value = personal.name || '';
-                document.getElementById('age').value = personal.age || '';
-                document.getElementById('email').value = personal.email || '';
-                document.getElementById('phone').value = personal.phone || '';
-                document.getElementById('dob').value = personal.dob || '';
-                document.getElementById('gender').value = personal.gender || '';
-                document.getElementById('address').value = personal.address || '';
-                document.getElementById('passportNumber').value = personal.passport_number || '';
-                document.getElementById('passportExpiry').value = personal.passport_expiry || '';
+        async function signIn() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showError('Please enter both email and password.');
+                return;
             }
-            
-            // Populate family info
-            if (applicationData.family_info) {
-                const family = applicationData.family_info;
-                document.getElementById('fatherName').value = family.father_name || '';
-                document.getElementById('motherName').value = family.mother_name || '';
-                document.getElementById('maritalStatus').value = family.marital_status || '';
-                document.getElementById('spouseName').value = family.spouse_name || '';
-                document.getElementById('children').value = family.children || '';
-                document.getElementById('emergencyContact').value = family.emergency_contact || '';
-                document.getElementById('emergencyPhone').value = family.emergency_phone || '';
-                document.getElementById('emergencyRelation').value = family.emergency_relation || '';
-                toggleSpouseField();
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                currentUser = userCredential.user;
+                showSuccess('Signed in successfully!');
+                initializeApplication();
+            } catch (error) {
+                console.error('Sign in error:', error);
+                showError('Invalid email or password.');
             }
-            
-            // Continue populating other sections...
         }
 
-        function startSession() {
-            sessionTimeLeft = 60;
-            
-            sessionTimer = setInterval(() => {
-                sessionTimeLeft--;
+        async function signOut() {
+            try {
+                await auth.signOut();
+                currentUser = null;
+                acknowledgmentNumber = '';
+                applicationData = {};
                 
-                if (sessionTimeLeft <= 0) {
-                    expireSession();
-                }
-            }, 1000);
-        }
-
-        function expireSession() {
-            clearInterval(sessionTimer);
-            alert('Session expired due to inactivity. Your data has been saved. Please refresh the page to continue.');
-            location.reload();
-        }
-
-        function resetSessionTimer() {
-            sessionTimeLeft = 60;
-        }
-
-        function nextPage() {
-            if (validateCurrentPage()) {
-                if (currentPage === 1 && !acknowledgmentNumber) {
-                    generateAcknowledgmentNumber();
-                }
+                // Reset UI
+                document.getElementById('authSection').classList.remove('hidden');
+                document.getElementById('progressSection').classList.add('hidden');
+                hideAllSteps();
                 
-                if (currentPage < totalPages) {
-                    document.getElementById(`page${currentPage}`).classList.add('hidden');
-                    currentPage++;
-                    document.getElementById(`page${currentPage}`).classList.remove('hidden');
-                    updateProgress();
-                    updateNavigationButtons();
-                    resetSessionTimer();
-                    autoSave();
-                }
+                showSuccess('Signed out successfully!');
+            } catch (error) {
+                console.error('Sign out error:', error);
+                showError('Error signing out.');
             }
         }
 
-        function prevPage() {
-            if (currentPage > 1) {
-                document.getElementById(`page${currentPage}`).classList.add('hidden');
-                currentPage--;
-                document.getElementById(`page${currentPage}`).classList.remove('hidden');
-                updateProgress();
-                updateNavigationButtons();
-                resetSessionTimer();
+        function initializeApplication() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('progressSection').classList.remove('hidden');
+            
+            // Pre-fill email fields
+            const userEmail = currentUser.email;
+            document.getElementById('initialEmail').value = userEmail;
+            document.getElementById('email').value = userEmail;
+            document.getElementById('retrieveEmail').value = userEmail;
+            
+            showStep(1);
+            updateProgress();
+            initializeSession();
+        }
+
+        // Utility Functions
+        function generateAckNumber() {
+            const timestamp = Date.now().toString().slice(-6);
+            const random = Math.random().toString(36).substr(2, 4).toUpperCase();
+            return `ACK-${timestamp}${random}`;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function hideAllSteps() {
+            for (let i = 1; i <= 8; i++) {
+                document.getElementById(`step${i}`).classList.add('hidden');
+            }
+            document.getElementById('acknowledgmentDisplay').classList.add('hidden');
+            document.getElementById('finalConfirmationPage').classList.add('hidden');
+            document.getElementById('pdfDocumentView').classList.add('hidden');
+        }
+
+        function showStep(step) {
+            hideAllSteps();
+            
+            if (step === 'acknowledgment') {
+                document.getElementById('acknowledgmentDisplay').classList.remove('hidden');
+            } else if (step === 'final') {
+                document.getElementById('finalConfirmationPage').classList.remove('hidden');
+            } else if (step === 'pdf') {
+                document.getElementById('pdfDocumentView').classList.remove('hidden');
+            } else {
+                document.getElementById(`step${step}`).classList.remove('hidden');
             }
         }
 
         function updateProgress() {
-            const progress = (currentPage / totalPages) * 100;
-            progressBar.style.width = `${progress}%`;
-            progressText.textContent = `Step ${currentPage} of ${totalPages}`;
+            const progress = (currentStep / 8) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('currentStep').textContent = currentStep;
         }
 
-        function updateNavigationButtons() {
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            
-            if (currentPage === 1) {
-                prevBtn.classList.add('hidden');
-            } else {
-                prevBtn.classList.remove('hidden');
-            }
-            
-            if (currentPage === totalPages) {
-                nextBtn.classList.add('hidden');
-            } else {
-                nextBtn.classList.remove('hidden');
+        // Step Navigation
+        function nextStep() {
+            if (validateCurrentStep()) {
+                saveProgress();
+                currentStep++;
+                if (currentStep <= 8) {
+                    showStep(currentStep);
+                    updateProgress();
+                }
             }
         }
 
-        function validateCurrentPage() {
-            const currentPageEl = document.getElementById(`page${currentPage}`);
-            const requiredFields = currentPageEl.querySelectorAll('[required]');
+        function previousStep() {
+            if (currentStep > 2) {
+                currentStep--;
+                showStep(currentStep);
+                updateProgress();
+            }
+        }
+
+        function validateCurrentStep() {
+            const currentStepDiv = document.getElementById(`step${currentStep}`);
+            const requiredInputs = currentStepDiv.querySelectorAll('[required]');
             
-            for (let field of requiredFields) {
-                if (!field.value.trim()) {
-                    field.focus();
-                    alert(`Please fill in the required field: ${field.previousElementSibling.textContent}`);
+            for (let input of requiredInputs) {
+                if (!input.value.trim()) {
+                    showError(`Please fill in all required fields.`);
+                    input.focus();
                     return false;
                 }
             }
             
-            // Additional validation for specific pages
-            if (currentPage === 1) {
-                const email = document.getElementById('email').value;
-                if (!isValidEmail(email)) {
-                    alert('Please enter a valid email address');
+            // Additional validation for specific steps
+            if (currentStep === 4) {
+                const expiryDate = new Date(document.getElementById('passportExpiryDate').value);
+                const today = new Date();
+                const sixMonthsFromNow = new Date();
+                sixMonthsFromNow.setMonth(today.getMonth() + 6);
+                
+                if (expiryDate < sixMonthsFromNow) {
+                    showError('Passport must be valid for at least 6 months from today.');
+                    return false;
+                }
+            }
+            
+            if (currentStep === 7) {
+                const checkboxes = document.querySelectorAll('#step7 input[type="checkbox"]');
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                
+                if (!allChecked) {
+                    showError('Please confirm that you have all required documents.');
                     return false;
                 }
             }
@@ -1069,318 +1226,539 @@
             return true;
         }
 
-        function isValidEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        }
-
-        function generateAcknowledgmentNumber() {
-            const timestamp = Date.now().toString();
-            const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-            acknowledgmentNumber = `H1B${timestamp.slice(-6)}${random}`;
-            
-            // Send acknowledgment email
-            sendAcknowledgmentEmail();
-        }
-
-        async function sendAcknowledgmentEmail(name, email) {
-            const templateParams = {
-                user_name: name,
-                email: email,
-                ack_number: acknowledgmentNumber,
-                submission_date: new Date().toLocaleDateString('en-IN')
-            };
-            
-            try {
-                await emailjs.send('service_z3x1v6e', 'template_t16ktja', templateParams);
-                console.log('Acknowledgment email sent successfully');
-                alert(`Acknowledgment email sent to ${email}! Your acknowledgment number is: ${acknowledgmentNumber}`);
-            } catch (error) {
-                console.error('Error sending email:', error);
-                alert('Email sending failed, but you can continue with your application. Your acknowledgment number is: ' + acknowledgmentNumber);
-            }
-        }
-
-        function autoSave() {
-            if (!acknowledgmentNumber) return;
-            
-            collectFormData();
-            saveToFirestore();
-            resetSessionTimer();
-        }
-
+        // Data Management
         function collectFormData() {
-            // Personal Info
-            applicationData.personal_info = {
-                name: document.getElementById('fullName').value,
-                age: parseInt(document.getElementById('age').value) || 0,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                dob: document.getElementById('dob').value,
-                gender: document.getElementById('gender').value,
-                nationality: document.getElementById('nationality').value,
-                place_of_birth: document.getElementById('placeOfBirth').value,
-                address: document.getElementById('address').value,
-                city: document.getElementById('city').value,
-                state: document.getElementById('state').value,
-                pin_code: document.getElementById('pinCode').value,
-                passport_number: document.getElementById('passportNumber').value,
-                passport_issue: document.getElementById('passportIssue').value,
-                passport_expiry: document.getElementById('passportExpiry').value,
-                passport_authority: document.getElementById('passportAuthority').value
+            const data = {
+                personal_info: {
+                    name: (document.getElementById('firstName')?.value || '') + ' ' + (document.getElementById('lastName')?.value || ''),
+                    dob: document.getElementById('dateOfBirth')?.value || '',
+                    age: document.getElementById('dateOfBirth')?.value ? 
+                        new Date().getFullYear() - new Date(document.getElementById('dateOfBirth').value).getFullYear() : 0,
+                    email: currentUser?.email || '',
+                    phone: document.getElementById('phone')?.value || '',
+                    address: document.getElementById('currentAddress')?.value || ''
+                },
+                family_info: {
+                    father_name: document.getElementById('fatherName')?.value || '',
+                    mother_name: document.getElementById('motherName')?.value || '',
+                    spouse_name: document.getElementById('spouseName')?.value || ''
+                },
+                education: {
+                    highest_degree: document.getElementById('education')?.value || '',
+                    university: document.getElementById('university')?.value || '',
+                    graduation_year: document.getElementById('graduationYear')?.value ? 
+                        parseInt(document.getElementById('graduationYear').value) : 0
+                },
+                work_experience: [{
+                    company_name: document.getElementById('currentEmployer')?.value || '',
+                    role: document.getElementById('jobTitle')?.value || '',
+                    duration_months: document.getElementById('workExperience')?.value ? 
+                        parseInt(document.getElementById('workExperience').value) * 12 : 0,
+                    responsibilities: document.getElementById('responsibilities')?.value || ''
+                }],
+                document_selection: {
+                    passport: document.getElementById('doc1')?.checked || false,
+                    photo: document.getElementById('doc2')?.checked || false,
+                    bank_statement: document.getElementById('doc3')?.checked || false
+                },
+                embassy_appointment: {
+                    date: firebase.firestore.Timestamp.fromDate(new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000)),
+                    payment_required: 340
+                },
+                application_status: 'submitted',
+                acknowledgment_number: acknowledgmentNumber,
+                created_at: firebase.firestore.Timestamp.now(),
+                updated_at: firebase.firestore.Timestamp.now(),
+                email: currentUser?.email || ''
             };
             
-            // Family Info
-            applicationData.family_info = {
-                father_name: document.getElementById('fatherName').value,
-                mother_name: document.getElementById('motherName').value,
-                marital_status: document.getElementById('maritalStatus').value,
-                spouse_name: document.getElementById('spouseName').value,
-                children: parseInt(document.getElementById('children').value) || 0,
-                emergency_contact: document.getElementById('emergencyContact').value,
-                emergency_phone: document.getElementById('emergencyPhone').value,
-                emergency_relation: document.getElementById('emergencyRelation').value
-            };
-            
-            // Education
-            applicationData.education = {
-                highest_degree: document.getElementById('highestDegree').value,
-                field_of_study: document.getElementById('fieldOfStudy').value,
-                university: document.getElementById('university').value,
-                graduation_year: parseInt(document.getElementById('graduationYear').value) || 0,
-                gpa: document.getElementById('gpa').value,
-                education_country: document.getElementById('educationCountry').value,
-                certifications: document.getElementById('certifications').value
-            };
-            
-            // Work Experience
-            applicationData.work_experience = [];
-            const workItems = document.querySelectorAll('.work-experience-item');
-            workItems.forEach(item => {
-                const experience = {
-                    company_name: item.querySelector('[name="companyName"]').value,
-                    job_title: item.querySelector('[name="jobTitle"]').value,
-                    start_date: item.querySelector('[name="startDate"]').value,
-                    end_date: item.querySelector('[name="endDate"]').value,
-                    current_job: item.querySelector('[name="currentJob"]').checked,
-                    responsibilities: item.querySelector('[name="responsibilities"]').value,
-                    salary: parseInt(item.querySelector('[name="salary"]').value) || 0
-                };
-                if (experience.company_name) {
-                    applicationData.work_experience.push(experience);
-                }
-            });
-            
-            // Document Selection
-            applicationData.document_selection = {
-                passport: document.getElementById('doc_passport').checked,
-                photo: document.getElementById('doc_photo').checked,
-                i129: document.getElementById('doc_i129').checked,
-                education: document.getElementById('doc_education').checked,
-                experience: document.getElementById('doc_experience').checked,
-                bank_statement: document.getElementById('doc_bank').checked
-            };
-            
-            // Embassy Appointment
-            applicationData.embassy_appointment = {
-                preferred_time: document.getElementById('preferredTime').value,
-                special_requirements: document.getElementById('specialRequirements').value,
-                comments: document.getElementById('appointmentComments').value,
-                estimated_date: new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000) // 6 months from now
-            };
-            
-            // Payment acknowledgment
-            const paymentAck = document.getElementById('paymentAcknowledged');
-            if (paymentAck) {
-                applicationData.payment_acknowledged = paymentAck.checked;
+            return data;
+        }
+
+        function populateForm(data) {
+            if (data.personal_info) {
+                const nameParts = data.personal_info.name.split(' ');
+                if (document.getElementById('firstName')) document.getElementById('firstName').value = nameParts[0] || '';
+                if (document.getElementById('lastName')) document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
+                if (document.getElementById('dateOfBirth')) document.getElementById('dateOfBirth').value = data.personal_info.dob || '';
+                if (document.getElementById('phone')) document.getElementById('phone').value = data.personal_info.phone || '';
+                if (document.getElementById('currentAddress')) document.getElementById('currentAddress').value = data.personal_info.address || '';
             }
             
-            // Metadata
-            applicationData.acknowledgment_number = acknowledgmentNumber;
-            applicationData.application_status = 'in_progress';
-            applicationData.updated_at = firebase.firestore.FieldValue.serverTimestamp();
+            if (data.family_info) {
+                if (document.getElementById('fatherName')) document.getElementById('fatherName').value = data.family_info.father_name || '';
+                if (document.getElementById('motherName')) document.getElementById('motherName').value = data.family_info.mother_name || '';
+                if (document.getElementById('spouseName')) document.getElementById('spouseName').value = data.family_info.spouse_name || '';
+            }
             
-            if (!applicationData.created_at) {
-                applicationData.created_at = firebase.firestore.FieldValue.serverTimestamp();
+            if (data.education) {
+                if (document.getElementById('education')) document.getElementById('education').value = data.education.highest_degree || '';
+                if (document.getElementById('university')) document.getElementById('university').value = data.education.university || '';
+                if (document.getElementById('graduationYear')) document.getElementById('graduationYear').value = data.education.graduation_year || '';
+            }
+            
+            if (data.work_experience && data.work_experience[0]) {
+                if (document.getElementById('currentEmployer')) document.getElementById('currentEmployer').value = data.work_experience[0].company_name || '';
+                if (document.getElementById('jobTitle')) document.getElementById('jobTitle').value = data.work_experience[0].role || '';
+                if (document.getElementById('workExperience')) document.getElementById('workExperience').value = Math.floor(data.work_experience[0].duration_months / 12) || '';
+                if (document.getElementById('responsibilities')) document.getElementById('responsibilities').value = data.work_experience[0].responsibilities || '';
             }
         }
 
-        async function saveToFirestore() {
+        async function saveProgress() {
+            if (!acknowledgmentNumber || !currentUser) return;
+            
             try {
-                await db.collection('applications').doc(acknowledgmentNumber).set(applicationData, { merge: true });
-                console.log('Application data saved successfully');
+                const formData = collectFormData();
+                formData.currentStep = currentStep;
+                formData.updated_at = firebase.firestore.Timestamp.now();
+                
+                await db.collection('applications').doc(acknowledgmentNumber).set(formData, { merge: true });
+                console.log('Progress saved successfully');
             } catch (error) {
-                console.error('Error saving application:', error);
+                console.error('Error saving progress:', error);
             }
         }
 
-        function addWorkExperience() {
-            const container = document.getElementById('workExperienceContainer');
-            const itemCount = container.children.length;
+        // Acknowledgment Number Functions
+        async function generateAcknowledgment() {
+            const name = document.getElementById('initialName').value.trim();
+            const email = currentUser?.email;
             
-            const newItem = document.createElement('div');
-            newItem.className = 'work-experience-item border border-gray-200 rounded-lg p-6 mb-4';
-            newItem.innerHTML = `
-                <div class="flex justify-between items-center mb-4">
-                    <h4 class="text-lg font-semibold text-gray-800">Previous Position ${itemCount}</h4>
-                    <button type="button" class="text-red-600 hover:text-red-800" onclick="this.parentElement.parentElement.remove()">
-                        Remove
-                    </button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
-                        <input type="text" name="companyName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
-                        <input type="text" name="jobTitle" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-                        <input type="date" name="startDate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
-                        <input type="date" name="endDate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Job Responsibilities</label>
-                        <textarea name="responsibilities" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Annual Salary (USD)</label>
-                        <input type="number" name="salary" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-            `;
-            
-            container.appendChild(newItem);
-        }
-
-        function toggleSpouseField() {
-            const maritalStatus = document.getElementById('maritalStatus').value;
-            const spouseField = document.getElementById('spouseField');
-            
-            if (maritalStatus === 'married') {
-                spouseField.classList.remove('hidden');
-                document.getElementById('spouseName').required = true;
-            } else {
-                spouseField.classList.add('hidden');
-                document.getElementById('spouseName').required = false;
-            }
-        }
-
-        function toggleTravelFields() {
-            const traveledAbroad = document.getElementById('traveledAbroad').value;
-            const travelCountField = document.getElementById('travelCountField');
-            const usaTravelField = document.getElementById('usaTravelField');
-            const travelDetailsField = document.getElementById('travelDetailsField');
-            
-            if (traveledAbroad === 'yes') {
-                travelCountField.classList.remove('hidden');
-                usaTravelField.classList.remove('hidden');
-                travelDetailsField.classList.remove('hidden');
-            } else {
-                travelCountField.classList.add('hidden');
-                usaTravelField.classList.add('hidden');
-                travelDetailsField.classList.add('hidden');
-                document.getElementById('usaVisaField').classList.add('hidden');
-            }
-        }
-
-        function toggleUSAFields() {
-            const visitedUSA = document.getElementById('visitedUSA').value;
-            const usaVisaField = document.getElementById('usaVisaField');
-            
-            if (visitedUSA === 'yes') {
-                usaVisaField.classList.remove('hidden');
-            } else {
-                usaVisaField.classList.add('hidden');
-            }
-        }
-
-        function updateAppointmentDate() {
-            const appointmentDate = new Date();
-            appointmentDate.setMonth(appointmentDate.getMonth() + 6);
-            document.getElementById('appointmentDate').textContent = appointmentDate.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        }
-
-        async function submitApplication() {
-            if (!document.getElementById('finalDeclaration').checked) {
-                alert('Please accept the declaration to submit your application');
+            if (!name) {
+                showError('Please enter your full name.');
                 return;
             }
             
-            collectFormData();
-            applicationData.application_status = 'submitted';
+            try {
+                // Check if user already has an acknowledgment number
+                const existingQuery = await db.collection('applications')
+                    .where('email', '==', email)
+                    .limit(1)
+                    .get();
+                
+                if (!existingQuery.empty) {
+                    const existingDoc = existingQuery.docs[0];
+                    acknowledgmentNumber = existingDoc.data().acknowledgment_number;
+                    showSuccess('Using existing acknowledgment number for this email.');
+                } else {
+                    // Generate new acknowledgment number
+                    acknowledgmentNumber = generateAckNumber();
+                    
+                    // Save initial data
+                    await db.collection('applications').doc(acknowledgmentNumber).set({
+                        acknowledgment_number: acknowledgmentNumber,
+                        personal_info: {
+                            name: name,
+                            email: email
+                        },
+                        application_status: 'in_progress',
+                        created_at: firebase.firestore.Timestamp.now(),
+                        updated_at: firebase.firestore.Timestamp.now(),
+                        email: email
+                    });
+                }
+                
+                // Send email
+                await sendAcknowledmentEmail({
+                    user_name: name,
+                    email: email,
+                    ack_number: acknowledgmentNumber,
+                    submission_date: new Date().toLocaleDateString()
+                });
+                
+                // Display acknowledgment number
+                document.getElementById('ackNumber').textContent = acknowledgmentNumber;
+                showStep('acknowledgment');
+                
+            } catch (error) {
+                console.error('Error generating acknowledgment:', error);
+                showError('Error generating acknowledgment number. Please try again.');
+            }
+        }
+
+        async function loadExistingApplication() {
+            const ackNum = document.getElementById('existingAck').value.trim();
+            
+            if (!ackNum) {
+                showError('Please enter your acknowledgment number.');
+                return;
+            }
             
             try {
-                await saveToFirestore();
-                clearInterval(sessionTimer);
+                const doc = await db.collection('applications').doc(ackNum).get();
                 
-                // Show success message
-                applicationForm.classList.add('hidden');
-                progressContainer.classList.add('hidden');
-                document.getElementById('successMessage').classList.remove('hidden');
+                if (doc.exists) {
+                    const data = doc.data();
+                    
+                    // Check if this application belongs to current user
+                    if (data.email !== currentUser.email) {
+                        showError('This acknowledgment number does not belong to your account.');
+                        return;
+                    }
+                    
+                    acknowledgmentNumber = ackNum;
+                    
+                    // Populate form with saved data
+                    populateForm(data);
+                    
+                    // Go to saved step or step 2 if no progress
+                    currentStep = data.currentStep || 2;
+                    showStep(currentStep);
+                    updateProgress();
+                    
+                    showSuccess('Application loaded successfully!');
+                } else {
+                    showError('Invalid acknowledgment number. Please check and try again.');
+                }
+            } catch (error) {
+                console.error('Error loading application:', error);
+                showError('Error loading application. Please try again.');
+            }
+        }
+
+        async function retrieveAcknowledgment() {
+            const name = document.getElementById('retrieveName').value.trim();
+            const dob = document.getElementById('retrieveDOB').value;
+            const email = currentUser?.email;
+            
+            if (!name || !dob) {
+                showError('Please fill in all fields to retrieve your acknowledgment number.');
+                return;
+            }
+            
+            try {
+                const snapshot = await db.collection('applications')
+                    .where('personal_info.name', '==', name)
+                    .where('personal_info.dob', '==', dob)
+                    .where('email', '==', email)
+                    .get();
+                
+                if (!snapshot.empty) {
+                    const ack = snapshot.docs[0].data().acknowledgment_number;
+                    alert(`Your acknowledgment number is: ${ack}`);
+                    
+                    await sendAcknowledmentEmail({
+                        user_name: name,
+                        email: email,
+                        ack_number: ack,
+                        submission_date: new Date().toLocaleDateString()
+                    });
+                    
+                    // Display on screen
+                    acknowledgmentNumber = ack;
+                    document.getElementById('ackNumber').textContent = ack;
+                    showStep('acknowledgment');
+                } else {
+                    alert('No application found with the provided details.');
+                }
+            } catch (error) {
+                console.error('Error retrieving acknowledgment:', error);
+                showError('Error retrieving acknowledgment number. Please try again.');
+            }
+        }
+
+        function sendAcknowledmentEmail(data) {
+            return emailjs.send('service_z3x1v6e', 'template_t16ktja', {
+                user_name: data.user_name,
+                email: data.email,
+                ack_number: data.ack_number,
+                submission_date: data.submission_date
+            }).then(() => {
+                alert(`Acknowledgment email sent! Your number: ${data.ack_number}`);
+            }).catch(() => {
+                alert(`Email sending failed, but you can continue. Your acknowledgment number is: ${data.ack_number}`);
+            });
+        }
+
+        function startApplication() {
+            currentStep = 2;
+            showStep(currentStep);
+            updateProgress();
+            
+            // Pre-populate name from initial registration
+            const initialName = document.getElementById('initialName').value;
+            const nameParts = initialName.split(' ');
+            document.getElementById('firstName').value = nameParts[0] || '';
+            document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
+        }
+
+        // Application Submission
+        async function submitApplication() {
+            if (!document.getElementById('finalConfirmation').checked) {
+                showError('Please confirm the declaration before submitting.');
+                return;
+            }
+            
+            try {
+                const formData = collectFormData();
+                formData.application_status = 'submitted';
+                
+                // Calculate appointment date (6 months from now)
+                const appointmentDate = new Date();
+                appointmentDate.setMonth(appointmentDate.getMonth() + 6);
+                formData.embassy_appointment.date = firebase.firestore.Timestamp.fromDate(appointmentDate);
+                
+                // Save final application
+                await db.collection('applications').doc(acknowledgmentNumber).set(formData, { merge: true });
+                
+                // Send confirmation email
+                await sendConfirmationEmail(formData);
+                
+                // Show final confirmation
                 document.getElementById('finalAckNumber').textContent = acknowledgmentNumber;
+                document.getElementById('submissionDate').textContent = new Date().toLocaleDateString();
+                document.getElementById('finalAppointmentDate').textContent = appointmentDate.toLocaleDateString();
                 
-                // Send final confirmation email
-                await sendFinalConfirmationEmail();
+                showStep('final');
+                showSuccess('Application submitted successfully!');
                 
             } catch (error) {
                 console.error('Error submitting application:', error);
-                alert('Error submitting application. Please try again.');
+                showError('Error submitting application. Please try again.');
             }
         }
 
-        async function sendFinalConfirmationEmail() {
-            const name = document.getElementById('fullName').value;
-            const email = document.getElementById('email').value;
-            
-            const templateParams = {
-                user_name: name,
-                user_email: email,
-                acknowledgment_number: acknowledgmentNumber,
-                to_email: email,
-                status: 'submitted'
-            };
-            
+        async function sendConfirmationEmail(data) {
             try {
-                await emailjs.send('service_z3x1v6e', 'template_t16ktja', templateParams);
-                console.log('Final confirmation email sent successfully');
-            } catch (error) {
-                console.error('Error sending final email:', error);
-            }
-        }
-
-        function logout() {
-            clearInterval(sessionTimer);
-            location.reload();
-        }
-
-        // Utility function for debouncing
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
+                const templateParams = {
+                    user_name: data.personal_info.name,
+                    email: data.personal_info.email,
+                    ack_number: acknowledgmentNumber,
+                    submission_date: new Date().toLocaleDateString()
                 };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
+                
+                await emailjs.send('service_z3x1v6e', 'template_yl4fwyg', templateParams);
+            } catch (error) {
+                console.error('Error sending confirmation email:', error);
+            }
         }
 
-        // Prevent form submission on Enter key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
-                e.preventDefault();
+        // PDF Document Functions
+        async function viewApplicationDocument() {
+            try {
+                const doc = await db.collection('applications').doc(acknowledgmentNumber).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    generatePDFContent(data);
+                    showStep('pdf');
+                }
+            } catch (error) {
+                console.error('Error loading application data:', error);
+                showError('Error loading application data.');
             }
+        }
+
+        function generatePDFContent(data) {
+            // Set basic info
+            document.getElementById('pdfAckNumber').textContent = acknowledgmentNumber;
+            document.getElementById('pdfSubmissionDate').textContent = new Date().toLocaleDateString();
+            document.getElementById('pdfSignatureDate').textContent = new Date().toLocaleDateString();
+            document.getElementById('pdfDocumentId').textContent = `DOC-${acknowledgmentNumber}`;
+            document.getElementById('pdfGeneratedDate').textContent = new Date().toLocaleString();
+
+            // Personal Information
+            const personalInfo = document.getElementById('pdfPersonalInfo');
+            personalInfo.innerHTML = `
+                <div class="pdf-field"><span class="label">Full Name:</span><span class="value">${data.personal_info?.name || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Date of Birth:</span><span class="value">${data.personal_info?.dob || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Age:</span><span class="value">${data.personal_info?.age || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Gender:</span><span class="value">${document.getElementById('gender')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Nationality:</span><span class="value">${document.getElementById('nationality')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Marital Status:</span><span class="value">${document.getElementById('maritalStatus')?.value || 'N/A'}</span></div>
+            `;
+
+            // Family Information
+            const familyInfo = document.getElementById('pdfFamilyInfo');
+            familyInfo.innerHTML = `
+                <div class="pdf-field"><span class="label">Father's Name:</span><span class="value">${data.family_info?.father_name || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Mother's Name:</span><span class="value">${data.family_info?.mother_name || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Spouse's Name:</span><span class="value">${data.family_info?.spouse_name || 'N/A'}</span></div>
+            `;
+
+            // Contact Information
+            const contactInfo = document.getElementById('pdfContactInfo');
+            contactInfo.innerHTML = `
+                <div class="pdf-field"><span class="label">Email Address:</span><span class="value">${data.personal_info?.email || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Phone Number:</span><span class="value">${data.personal_info?.phone || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Address:</span><span class="value">${data.personal_info?.address || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">City:</span><span class="value">${document.getElementById('city')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">State:</span><span class="value">${document.getElementById('state')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">PIN Code:</span><span class="value">${document.getElementById('pincode')?.value || 'N/A'}</span></div>
+            `;
+
+            // Passport Information
+            const passportInfo = document.getElementById('pdfPassportInfo');
+            passportInfo.innerHTML = `
+                <div class="pdf-field"><span class="label">Passport Number:</span><span class="value">${document.getElementById('passportNumber')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Issue Date:</span><span class="value">${document.getElementById('passportIssueDate')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Expiry Date:</span><span class="value">${document.getElementById('passportExpiryDate')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Place of Issue:</span><span class="value">${document.getElementById('placeOfIssue')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Previous US Visa:</span><span class="value">${document.getElementById('previousVisaHistory')?.value || 'N/A'}</span></div>
+            `;
+
+            // Education Information
+            const educationInfo = document.getElementById('pdfEducationInfo');
+            educationInfo.innerHTML = `
+                <div class="pdf-field"><span class="label">Highest Degree:</span><span class="value">${data.education?.highest_degree || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Field of Study:</span><span class="value">${document.getElementById('fieldOfStudy')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">University:</span><span class="value">${data.education?.university || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Graduation Year:</span><span class="value">${data.education?.graduation_year || 'N/A'}</span></div>
+            `;
+
+            // Employment Information
+            const employmentInfo = document.getElementById('pdfEmploymentInfo');
+            const workExp = data.work_experience?.[0] || {};
+            employmentInfo.innerHTML = `
+                <div class="pdf-field"><span class="label">Current Employer:</span><span class="value">${workExp.company_name || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Job Title:</span><span class="value">${workExp.role || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Work Experience:</span><span class="value">${Math.floor(workExp.duration_months / 12) || 0} years</span></div>
+                <div class="pdf-field"><span class="label">Current Salary:</span><span class="value">₹${document.getElementById('currentSalary')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Proposed US Salary:</span><span class="value">$${document.getElementById('proposedSalary')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Responsibilities:</span><span class="value">${workExp.responsibilities || 'N/A'}</span></div>
+            `;
+
+            // US Employer Information
+            const usEmployerInfo = document.getElementById('pdfUSEmployerInfo');
+            usEmployerInfo.innerHTML = `
+                <div class="pdf-field"><span class="label">US Employer:</span><span class="value">${document.getElementById('usEmployer')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">US Job Title:</span><span class="value">${document.getElementById('usJobTitle')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Work Location:</span><span class="value">${document.getElementById('workLocation')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Start Date:</span><span class="value">${document.getElementById('startDate')?.value || 'N/A'}</span></div>
+                <div class="pdf-field"><span class="label">Contract Duration:</span><span class="value">${document.getElementById('contractDuration')?.value || 'N/A'} years</span></div>
+                <div class="pdf-field"><span class="label">Employer Address:</span><span class="value">${document.getElementById('usEmployerAddress')?.value || 'N/A'}</span></div>
+            `;
+
+            // Appointment Information
+            const appointmentInfo = document.getElementById('pdfAppointmentInfo');
+            const appointmentDate = data.embassy_appointment?.date?.toDate?.() || new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000);
+            appointmentInfo.innerHTML = `
+                <div class="pdf-field"><span class="label">Embassy:</span><span class="value">US Consulate General, Mumbai</span></div>
+                <div class="pdf-field"><span class="label">Appointment Date:</span><span class="value">${appointmentDate.toLocaleDateString()}</span></div>
+                <div class="pdf-field"><span class="label">Visa Fee:</span><span class="value">USD $340</span></div>
+                <div class="pdf-field"><span class="label">Status:</span><span class="value">${data.application_status || 'Submitted'}</span></div>
+            `;
+        }
+
+        function printDocument() {
+            window.print();
+        }
+
+        function downloadPDF() {
+            // Create a simple text-based download since we can't use external PDF libraries
+            const data = collectFormData();
+            const content = `
+H1B VISA APPLICATION
+Acknowledgment Number: ${acknowledgmentNumber}
+Submission Date: ${new Date().toLocaleDateString()}
+
+PERSONAL INFORMATION
+Name: ${data.personal_info.name}
+Date of Birth: ${data.personal_info.dob}
+Email: ${data.personal_info.email}
+Phone: ${data.personal_info.phone}
+Address: ${data.personal_info.address}
+
+FAMILY INFORMATION
+Father's Name: ${data.family_info.father_name}
+Mother's Name: ${data.family_info.mother_name}
+Spouse's Name: ${data.family_info.spouse_name}
+
+EDUCATION
+Highest Degree: ${data.education.highest_degree}
+University: ${data.education.university}
+Graduation Year: ${data.education.graduation_year}
+
+EMPLOYMENT
+Current Employer: ${data.work_experience[0]?.company_name}
+Job Title: ${data.work_experience[0]?.role}
+Experience: ${Math.floor(data.work_experience[0]?.duration_months / 12)} years
+
+EMBASSY APPOINTMENT
+Date: ${new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+Fee: USD $340
+Status: ${data.application_status}
+
+This is an official document generated by the USCIS H1B Application System.
+            `;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `H1B_Application_${acknowledgmentNumber}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function backToApplication() {
+            showStep('final');
+        }
+
+        // Initialize Application Summary
+        function updateApplicationSummary() {
+            const summaryDiv = document.getElementById('applicationSummary');
+            
+            const appointmentDate = new Date();
+            appointmentDate.setMonth(appointmentDate.getMonth() + 6);
+            document.getElementById('appointmentDate').textContent = appointmentDate.toLocaleDateString();
+            
+            summaryDiv.innerHTML = `
+                <p><strong>Name:</strong> ${document.getElementById('firstName')?.value} ${document.getElementById('lastName')?.value}</p>
+                <p><strong>Email:</strong> ${currentUser?.email}</p>
+                <p><strong>Phone:</strong> ${document.getElementById('phone')?.value}</p>
+                <p><strong>Passport Number:</strong> ${document.getElementById('passportNumber')?.value}</p>
+                <p><strong>Current Employer:</strong> ${document.getElementById('currentEmployer')?.value}</p>
+                <p><strong>US Employer:</strong> ${document.getElementById('usEmployer')?.value}</p>
+                <p><strong>Proposed Start Date:</strong> ${document.getElementById('startDate')?.value}</p>
+                <p><strong>Acknowledgment Number:</strong> ${acknowledgmentNumber}</p>
+            `;
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication state
+            auth.onAuthStateChanged(function(user) {
+                if (user) {
+                    currentUser = user;
+                    initializeApplication();
+                } else {
+                    currentUser = null;
+                    document.getElementById('authSection').classList.remove('hidden');
+                    document.getElementById('progressSection').classList.add('hidden');
+                    hideAllSteps();
+                }
+            });
+            
+            // Add marital status toggle
+            document.getElementById('maritalStatus').addEventListener('change', function() {
+                const spouseField = document.getElementById('spouseField');
+                if (this.value === 'married') {
+                    spouseField.style.display = 'block';
+                    document.getElementById('spouseName').required = true;
+                } else {
+                    spouseField.style.display = 'none';
+                    document.getElementById('spouseName').required = false;
+                    document.getElementById('spouseName').value = '';
+                }
+            });
+            
+            // Add event listener to update summary when reaching step 8
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.target.id === 'step8' && !mutation.target.classList.contains('hidden')) {
+                        updateApplicationSummary();
+                    }
+                });
+            });
+            
+            observer.observe(document.getElementById('step8'), {
+                attributes: true,
+                attributeFilter: ['class']
+            });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d563f906158adf',t:'MTc1NDg5MDc0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d5c7f6128159c0',t:'MTc1NDg5NDg0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
