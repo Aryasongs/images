@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oriontec H1B Visa Application System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .progress-bar { transition: width 0.3s ease; }
+        .session-warning { animation: pulse 2s infinite; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-blue-600">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">O</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Oriontec</h1>
+                        <p class="text-sm text-gray-600">H1B Visa Application Portal</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div id="userInfo" class="hidden text-sm text-gray-600"></div>
+                    <button id="logoutBtn" class="hidden bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div id="progressContainer" class="hidden bg-white shadow-sm">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-gray-700">Progress</span>
+                <span id="progressText" class="text-sm text-gray-600">Step 1 of 8</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+                <div id="progressBar" class="progress-bar bg-blue-600 h-2 rounded-full" style="width: 12.5%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Initial Form for Acknowledgment Number -->
+        <div id="initialForm" class="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 fade-in">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">H1B Visa Application</h2>
+                <p class="text-gray-600">Enter your basic details to get started</p>
+            </div>
+
+            <form id="ackForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                    <input type="text" name="user_name" id="initialName" required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                    <input type="email" name="email" id="initialEmail" required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                    Get Acknowledgment Number
+                </button>
+            </form>
+
+            <div class="text-center mt-6">
+                <span class="text-gray-500">Already have an acknowledgment number?</span>
+                <button id="showResumeForm" class="text-blue-600 hover:text-blue-800 font-medium ml-2">
+                    Resume Application
+                </button>
+            </div>
+        </div>
+
+        <!-- Resume Form -->
+        <div id="resumeForm" class="hidden max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 fade-in">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Resume Application</h2>
+                <p class="text-gray-600">Enter your acknowledgment number to continue</p>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Acknowledgment Number</label>
+                    <input type="text" id="ackNumber" placeholder="Enter your acknowledgment number" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <button id="resumeBtn" class="w-full mt-3 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-medium">
+                        Resume Application
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <button id="backToInitial" class="text-blue-600 hover:text-blue-800 font-medium">
+                        ← Back to Start New Application
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Form Container -->
+        <div id="applicationForm" class="hidden max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 fade-in">
+            <!-- Page 1: Personal Info -->
+            <div id="page1" class="form-page">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Personal Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                        <input type="text" id="fullName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Age *</label>
+                        <input type="number" id="age" required min="18" max="65" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                        <input type="email" id="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                        <input type="tel" id="phone" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth *</label>
+                        <input type="date" id="dob" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Gender *</label>
+                        <select id="gender" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nationality *</label>
+                        <select id="nationality" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select Nationality</option>
+                            <option value="indian">Indian</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Place of Birth *</label>
+                        <input type="text" id="placeOfBirth" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Current Address *</label>
+                        <textarea id="address" required rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                        <input type="text" id="city" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">State *</label>
+                        <input type="text" id="state" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">PIN Code *</label>
+                        <input type="text" id="pinCode" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Passport Number *</label>
+                        <input type="text" id="passportNumber" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Passport Issue Date *</label>
+                        <input type="date" id="passportIssue" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Passport Expiry Date *</label>
+                        <input type="date" id="passportExpiry" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Passport Issuing Authority *</label>
+                        <input type="text" id="passportAuthority" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 2: Family Background & Travel History -->
+            <div id="page2" class="form-page hidden">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Family Background & Travel History</h3>
+                
+                <!-- Family Information -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <h4 class="text-lg font-semibold text-blue-800 mb-4">Family Information</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Father's Name *</label>
+                            <input type="text" id="fatherName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Mother's Name *</label>
+                            <input type="text" id="motherName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Marital Status *</label>
+                            <select id="maritalStatus" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Status</option>
+                                <option value="single">Single</option>
+                                <option value="married">Married</option>
+                                <option value="divorced">Divorced</option>
+                                <option value="widowed">Widowed</option>
+                            </select>
+                        </div>
+                        <div id="spouseField" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Spouse's Name</label>
+                            <input type="text" id="spouseName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Number of Children</label>
+                            <input type="number" id="children" min="0" max="10" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Contact Name *</label>
+                            <input type="text" id="emergencyContact" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Contact Phone *</label>
+                            <input type="tel" id="emergencyPhone" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Relationship to Emergency Contact *</label>
+                            <input type="text" id="emergencyRelation" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Travel History -->
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-green-800 mb-4">Travel History</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Have you traveled outside India? *</label>
+                            <select id="traveledAbroad" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Option</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div id="travelCountField" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Number of Countries Visited</label>
+                            <input type="number" id="countriesVisited" min="0" max="50" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div id="usaTravelField" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Have you visited USA before?</label>
+                            <select id="visitedUSA" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Option</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div id="usaVisaField" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Previous US Visa Type</label>
+                            <select id="previousUSAVisa" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Visa Type</option>
+                                <option value="tourist">Tourist (B1/B2)</option>
+                                <option value="student">Student (F1)</option>
+                                <option value="work">Work (H1B/L1)</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div id="travelDetailsField" class="hidden md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Travel Details (Countries, Dates, Purpose)</label>
+                            <textarea id="travelDetails" rows="4" placeholder="Please provide details of your international travel history..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 3: Education -->
+            <div id="page3" class="form-page hidden">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Educational Background</h3>
+                
+                <!-- Highest Education -->
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+                    <h4 class="text-lg font-semibold text-purple-800 mb-4">Highest Education</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Highest Degree *</label>
+                            <select id="highestDegree" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Degree</option>
+                                <option value="10th">10th Standard</option>
+                                <option value="12th">12th Standard</option>
+                                <option value="diploma">Diploma</option>
+                                <option value="bachelor">Bachelor's Degree</option>
+                                <option value="master">Master's Degree</option>
+                                <option value="phd">PhD</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Field of Study *</label>
+                            <select id="fieldOfStudy" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Field</option>
+                                <option value="computer_science">Computer Science</option>
+                                <option value="information_technology">Information Technology</option>
+                                <option value="engineering">Engineering</option>
+                                <option value="business">Business Administration</option>
+                                <option value="finance">Finance</option>
+                                <option value="mathematics">Mathematics</option>
+                                <option value="science">Science</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">University/Institution *</label>
+                            <input type="text" id="university" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Graduation Year *</label>
+                            <input type="number" id="graduationYear" required min="1980" max="2024" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">GPA/Percentage *</label>
+                            <input type="text" id="gpa" required placeholder="e.g., 8.5 CGPA or 85%" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Country of Education *</label>
+                            <select id="educationCountry" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Country</option>
+                                <option value="india">India</option>
+                                <option value="usa">United States</option>
+                                <option value="uk">United Kingdom</option>
+                                <option value="canada">Canada</option>
+                                <option value="australia">Australia</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Education -->
+                <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6">
+                    <h4 class="text-lg font-semibold text-indigo-800 mb-4">Additional Education (if any)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Second Degree</label>
+                            <select id="secondDegree" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Degree</option>
+                                <option value="diploma">Diploma</option>
+                                <option value="bachelor">Bachelor's Degree</option>
+                                <option value="master">Master's Degree</option>
+                                <option value="phd">PhD</option>
+                                <option value="certificate">Certificate Course</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Second Field of Study</label>
+                            <input type="text" id="secondField" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Second Institution</label>
+                            <input type="text" id="secondUniversity" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Second Graduation Year</label>
+                            <input type="number" id="secondGradYear" min="1980" max="2024" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Professional Certifications -->
+                <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-orange-800 mb-4">Professional Certifications & Skills</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Technical Skills *</label>
+                            <textarea id="technicalSkills" required rows="3" placeholder="List your technical skills (e.g., Java, Python, AWS, etc.)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Professional Certifications</label>
+                            <textarea id="certifications" rows="3" placeholder="List any relevant certifications (e.g., AWS Certified, PMP, etc.)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">English Proficiency Test</label>
+                            <select id="englishTest" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Test</option>
+                                <option value="ielts">IELTS</option>
+                                <option value="toefl">TOEFL</option>
+                                <option value="pte">PTE</option>
+                                <option value="none">None</option>
+                                <option value="native">Native Speaker</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Test Score</label>
+                            <input type="text" id="englishScore" placeholder="e.g., 7.5 IELTS or 100 TOEFL" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 4: Work Experience & Financial Information -->
+            <div id="page4" class="form-page hidden">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Work Experience & Financial Information</h3>
+                
+                <!-- Current Employment -->
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                    <h4 class="text-lg font-semibold text-green-800 mb-4">Current Employment Status</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Employment Status *</label>
+                            <select id="employmentStatus" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Status</option>
+                                <option value="employed">Currently Employed</option>
+                                <option value="unemployed">Unemployed</option>
+                                <option value="student">Student</option>
+                                <option value="self_employed">Self Employed</option>
+                                <option value="business_owner">Business Owner</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Total Work Experience *</label>
+                            <select id="totalExperience" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Experience</option>
+                                <option value="0-1">0-1 Years</option>
+                                <option value="1-3">1-3 Years</option>
+                                <option value="3-5">3-5 Years</option>
+                                <option value="5-10">5-10 Years</option>
+                                <option value="10+">10+ Years</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Work Experience -->
+                <div id="workExperienceContainer">
+                    <div class="work-experience-item bg-blue-50 border border-blue-200 rounded-lg p-6 mb-4">
+                        <h4 class="text-lg font-semibold text-blue-800 mb-4">Current/Most Recent Position</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Company Name *</label>
+                                <input type="text" name="companyName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Job Title *</label>
+                                <input type="text" name="jobTitle" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Industry *</label>
+                                <select name="industry" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Industry</option>
+                                    <option value="information_technology">Information Technology</option>
+                                    <option value="software">Software Development</option>
+                                    <option value="consulting">Consulting</option>
+                                    <option value="finance">Finance & Banking</option>
+                                    <option value="healthcare">Healthcare</option>
+                                    <option value="manufacturing">Manufacturing</option>
+                                    <option value="education">Education</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Company Size</label>
+                                <select name="companySize" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Size</option>
+                                    <option value="startup">Startup (1-50)</option>
+                                    <option value="small">Small (51-200)</option>
+                                    <option value="medium">Medium (201-1000)</option>
+                                    <option value="large">Large (1000+)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Start Date *</label>
+                                <input type="date" name="startDate" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                                <input type="date" name="endDate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <label class="flex items-center mt-2">
+                                    <input type="checkbox" name="currentJob" class="mr-2"> Currently working here
+                                </label>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Job Responsibilities *</label>
+                                <textarea name="responsibilities" required rows="3" placeholder="Describe your key responsibilities and achievements..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Annual Salary (INR) *</label>
+                                <select name="salaryRange" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Salary Range</option>
+                                    <option value="0-3">0-3 Lakhs</option>
+                                    <option value="3-6">3-6 Lakhs</option>
+                                    <option value="6-10">6-10 Lakhs</option>
+                                    <option value="10-15">10-15 Lakhs</option>
+                                    <option value="15-25">15-25 Lakhs</option>
+                                    <option value="25-50">25-50 Lakhs</option>
+                                    <option value="50+">50+ Lakhs</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Work Location</label>
+                                <select name="workLocation" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Location</option>
+                                    <option value="office">Office</option>
+                                    <option value="remote">Remote</option>
+                                    <option value="hybrid">Hybrid</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="addWorkExperience" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors mb-6">
+                    + Add Previous Experience
+                </button>
+
+                <!-- Financial Information -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-yellow-800 mb-4">Financial Information</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Bank Account Balance (INR) *</label>
+                            <select id="bankBalance" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Range</option>
+                                <option value="0-1">0-1 Lakh</option>
+                                <option value="1-5">1-5 Lakhs</option>
+                                <option value="5-10">5-10 Lakhs</option>
+                                <option value="10-25">10-25 Lakhs</option>
+                                <option value="25-50">25-50 Lakhs</option>
+                                <option value="50+">50+ Lakhs</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Property Ownership *</label>
+                            <select id="propertyOwnership" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Option</option>
+                                <option value="own_house">Own House</option>
+                                <option value="own_apartment">Own Apartment</option>
+                                <option value="own_land">Own Land</option>
+                                <option value="multiple">Multiple Properties</option>
+                                <option value="rented">Living in Rented Property</option>
+                                <option value="family">Living with Family</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Property Value (if owned)</label>
+                            <select id="propertyValue" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Range</option>
+                                <option value="10-25">10-25 Lakhs</option>
+                                <option value="25-50">25-50 Lakhs</option>
+                                <option value="50-1cr">50 Lakhs - 1 Crore</option>
+                                <option value="1-2cr">1-2 Crores</option>
+                                <option value="2cr+">2+ Crores</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Other Investments</label>
+                            <select id="investments" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Option</option>
+                                <option value="stocks">Stocks/Mutual Funds</option>
+                                <option value="fd">Fixed Deposits</option>
+                                <option value="gold">Gold/Jewelry</option>
+                                <option value="multiple">Multiple Investments</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Financial Sponsor (if any)</label>
+                            <input type="text" id="financialSponsor" placeholder="Name and relationship of person sponsoring your trip" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 5: Document Selection -->
+            <div id="page5" class="form-page hidden">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Required Documents</h3>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <p class="text-blue-800 font-medium">Please confirm you have the following mandatory documents ready:</p>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex items-center p-4 border border-gray-200 rounded-lg">
+                        <input type="checkbox" id="doc_passport" required class="mr-4 h-5 w-5 text-blue-600">
+                        <div>
+                            <label for="doc_passport" class="font-medium text-gray-800">Valid Passport</label>
+                            <p class="text-sm text-gray-600">Must be valid for at least 6 months beyond intended stay</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 border border-gray-200 rounded-lg">
+                        <input type="checkbox" id="doc_photo" required class="mr-4 h-5 w-5 text-blue-600">
+                        <div>
+                            <label for="doc_photo" class="font-medium text-gray-800">Passport-style Photograph</label>
+                            <p class="text-sm text-gray-600">2x2 inches, taken within last 6 months</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 border border-gray-200 rounded-lg">
+                        <input type="checkbox" id="doc_i129" required class="mr-4 h-5 w-5 text-blue-600">
+                        <div>
+                            <label for="doc_i129" class="font-medium text-gray-800">Form I-129 (Petition)</label>
+                            <p class="text-sm text-gray-600">Filed by your US employer</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 border border-gray-200 rounded-lg">
+                        <input type="checkbox" id="doc_education" required class="mr-4 h-5 w-5 text-blue-600">
+                        <div>
+                            <label for="doc_education" class="font-medium text-gray-800">Educational Certificates</label>
+                            <p class="text-sm text-gray-600">Degree certificates and transcripts</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 border border-gray-200 rounded-lg">
+                        <input type="checkbox" id="doc_experience" required class="mr-4 h-5 w-5 text-blue-600">
+                        <div>
+                            <label for="doc_experience" class="font-medium text-gray-800">Work Experience Letters</label>
+                            <p class="text-sm text-gray-600">From previous employers</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 border border-gray-200 rounded-lg">
+                        <input type="checkbox" id="doc_bank" required class="mr-4 h-5 w-5 text-blue-600">
+                        <div>
+                            <label for="doc_bank" class="font-medium text-gray-800">Bank Statements</label>
+                            <p class="text-sm text-gray-600">Last 6 months statements</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 6: Embassy Appointment -->
+            <div id="page6" class="form-page hidden">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Embassy Appointment Information</h3>
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-6">
+                    <h4 class="text-lg font-semibold text-blue-800 mb-3">US Consulate General - Mumbai</h4>
+                    <div class="space-y-2 text-blue-700">
+                        <p><strong>Address:</strong> C-49, G Block, Bandra Kurla Complex, Mumbai 400051</p>
+                        <p><strong>Appointment Availability:</strong> Approximately 6 months from application date</p>
+                        <p><strong>Estimated Appointment Date:</strong> <span id="appointmentDate" class="font-semibold"></span></p>
+                    </div>
+                </div>
+                
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                    <h5 class="font-semibold text-yellow-800 mb-2">Important Notes:</h5>
+                    <ul class="text-yellow-700 text-sm space-y-1">
+                        <li>• Appointment dates are subject to availability and may vary</li>
+                        <li>• You will receive appointment scheduling instructions via email</li>
+                        <li>• Bring all original documents to your appointment</li>
+                        <li>• Arrive 15 minutes before your scheduled time</li>
+                    </ul>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Time Slot</label>
+                        <select id="preferredTime" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="morning">Morning (9:00 AM - 12:00 PM)</option>
+                            <option value="afternoon">Afternoon (1:00 PM - 4:00 PM)</option>
+                            <option value="any">Any Available Time</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Special Requirements</label>
+                        <select id="specialRequirements" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="none">None</option>
+                            <option value="wheelchair">Wheelchair Access</option>
+                            <option value="interpreter">Interpreter Required</option>
+                            <option value="other">Other (specify in comments)</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Additional Comments</label>
+                        <textarea id="appointmentComments" rows="3" placeholder="Any special requests or additional information" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 7: Payment Instructions -->
+            <div id="page7" class="form-page hidden">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Payment Information</h3>
+                
+                <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+                    <h4 class="text-xl font-semibold text-green-800 mb-3">H1B Visa Application Fee</h4>
+                    <div class="text-3xl font-bold text-green-700 mb-2">$340 USD</div>
+                    <p class="text-green-600">This fee is payable to the US Department of State</p>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="border border-gray-200 rounded-lg p-6">
+                        <h5 class="font-semibold text-gray-800 mb-3">Payment Instructions:</h5>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                            <li>Complete your application form submission</li>
+                            <li>You will receive an email with your unique application ID</li>
+                            <li>Visit the official US visa payment portal</li>
+                            <li>Enter your application ID and make payment</li>
+                            <li>Save your payment receipt for the interview</li>
+                        </ol>
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h5 class="font-semibold text-blue-800 mb-2">Official Payment Portal:</h5>
+                        <a href="https://cgifederal.secure.force.com/" target="_blank" 
+                           class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                            🔗 CGI Federal - US Visa Payment Portal
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <h5 class="font-semibold text-yellow-800 mb-2">Important Notes:</h5>
+                        <ul class="text-yellow-700 text-sm space-y-1">
+                            <li>• Payment must be made before your embassy appointment</li>
+                            <li>• Fees are non-refundable, even if visa is denied</li>
+                            <li>• Keep payment receipt as proof of payment</li>
+                            <li>• Additional fees may apply for expedited processing</li>
+                        </ul>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="paymentAcknowledged" required class="mr-3 h-5 w-5 text-blue-600">
+                            <span class="text-gray-700">I understand the payment requirements and will complete payment through the official portal</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 8: Review & Submit -->
+            <div id="page8" class="form-page hidden">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Review & Submit Application</h3>
+                
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <p class="text-blue-800">Please review all information carefully before submitting. You can edit any section by clicking the "Edit" button.</p>
+                </div>
+
+                <div id="reviewSections" class="space-y-6">
+                    <!-- Review sections will be populated by JavaScript -->
+                </div>
+
+                <div class="border-t pt-6 mt-8">
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <label class="flex items-start">
+                            <input type="checkbox" id="finalDeclaration" required class="mr-3 mt-1 h-5 w-5 text-blue-600">
+                            <span class="text-gray-700 text-sm">
+                                I declare that all information provided in this application is true and accurate to the best of my knowledge. 
+                                I understand that providing false information may result in denial of my visa application and may affect future applications.
+                            </span>
+                        </label>
+                    </div>
+                    
+                    <button type="button" id="submitApplication" class="w-full bg-green-600 text-white py-4 rounded-lg hover:bg-green-700 transition-colors font-semibold text-lg">
+                        Submit H1B Visa Application
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between mt-8 pt-6 border-t">
+                <button type="button" id="prevBtn" class="hidden bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors">
+                    ← Previous
+                </button>
+                <div class="flex-1"></div>
+                <button type="button" id="nextBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    Next →
+                </button>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="hidden max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 text-center fade-in">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Application Submitted Successfully!</h3>
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <p class="text-green-800 font-medium">Your Acknowledgment Number:</p>
+                <p id="finalAckNumber" class="text-2xl font-bold text-green-700 mt-2"></p>
+            </div>
+            <p class="text-gray-600 mb-6">
+                A confirmation email has been sent to your registered email address with further instructions. 
+                Please save your acknowledgment number for future reference.
+            </p>
+            <button onclick="location.reload()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                Submit New Application
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDVmXF8KdScaXAVqmpgB5CaJMjFLr00hDw",
+            authDomain: "h1bvisa-73e93.firebaseapp.com",
+            projectId: "h1bvisa-73e93",
+            storageBucket: "h1bvisa-73e93.firebasestorage.app",
+            messagingSenderId: "697062091568",
+            appId: "1:697062091568:web:70061eb70023788b8bf6f5"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Initialize EmailJS
+        emailjs.init("QI1aOpAqKdm9d4BkT");
+
+        // Global variables
+        let currentPage = 1;
+        let totalPages = 8;
+        let sessionTimer;
+        let sessionTimeLeft = 60;
+        let currentUser = null;
+        let acknowledgmentNumber = null;
+        let applicationData = {};
+
+        // DOM elements
+        const applicationForm = document.getElementById('applicationForm');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            updateAppointmentDate();
+        });
+
+        function setupEventListeners() {
+            // Initial form submission
+            document.getElementById('ackForm').addEventListener('submit', handleInitialSubmission);
+            
+            // Form navigation
+            document.getElementById('showResumeForm').addEventListener('click', showResumeForm);
+            document.getElementById('backToInitial').addEventListener('click', showInitialForm);
+            document.getElementById('resumeBtn').addEventListener('click', resumeApplication);
+            
+            // Navigation buttons
+            document.getElementById('nextBtn').addEventListener('click', nextPage);
+            document.getElementById('prevBtn').addEventListener('click', prevPage);
+            document.getElementById('submitApplication').addEventListener('click', submitApplication);
+            
+            // Form inputs - auto-save on change
+            document.addEventListener('input', debounce(autoSave, 1000));
+            document.addEventListener('change', autoSave);
+            
+            // Work experience
+            document.getElementById('addWorkExperience').addEventListener('click', addWorkExperience);
+            
+            // Conditional field toggles
+            document.getElementById('maritalStatus').addEventListener('change', toggleSpouseField);
+            document.getElementById('traveledAbroad').addEventListener('change', toggleTravelFields);
+            document.getElementById('visitedUSA').addEventListener('change', toggleUSAFields);
+            
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+        }
+
+        async function handleInitialSubmission(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('initialName').value.trim();
+            const email = document.getElementById('initialEmail').value.trim();
+            
+            if (!name || !email) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+            
+            // Generate acknowledgment number
+            generateAcknowledgmentNumber();
+            
+            // Pre-fill form data
+            document.getElementById('fullName').value = name;
+            document.getElementById('email').value = email;
+            
+            // Send acknowledgment email
+            await sendAcknowledgmentEmail(name, email);
+            
+            // Show application form
+            startApplication();
+        }
+
+        function showResumeForm() {
+            document.getElementById('initialForm').classList.add('hidden');
+            document.getElementById('resumeForm').classList.remove('hidden');
+        }
+
+        function showInitialForm() {
+            document.getElementById('resumeForm').classList.add('hidden');
+            document.getElementById('initialForm').classList.remove('hidden');
+        }
+
+        function startApplication() {
+            document.getElementById('initialForm').classList.add('hidden');
+            document.getElementById('resumeForm').classList.add('hidden');
+            document.getElementById('applicationForm').classList.remove('hidden');
+            document.getElementById('progressContainer').classList.remove('hidden');
+            startSession();
+            updateProgress();
+        }
+
+        function resumeApplication() {
+            const ackNum = document.getElementById('ackNumber').value.trim();
+            if (!ackNum) {
+                alert('Please enter your acknowledgment number');
+                return;
+            }
+            
+            loadApplicationData(ackNum);
+        }
+
+        async function loadApplicationData(ackNum) {
+            try {
+                const doc = await db.collection('applications').doc(ackNum).get();
+                if (doc.exists) {
+                    applicationData = doc.data();
+                    acknowledgmentNumber = ackNum;
+                    populateFormData();
+                    startNewApplication();
+                } else {
+                    alert('Invalid acknowledgment number. Please check and try again.');
+                }
+            } catch (error) {
+                console.error('Error loading application:', error);
+                alert('Error loading application. Please try again.');
+            }
+        }
+
+        function populateFormData() {
+            // Populate personal info
+            if (applicationData.personal_info) {
+                const personal = applicationData.personal_info;
+                document.getElementById('fullName').value = personal.name || '';
+                document.getElementById('age').value = personal.age || '';
+                document.getElementById('email').value = personal.email || '';
+                document.getElementById('phone').value = personal.phone || '';
+                document.getElementById('dob').value = personal.dob || '';
+                document.getElementById('gender').value = personal.gender || '';
+                document.getElementById('address').value = personal.address || '';
+                document.getElementById('passportNumber').value = personal.passport_number || '';
+                document.getElementById('passportExpiry').value = personal.passport_expiry || '';
+            }
+            
+            // Populate family info
+            if (applicationData.family_info) {
+                const family = applicationData.family_info;
+                document.getElementById('fatherName').value = family.father_name || '';
+                document.getElementById('motherName').value = family.mother_name || '';
+                document.getElementById('maritalStatus').value = family.marital_status || '';
+                document.getElementById('spouseName').value = family.spouse_name || '';
+                document.getElementById('children').value = family.children || '';
+                document.getElementById('emergencyContact').value = family.emergency_contact || '';
+                document.getElementById('emergencyPhone').value = family.emergency_phone || '';
+                document.getElementById('emergencyRelation').value = family.emergency_relation || '';
+                toggleSpouseField();
+            }
+            
+            // Continue populating other sections...
+        }
+
+        function startSession() {
+            sessionTimeLeft = 60;
+            
+            sessionTimer = setInterval(() => {
+                sessionTimeLeft--;
+                
+                if (sessionTimeLeft <= 0) {
+                    expireSession();
+                }
+            }, 1000);
+        }
+
+        function expireSession() {
+            clearInterval(sessionTimer);
+            alert('Session expired due to inactivity. Your data has been saved. Please refresh the page to continue.');
+            location.reload();
+        }
+
+        function resetSessionTimer() {
+            sessionTimeLeft = 60;
+        }
+
+        function nextPage() {
+            if (validateCurrentPage()) {
+                if (currentPage === 1 && !acknowledgmentNumber) {
+                    generateAcknowledgmentNumber();
+                }
+                
+                if (currentPage < totalPages) {
+                    document.getElementById(`page${currentPage}`).classList.add('hidden');
+                    currentPage++;
+                    document.getElementById(`page${currentPage}`).classList.remove('hidden');
+                    updateProgress();
+                    updateNavigationButtons();
+                    resetSessionTimer();
+                    autoSave();
+                }
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                document.getElementById(`page${currentPage}`).classList.add('hidden');
+                currentPage--;
+                document.getElementById(`page${currentPage}`).classList.remove('hidden');
+                updateProgress();
+                updateNavigationButtons();
+                resetSessionTimer();
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentPage / totalPages) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `Step ${currentPage} of ${totalPages}`;
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (currentPage === 1) {
+                prevBtn.classList.add('hidden');
+            } else {
+                prevBtn.classList.remove('hidden');
+            }
+            
+            if (currentPage === totalPages) {
+                nextBtn.classList.add('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+            }
+        }
+
+        function validateCurrentPage() {
+            const currentPageEl = document.getElementById(`page${currentPage}`);
+            const requiredFields = currentPageEl.querySelectorAll('[required]');
+            
+            for (let field of requiredFields) {
+                if (!field.value.trim()) {
+                    field.focus();
+                    alert(`Please fill in the required field: ${field.previousElementSibling.textContent}`);
+                    return false;
+                }
+            }
+            
+            // Additional validation for specific pages
+            if (currentPage === 1) {
+                const email = document.getElementById('email').value;
+                if (!isValidEmail(email)) {
+                    alert('Please enter a valid email address');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function generateAcknowledgmentNumber() {
+            const timestamp = Date.now().toString();
+            const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+            acknowledgmentNumber = `H1B${timestamp.slice(-6)}${random}`;
+            
+            // Send acknowledgment email
+            sendAcknowledgmentEmail();
+        }
+
+        async function sendAcknowledgmentEmail(name, email) {
+            const templateParams = {
+                user_name: name,
+                email: email,
+                ack_number: acknowledgmentNumber,
+                submission_date: new Date().toLocaleDateString('en-IN')
+            };
+            
+            try {
+                await emailjs.send('service_z3x1v6e', 'template_t16ktja', templateParams);
+                console.log('Acknowledgment email sent successfully');
+                alert(`Acknowledgment email sent to ${email}! Your acknowledgment number is: ${acknowledgmentNumber}`);
+            } catch (error) {
+                console.error('Error sending email:', error);
+                alert('Email sending failed, but you can continue with your application. Your acknowledgment number is: ' + acknowledgmentNumber);
+            }
+        }
+
+        function autoSave() {
+            if (!acknowledgmentNumber) return;
+            
+            collectFormData();
+            saveToFirestore();
+            resetSessionTimer();
+        }
+
+        function collectFormData() {
+            // Personal Info
+            applicationData.personal_info = {
+                name: document.getElementById('fullName').value,
+                age: parseInt(document.getElementById('age').value) || 0,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                dob: document.getElementById('dob').value,
+                gender: document.getElementById('gender').value,
+                nationality: document.getElementById('nationality').value,
+                place_of_birth: document.getElementById('placeOfBirth').value,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                pin_code: document.getElementById('pinCode').value,
+                passport_number: document.getElementById('passportNumber').value,
+                passport_issue: document.getElementById('passportIssue').value,
+                passport_expiry: document.getElementById('passportExpiry').value,
+                passport_authority: document.getElementById('passportAuthority').value
+            };
+            
+            // Family Info
+            applicationData.family_info = {
+                father_name: document.getElementById('fatherName').value,
+                mother_name: document.getElementById('motherName').value,
+                marital_status: document.getElementById('maritalStatus').value,
+                spouse_name: document.getElementById('spouseName').value,
+                children: parseInt(document.getElementById('children').value) || 0,
+                emergency_contact: document.getElementById('emergencyContact').value,
+                emergency_phone: document.getElementById('emergencyPhone').value,
+                emergency_relation: document.getElementById('emergencyRelation').value
+            };
+            
+            // Education
+            applicationData.education = {
+                highest_degree: document.getElementById('highestDegree').value,
+                field_of_study: document.getElementById('fieldOfStudy').value,
+                university: document.getElementById('university').value,
+                graduation_year: parseInt(document.getElementById('graduationYear').value) || 0,
+                gpa: document.getElementById('gpa').value,
+                education_country: document.getElementById('educationCountry').value,
+                certifications: document.getElementById('certifications').value
+            };
+            
+            // Work Experience
+            applicationData.work_experience = [];
+            const workItems = document.querySelectorAll('.work-experience-item');
+            workItems.forEach(item => {
+                const experience = {
+                    company_name: item.querySelector('[name="companyName"]').value,
+                    job_title: item.querySelector('[name="jobTitle"]').value,
+                    start_date: item.querySelector('[name="startDate"]').value,
+                    end_date: item.querySelector('[name="endDate"]').value,
+                    current_job: item.querySelector('[name="currentJob"]').checked,
+                    responsibilities: item.querySelector('[name="responsibilities"]').value,
+                    salary: parseInt(item.querySelector('[name="salary"]').value) || 0
+                };
+                if (experience.company_name) {
+                    applicationData.work_experience.push(experience);
+                }
+            });
+            
+            // Document Selection
+            applicationData.document_selection = {
+                passport: document.getElementById('doc_passport').checked,
+                photo: document.getElementById('doc_photo').checked,
+                i129: document.getElementById('doc_i129').checked,
+                education: document.getElementById('doc_education').checked,
+                experience: document.getElementById('doc_experience').checked,
+                bank_statement: document.getElementById('doc_bank').checked
+            };
+            
+            // Embassy Appointment
+            applicationData.embassy_appointment = {
+                preferred_time: document.getElementById('preferredTime').value,
+                special_requirements: document.getElementById('specialRequirements').value,
+                comments: document.getElementById('appointmentComments').value,
+                estimated_date: new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000) // 6 months from now
+            };
+            
+            // Payment acknowledgment
+            const paymentAck = document.getElementById('paymentAcknowledged');
+            if (paymentAck) {
+                applicationData.payment_acknowledged = paymentAck.checked;
+            }
+            
+            // Metadata
+            applicationData.acknowledgment_number = acknowledgmentNumber;
+            applicationData.application_status = 'in_progress';
+            applicationData.updated_at = firebase.firestore.FieldValue.serverTimestamp();
+            
+            if (!applicationData.created_at) {
+                applicationData.created_at = firebase.firestore.FieldValue.serverTimestamp();
+            }
+        }
+
+        async function saveToFirestore() {
+            try {
+                await db.collection('applications').doc(acknowledgmentNumber).set(applicationData, { merge: true });
+                console.log('Application data saved successfully');
+            } catch (error) {
+                console.error('Error saving application:', error);
+            }
+        }
+
+        function addWorkExperience() {
+            const container = document.getElementById('workExperienceContainer');
+            const itemCount = container.children.length;
+            
+            const newItem = document.createElement('div');
+            newItem.className = 'work-experience-item border border-gray-200 rounded-lg p-6 mb-4';
+            newItem.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-lg font-semibold text-gray-800">Previous Position ${itemCount}</h4>
+                    <button type="button" class="text-red-600 hover:text-red-800" onclick="this.parentElement.parentElement.remove()">
+                        Remove
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                        <input type="text" name="companyName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
+                        <input type="text" name="jobTitle" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                        <input type="date" name="startDate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                        <input type="date" name="endDate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Job Responsibilities</label>
+                        <textarea name="responsibilities" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Annual Salary (USD)</label>
+                        <input type="number" name="salary" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(newItem);
+        }
+
+        function toggleSpouseField() {
+            const maritalStatus = document.getElementById('maritalStatus').value;
+            const spouseField = document.getElementById('spouseField');
+            
+            if (maritalStatus === 'married') {
+                spouseField.classList.remove('hidden');
+                document.getElementById('spouseName').required = true;
+            } else {
+                spouseField.classList.add('hidden');
+                document.getElementById('spouseName').required = false;
+            }
+        }
+
+        function toggleTravelFields() {
+            const traveledAbroad = document.getElementById('traveledAbroad').value;
+            const travelCountField = document.getElementById('travelCountField');
+            const usaTravelField = document.getElementById('usaTravelField');
+            const travelDetailsField = document.getElementById('travelDetailsField');
+            
+            if (traveledAbroad === 'yes') {
+                travelCountField.classList.remove('hidden');
+                usaTravelField.classList.remove('hidden');
+                travelDetailsField.classList.remove('hidden');
+            } else {
+                travelCountField.classList.add('hidden');
+                usaTravelField.classList.add('hidden');
+                travelDetailsField.classList.add('hidden');
+                document.getElementById('usaVisaField').classList.add('hidden');
+            }
+        }
+
+        function toggleUSAFields() {
+            const visitedUSA = document.getElementById('visitedUSA').value;
+            const usaVisaField = document.getElementById('usaVisaField');
+            
+            if (visitedUSA === 'yes') {
+                usaVisaField.classList.remove('hidden');
+            } else {
+                usaVisaField.classList.add('hidden');
+            }
+        }
+
+        function updateAppointmentDate() {
+            const appointmentDate = new Date();
+            appointmentDate.setMonth(appointmentDate.getMonth() + 6);
+            document.getElementById('appointmentDate').textContent = appointmentDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        async function submitApplication() {
+            if (!document.getElementById('finalDeclaration').checked) {
+                alert('Please accept the declaration to submit your application');
+                return;
+            }
+            
+            collectFormData();
+            applicationData.application_status = 'submitted';
+            
+            try {
+                await saveToFirestore();
+                clearInterval(sessionTimer);
+                
+                // Show success message
+                applicationForm.classList.add('hidden');
+                progressContainer.classList.add('hidden');
+                document.getElementById('successMessage').classList.remove('hidden');
+                document.getElementById('finalAckNumber').textContent = acknowledgmentNumber;
+                
+                // Send final confirmation email
+                await sendFinalConfirmationEmail();
+                
+            } catch (error) {
+                console.error('Error submitting application:', error);
+                alert('Error submitting application. Please try again.');
+            }
+        }
+
+        async function sendFinalConfirmationEmail() {
+            const name = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            
+            const templateParams = {
+                user_name: name,
+                user_email: email,
+                acknowledgment_number: acknowledgmentNumber,
+                to_email: email,
+                status: 'submitted'
+            };
+            
+            try {
+                await emailjs.send('service_z3x1v6e', 'template_t16ktja', templateParams);
+                console.log('Final confirmation email sent successfully');
+            } catch (error) {
+                console.error('Error sending final email:', error);
+            }
+        }
+
+        function logout() {
+            clearInterval(sessionTimer);
+            location.reload();
+        }
+
+        // Utility function for debouncing
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Prevent form submission on Enter key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d563f906158adf',t:'MTc1NDg5MDc0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
