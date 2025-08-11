@@ -495,6 +495,173 @@
             border: 2px solid #4caf50;
         }
 
+        .status-under_review {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+
+        .status-documents_requested {
+            background: #ffeaa7;
+            color: #d68910;
+            border: 2px solid #f39c12;
+        }
+
+        .status-interview_scheduled {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #17a2b8;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+
+        .status-on_hold {
+            background: #e2e3e5;
+            color: #383d41;
+            border: 2px solid #6c757d;
+        }
+
+        .tracking-timeline {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #28a745;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #28a745;
+        }
+
+        .timeline-item.pending::before {
+            background: #6c757d;
+            box-shadow: 0 0 0 2px #6c757d;
+        }
+
+        .timeline-item.current::before {
+            background: #007bff;
+            box-shadow: 0 0 0 2px #007bff;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 2px #007bff; }
+            50% { box-shadow: 0 0 0 8px rgba(0, 123, 255, 0.3); }
+            100% { box-shadow: 0 0 0 2px #007bff; }
+        }
+
+        .timeline-content {
+            flex: 1;
+            margin-left: 20px;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .timeline-date {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .timeline-description {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .tracking-details {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .detail-value {
+            color: #555;
+        }
+
+        .admin-controls {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .applications-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .applications-table th,
+        .applications-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .applications-table th {
+            background: #1e3c72;
+            color: white;
+            font-weight: 600;
+        }
+
+        .applications-table tr:hover {
+            background: #f8f9fa;
+        }
+
         .auth-section {
             background: #f8f9fa;
             padding: 30px;
@@ -596,6 +763,15 @@
             <button type="button" class="btn" onclick="generateAcknowledgment()">Generate Acknowledgment Number</button>
             
             <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                <h3 style="color: #1e3c72; margin-bottom: 15px;">Track Your Application</h3>
+                <div class="form-group">
+                    <label for="trackingAck">Enter Acknowledgment Number</label>
+                    <input type="text" id="trackingAck" placeholder="ACK-XXXXXXXX">
+                </div>
+                <button type="button" class="btn btn-success" onclick="trackApplication()">Track Application Status</button>
+            </div>
+            
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
                 <h3 style="color: #1e3c72; margin-bottom: 15px;">Already have an acknowledgment number?</h3>
                 <div class="form-group">
                     <label for="existingAck">Enter Acknowledgment Number</label>
@@ -621,6 +797,11 @@
                     <input type="email" id="retrieveEmail">
                 </div>
                 <button type="button" class="btn btn-secondary" onclick="retrieveAcknowledgment()">Retrieve Acknowledgment Number</button>
+            </div>
+            
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                <h3 style="color: #1e3c72; margin-bottom: 15px;">Admin Access</h3>
+                <button type="button" class="btn" style="background: linear-gradient(135deg, #e74c3c, #c0392b);" onclick="showAdminLogin()">Admin Login</button>
             </div>
         </div>
 
@@ -1203,6 +1384,99 @@
             <button type="button" class="btn" onclick="submitApplication()">Submit Application</button>
         </div>
 
+        <!-- Application Tracking Display -->
+        <div id="trackingDisplay" class="form-section hidden">
+            <h2 class="section-title">Application Status Tracking</h2>
+            <div id="trackingContent">
+                <div class="acknowledgment-box">
+                    <p><strong>Acknowledgment Number:</strong></p>
+                    <div class="acknowledgment-number" id="trackingAckNumber"></div>
+                    <div id="statusBadge" class="status-badge status-submitted" style="margin: 20px 0;"></div>
+                </div>
+                
+                <div class="tracking-timeline" id="trackingTimeline">
+                    <!-- Timeline will be populated dynamically -->
+                </div>
+                
+                <div id="trackingDetails" class="tracking-details">
+                    <!-- Application details will be populated here -->
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button type="button" class="btn btn-secondary" onclick="backToHome()">Back to Home</button>
+                    <button type="button" class="btn" onclick="refreshTracking()">Refresh Status</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Login -->
+        <div id="adminLogin" class="form-section hidden">
+            <h2 class="section-title">Admin Login</h2>
+            <div class="auth-section">
+                <div class="form-group">
+                    <label for="adminUsername">Username</label>
+                    <input type="text" id="adminUsername" placeholder="Enter admin username">
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" placeholder="Enter admin password">
+                </div>
+                <button type="button" class="btn" onclick="adminLogin()">Login</button>
+                <button type="button" class="btn btn-secondary" onclick="backToHome()">Back</button>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="form-section hidden">
+            <h2 class="section-title">Admin Dashboard</h2>
+            <div class="admin-controls">
+                <div class="form-group">
+                    <label for="adminSearchAck">Search by Acknowledgment Number</label>
+                    <input type="text" id="adminSearchAck" placeholder="ACK-XXXXXXXX">
+                    <button type="button" class="btn" onclick="adminSearchApplication()">Search</button>
+                </div>
+                
+                <div id="adminApplicationDetails" class="hidden">
+                    <h3>Application Details</h3>
+                    <div id="adminAppInfo"></div>
+                    
+                    <div class="form-group" style="margin-top: 30px;">
+                        <label for="statusUpdate">Update Status</label>
+                        <select id="statusUpdate">
+                            <option value="submitted">Submitted</option>
+                            <option value="under_review">Under Review</option>
+                            <option value="documents_requested">Documents Requested</option>
+                            <option value="interview_scheduled">Interview Scheduled</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="on_hold">On Hold</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="statusNotes">Status Notes</label>
+                        <textarea id="statusNotes" rows="3" placeholder="Add notes about the status update..."></textarea>
+                    </div>
+                    
+                    <button type="button" class="btn" onclick="updateApplicationStatus()">Update Status</button>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <button type="button" class="btn" onclick="viewAllApplications()">View All Applications</button>
+                    <button type="button" class="btn btn-secondary" onclick="adminLogout()">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Applications View -->
+        <div id="allApplicationsView" class="form-section hidden">
+            <h2 class="section-title">All Applications</h2>
+            <div id="applicationsTable">
+                <!-- Applications table will be populated here -->
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="backToAdminDashboard()">Back to Dashboard</button>
+        </div>
+
         <!-- Final Confirmation -->
         <div id="finalConfirmationPage" class="form-section hidden">
             <div style="text-align: center; padding: 40px;">
@@ -1345,6 +1619,8 @@
         let applicationData = {};
         let acknowledgmentNumber = '';
         let currentUser = null;
+        let isAdmin = false;
+        let currentTrackingApp = null;
 
         // Session Management
         let inactivityTimer;
@@ -1489,6 +1765,10 @@
             document.getElementById('acknowledgmentDisplay').classList.add('hidden');
             document.getElementById('finalConfirmationPage').classList.add('hidden');
             document.getElementById('pdfDocumentView').classList.add('hidden');
+            document.getElementById('trackingDisplay').classList.add('hidden');
+            document.getElementById('adminLogin').classList.add('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+            document.getElementById('allApplicationsView').classList.add('hidden');
         }
 
         function showStep(step) {
@@ -1500,6 +1780,14 @@
                 document.getElementById('finalConfirmationPage').classList.remove('hidden');
             } else if (step === 'pdf') {
                 document.getElementById('pdfDocumentView').classList.remove('hidden');
+            } else if (step === 'tracking') {
+                document.getElementById('trackingDisplay').classList.remove('hidden');
+            } else if (step === 'adminLogin') {
+                document.getElementById('adminLogin').classList.remove('hidden');
+            } else if (step === 'adminDashboard') {
+                document.getElementById('adminDashboard').classList.remove('hidden');
+            } else if (step === 'allApplications') {
+                document.getElementById('allApplicationsView').classList.remove('hidden');
             } else {
                 document.getElementById(`step${step}`).classList.remove('hidden');
             }
@@ -2065,6 +2353,412 @@ This is an official document generated by the USCIS H1B Application System.
             showStep('final');
         }
 
+        // Application Tracking Functions
+        async function trackApplication() {
+            const ackNum = document.getElementById('trackingAck').value.trim();
+            
+            if (!ackNum) {
+                showError('Please enter your acknowledgment number.');
+                return;
+            }
+            
+            try {
+                // First check localStorage
+                const existingApps = JSON.parse(localStorage.getItem('h1b_applications') || '{}');
+                let foundApp = null;
+                
+                for (const email in existingApps) {
+                    if (existingApps[email].acknowledgment_number === ackNum) {
+                        foundApp = existingApps[email];
+                        break;
+                    }
+                }
+                
+                if (foundApp) {
+                    currentTrackingApp = foundApp;
+                    displayTrackingInfo(foundApp);
+                    showStep('tracking');
+                } else {
+                    // Try Firebase if not found locally
+                    const doc = await db.collection('applications').doc(ackNum).get();
+                    if (doc.exists) {
+                        currentTrackingApp = doc.data();
+                        displayTrackingInfo(doc.data());
+                        showStep('tracking');
+                    } else {
+                        showError('Application not found. Please check your acknowledgment number.');
+                    }
+                }
+            } catch (error) {
+                console.error('Error tracking application:', error);
+                showError('Error retrieving application status. Please try again.');
+            }
+        }
+
+        function displayTrackingInfo(appData) {
+            document.getElementById('trackingAckNumber').textContent = appData.acknowledgment_number;
+            
+            // Update status badge
+            const statusBadge = document.getElementById('statusBadge');
+            const status = appData.application_status || 'submitted';
+            statusBadge.textContent = formatStatusText(status);
+            statusBadge.className = `status-badge status-${status}`;
+            
+            // Generate timeline
+            generateTimeline(appData);
+            
+            // Display application details
+            displayTrackingDetails(appData);
+        }
+
+        function formatStatusText(status) {
+            const statusMap = {
+                'submitted': 'Submitted',
+                'under_review': 'Under Review',
+                'documents_requested': 'Documents Requested',
+                'interview_scheduled': 'Interview Scheduled',
+                'approved': 'Approved',
+                'rejected': 'Rejected',
+                'on_hold': 'On Hold'
+            };
+            return statusMap[status] || 'Unknown';
+        }
+
+        function generateTimeline(appData) {
+            const timeline = document.getElementById('trackingTimeline');
+            const currentStatus = appData.application_status || 'submitted';
+            
+            const timelineSteps = [
+                { id: 'submitted', title: 'Application Submitted', description: 'Your application has been received and is being processed.' },
+                { id: 'under_review', title: 'Under Review', description: 'Your application is being reviewed by our team.' },
+                { id: 'documents_requested', title: 'Documents Requested', description: 'Additional documents may be required.' },
+                { id: 'interview_scheduled', title: 'Interview Scheduled', description: 'Your embassy interview has been scheduled.' },
+                { id: 'approved', title: 'Approved', description: 'Congratulations! Your visa has been approved.' }
+            ];
+            
+            let timelineHTML = '<h3 style="margin-bottom: 20px;">Application Timeline</h3>';
+            
+            timelineSteps.forEach((step, index) => {
+                let itemClass = 'timeline-item';
+                let date = '';
+                
+                if (step.id === currentStatus) {
+                    itemClass += ' current';
+                    date = new Date().toLocaleDateString();
+                } else if (timelineSteps.findIndex(s => s.id === currentStatus) > index) {
+                    itemClass += ' completed';
+                    date = new Date(Date.now() - (timelineSteps.length - index) * 24 * 60 * 60 * 1000).toLocaleDateString();
+                } else {
+                    itemClass += ' pending';
+                    date = 'Pending';
+                }
+                
+                timelineHTML += `
+                    <div class="${itemClass}">
+                        <div class="timeline-content">
+                            <div class="timeline-title">${step.title}</div>
+                            <div class="timeline-date">${date}</div>
+                            <div class="timeline-description">${step.description}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            timeline.innerHTML = timelineHTML;
+        }
+
+        function displayTrackingDetails(appData) {
+            const detailsDiv = document.getElementById('trackingDetails');
+            
+            const appointmentDate = appData.embassy_appointment?.date?.toDate?.() || 
+                                  new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000);
+            
+            detailsDiv.innerHTML = `
+                <h3 style="margin-bottom: 20px;">Application Details</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Applicant Name:</span>
+                    <span class="detail-value">${appData.personal_info?.name || 'N/A'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">${appData.personal_info?.email || appData.email || 'N/A'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Application Date:</span>
+                    <span class="detail-value">${appData.created_at ? new Date(appData.created_at).toLocaleDateString() : 'N/A'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Current Status:</span>
+                    <span class="detail-value">${formatStatusText(appData.application_status || 'submitted')}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Embassy Appointment:</span>
+                    <span class="detail-value">${appointmentDate.toLocaleDateString()}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Visa Fee:</span>
+                    <span class="detail-value">USD $340</span>
+                </div>
+                ${appData.status_notes ? `
+                <div class="detail-row">
+                    <span class="detail-label">Notes:</span>
+                    <span class="detail-value">${appData.status_notes}</span>
+                </div>
+                ` : ''}
+            `;
+        }
+
+        function refreshTracking() {
+            if (currentTrackingApp) {
+                trackApplication();
+            }
+        }
+
+        function backToHome() {
+            currentStep = 1;
+            showStep(1);
+            updateProgress();
+            
+            // Clear tracking data
+            currentTrackingApp = null;
+            document.getElementById('trackingAck').value = '';
+        }
+
+        // Admin Functions
+        function showAdminLogin() {
+            showStep('adminLogin');
+        }
+
+        function adminLogin() {
+            const username = document.getElementById('adminUsername').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            
+            // Simple admin credentials (in production, use proper authentication)
+            if (username === 'admin' && password === 'admin123') {
+                isAdmin = true;
+                showStep('adminDashboard');
+                showSuccess('Admin login successful!');
+            } else {
+                showError('Invalid admin credentials.');
+            }
+        }
+
+        function adminLogout() {
+            isAdmin = false;
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+            backToHome();
+            showSuccess('Admin logged out successfully.');
+        }
+
+        async function adminSearchApplication() {
+            if (!isAdmin) {
+                showError('Access denied. Please login as admin.');
+                return;
+            }
+            
+            const ackNum = document.getElementById('adminSearchAck').value.trim();
+            
+            if (!ackNum) {
+                showError('Please enter an acknowledgment number.');
+                return;
+            }
+            
+            try {
+                // Search in localStorage first
+                const existingApps = JSON.parse(localStorage.getItem('h1b_applications') || '{}');
+                let foundApp = null;
+                
+                for (const email in existingApps) {
+                    if (existingApps[email].acknowledgment_number === ackNum) {
+                        foundApp = existingApps[email];
+                        break;
+                    }
+                }
+                
+                if (foundApp) {
+                    displayAdminApplicationDetails(foundApp);
+                } else {
+                    // Try Firebase
+                    const doc = await db.collection('applications').doc(ackNum).get();
+                    if (doc.exists) {
+                        displayAdminApplicationDetails(doc.data());
+                    } else {
+                        showError('Application not found.');
+                        document.getElementById('adminApplicationDetails').classList.add('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Error searching application:', error);
+                showError('Error searching application.');
+            }
+        }
+
+        function displayAdminApplicationDetails(appData) {
+            const detailsDiv = document.getElementById('adminAppInfo');
+            const appointmentDate = appData.embassy_appointment?.date?.toDate?.() || 
+                                  new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000);
+            
+            detailsDiv.innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">Acknowledgment Number:</span>
+                    <span class="detail-value">${appData.acknowledgment_number}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Applicant Name:</span>
+                    <span class="detail-value">${appData.personal_info?.name || 'N/A'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">${appData.personal_info?.email || appData.email || 'N/A'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Phone:</span>
+                    <span class="detail-value">${appData.personal_info?.phone || 'N/A'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Current Status:</span>
+                    <span class="detail-value">${formatStatusText(appData.application_status || 'submitted')}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Application Date:</span>
+                    <span class="detail-value">${appData.created_at ? new Date(appData.created_at).toLocaleDateString() : 'N/A'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Embassy Appointment:</span>
+                    <span class="detail-value">${appointmentDate.toLocaleDateString()}</span>
+                </div>
+            `;
+            
+            // Set current status in dropdown
+            document.getElementById('statusUpdate').value = appData.application_status || 'submitted';
+            document.getElementById('statusNotes').value = appData.status_notes || '';
+            
+            document.getElementById('adminApplicationDetails').classList.remove('hidden');
+        }
+
+        async function updateApplicationStatus() {
+            if (!isAdmin) {
+                showError('Access denied.');
+                return;
+            }
+            
+            const ackNum = document.getElementById('adminSearchAck').value.trim();
+            const newStatus = document.getElementById('statusUpdate').value;
+            const notes = document.getElementById('statusNotes').value.trim();
+            
+            if (!ackNum || !newStatus) {
+                showError('Please select an application and status.');
+                return;
+            }
+            
+            try {
+                // Update in localStorage
+                const existingApps = JSON.parse(localStorage.getItem('h1b_applications') || '{}');
+                let updated = false;
+                
+                for (const email in existingApps) {
+                    if (existingApps[email].acknowledgment_number === ackNum) {
+                        existingApps[email].application_status = newStatus;
+                        existingApps[email].status_notes = notes;
+                        existingApps[email].updated_at = new Date().toISOString();
+                        updated = true;
+                        break;
+                    }
+                }
+                
+                if (updated) {
+                    localStorage.setItem('h1b_applications', JSON.stringify(existingApps));
+                }
+                
+                // Also update in Firebase if exists
+                try {
+                    await db.collection('applications').doc(ackNum).update({
+                        application_status: newStatus,
+                        status_notes: notes,
+                        updated_at: firebase.firestore.Timestamp.now()
+                    });
+                } catch (firebaseError) {
+                    console.log('Firebase update failed, but localStorage updated');
+                }
+                
+                showSuccess('Application status updated successfully!');
+                
+                // Refresh the display
+                adminSearchApplication();
+                
+            } catch (error) {
+                console.error('Error updating status:', error);
+                showError('Error updating application status.');
+            }
+        }
+
+        async function viewAllApplications() {
+            if (!isAdmin) {
+                showError('Access denied.');
+                return;
+            }
+            
+            try {
+                const existingApps = JSON.parse(localStorage.getItem('h1b_applications') || '{}');
+                const applications = Object.values(existingApps);
+                
+                let tableHTML = `
+                    <table class="applications-table">
+                        <thead>
+                            <tr>
+                                <th>Acknowledgment Number</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Application Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                applications.forEach(app => {
+                    const appDate = app.created_at ? new Date(app.created_at).toLocaleDateString() : 'N/A';
+                    tableHTML += `
+                        <tr>
+                            <td>${app.acknowledgment_number}</td>
+                            <td>${app.personal_info?.name || 'N/A'}</td>
+                            <td>${app.personal_info?.email || app.email || 'N/A'}</td>
+                            <td><span class="status-badge status-${app.application_status || 'submitted'}">${formatStatusText(app.application_status || 'submitted')}</span></td>
+                            <td>${appDate}</td>
+                            <td>
+                                <button class="btn" style="padding: 5px 10px; font-size: 12px;" onclick="quickEditStatus('${app.acknowledgment_number}')">Edit</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableHTML += '</tbody></table>';
+                
+                if (applications.length === 0) {
+                    tableHTML = '<p style="text-align: center; color: #666; margin: 40px 0;">No applications found.</p>';
+                }
+                
+                document.getElementById('applicationsTable').innerHTML = tableHTML;
+                showStep('allApplications');
+                
+            } catch (error) {
+                console.error('Error loading applications:', error);
+                showError('Error loading applications.');
+            }
+        }
+
+        function quickEditStatus(ackNum) {
+            document.getElementById('adminSearchAck').value = ackNum;
+            showStep('adminDashboard');
+            adminSearchApplication();
+        }
+
+        function backToAdminDashboard() {
+            showStep('adminDashboard');
+        }
+
         // Initialize Application Summary
         function updateApplicationSummary() {
             const summaryDiv = document.getElementById('applicationSummary');
@@ -2118,5 +2812,5 @@ This is an official document generated by the USCIS H1B Application System.
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d64ce501934829',t:'MTc1NDkwMDI4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d6636ff6134936',t:'MTc1NDkwMTIxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
