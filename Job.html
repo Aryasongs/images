@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oriontec Job Application System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .step-indicator {
+            transition: all 0.3s ease;
+        }
+        .step-active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .step-completed {
+            background: #10b981;
+            color: white;
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        /* Disable zoom completely */
+        body {
+            zoom: 1;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8 relative">
+            <h1 class="text-4xl font-bold text-white mb-2">Oriontec Career Portal</h1>
+            <p class="text-white/80 text-lg">Your Gateway to Professional Excellence</p>
+            <!-- Hidden Admin Access -->
+            <div class="absolute top-0 right-0">
+                <button onclick="showAdminLogin()" class="text-white/30 hover:text-white/60 text-xs" style="background: none; border: none; cursor: pointer;">⚙️</button>
+            </div>
+        </div>
+
+        <!-- Main Application Container -->
+        <div class="max-w-4xl mx-auto">
+            <!-- Step Indicator -->
+            <div class="flex justify-center mb-8">
+                <div class="flex space-x-4">
+                    <div id="step1-indicator" class="step-indicator step-active w-10 h-10 rounded-full flex items-center justify-center font-bold">1</div>
+                    <div class="w-16 h-1 bg-white/30 self-center"></div>
+                    <div id="step2-indicator" class="step-indicator w-10 h-10 rounded-full bg-white/30 flex items-center justify-center font-bold text-white/60">2</div>
+                    <div class="w-16 h-1 bg-white/30 self-center"></div>
+                    <div id="step3-indicator" class="step-indicator w-10 h-10 rounded-full bg-white/30 flex items-center justify-center font-bold text-white/60">3</div>
+                    <div class="w-16 h-1 bg-white/30 self-center"></div>
+                    <div id="step4-indicator" class="step-indicator w-10 h-10 rounded-full bg-white/30 flex items-center justify-center font-bold text-white/60">4</div>
+                </div>
+            </div>
+
+            <!-- Application Form Card -->
+            <div class="bg-white rounded-2xl card-shadow p-8">
+                <!-- Step 1: Initial Details -->
+                <div id="step1" class="step-content">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Personal Information</h2>
+                    <form id="initialForm" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                            <input type="text" id="firstName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth *</label>
+                            <input type="date" id="dob" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                            <input type="email" id="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition duration-300">
+                            Generate Application Number
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Step 2: Application Number Display -->
+                <div id="step2" class="step-content hidden">
+                    <div class="text-center">
+                        <div class="mb-6">
+                            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">Application Number Generated!</h2>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-xl mb-6">
+                            <p class="text-sm text-gray-600 mb-2">Your Application Number:</p>
+                            <p id="applicationNumber" class="text-3xl font-bold text-purple-600 mb-4"></p>
+                            <p class="text-sm text-gray-600 mb-2">Badge Number:</p>
+                            <p id="badgeNumber" class="text-xl font-semibold text-blue-600"></p>
+                        </div>
+                        
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                            <p class="text-sm text-yellow-800">
+                                <strong>Important:</strong> Please save your application number. You'll need it to track your application status or resume later.
+                            </p>
+                        </div>
+                        
+                        <button onclick="nextStep(3)" class="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-8 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition duration-300">
+                            Continue Application
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Comprehensive Application Form -->
+                <div id="step3" class="step-content hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Detailed Application Form</h2>
+                    <form id="detailedForm" class="space-y-6">
+                        <!-- Role Selection -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Position Applied For *</label>
+                            <select id="jobRole" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" onchange="updateSalaryRange()">
+                                <option value="">Select a position</option>
+                                <option value="multimedia-designer">Multimedia Designer</option>
+                                <option value="web-designer">Web Designer</option>
+                                <option value="frontend-developer">Front-End Developer</option>
+                                <option value="backend-developer">Back-End Developer</option>
+                                <option value="fullstack-developer">Full-Stack Developer</option>
+                                <option value="ui-ux-designer">UI/UX Designer</option>
+                                <option value="graphic-designer">Graphic Designer</option>
+                                <option value="mobile-developer">Mobile App Developer</option>
+                                <option value="digital-marketing">Digital Marketing Specialist</option>
+                                <option value="seo-specialist">SEO Specialist</option>
+                                <option value="content-writer">Content Writer</option>
+                                <option value="project-manager">Project Manager (Tech)</option>
+                                <option value="devops-engineer">DevOps Engineer</option>
+                            </select>
+                        </div>
+
+                        <div id="salaryRangeInfo" class="hidden bg-blue-50 border-l-4 border-blue-400 p-4">
+                            <p class="text-blue-800"><strong>Salary Range for this position:</strong> <span id="salaryRangeText"></span></p>
+                        </div>
+
+                        <!-- Experience Section -->
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Professional Experience</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Total Years of Experience *</label>
+                                    <input type="number" id="totalExperience" min="0" step="0.1" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <p class="text-sm text-gray-500 mt-1">Minimum 6 months (0.5 years) required</p>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Relevant Experience *</label>
+                                    <input type="number" id="relevantExperience" min="0" step="0.1" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Previous Job Title</label>
+                                <input type="text" id="previousJobTitle" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Previous Company</label>
+                                <input type="text" id="previousCompany" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Key Achievements/Projects</label>
+                                <textarea id="achievements" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Describe your key achievements and projects..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Technical Skills -->
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Technical Skills</h3>
+                            
+                            <div id="skillsSection">
+                                <!-- Dynamic skills based on role selection -->
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Programming Languages (if applicable)</label>
+                                <input type="text" id="programmingLanguages" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="e.g., JavaScript, Python, Java, C++">
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tools & Software</label>
+                                <input type="text" id="toolsSoftware" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="e.g., Adobe Creative Suite, VS Code, Docker">
+                            </div>
+                        </div>
+
+                        <!-- Education -->
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Education</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Highest Degree *</label>
+                                    <select id="highestDegree" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        <option value="">Select degree</option>
+                                        <option value="high-school">High School</option>
+                                        <option value="associate">Associate Degree</option>
+                                        <option value="bachelor">Bachelor's Degree</option>
+                                        <option value="master">Master's Degree</option>
+                                        <option value="phd">PhD</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Field of Study</label>
+                                    <input type="text" id="fieldOfStudy" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">University/Institution</label>
+                                <input type="text" id="university" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Graduation Year</label>
+                                <input type="number" id="graduationYear" min="1950" max="2030" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            </div>
+                        </div>
+
+                        <!-- Personal Information -->
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Contact Information</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                                    <input type="tel" id="phoneNumber" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Country *</label>
+                                    <input type="text" id="country" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">LinkedIn Profile URL</label>
+                                <input type="url" id="linkedinProfile" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="https://linkedin.com/in/yourprofile">
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Portfolio/Website URL</label>
+                                <input type="url" id="portfolio" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="https://yourportfolio.com">
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">GitHub Profile URL</label>
+                                <input type="url" id="githubProfile" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="https://github.com/yourusername">
+                            </div>
+                        </div>
+
+                        <!-- Professional Overview -->
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Professional Overview</h3>
+                            
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Professional Summary *</label>
+                                <textarea id="professionalSummary" rows="4" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Briefly describe your professional experience and expertise in 2-3 sentences..."></textarea>
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Key Technical Skills *</label>
+                                <textarea id="keyTechnicalSkills" rows="3" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="List your key technical skills and areas of expertise..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Work Experience -->
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Work Experience</h3>
+                            <p class="text-sm text-gray-600 mb-4">Please provide details for your most recent positions (up to 3 positions)</p>
+                            
+                            <div id="workExperienceContainer">
+                                <div class="work-experience-item border border-gray-200 p-4 rounded-lg mb-4">
+                                    <h4 class="font-medium text-gray-800 mb-3">Position 1 (Most Recent)</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Job Title *</label>
+                                            <input type="text" id="jobTitle1" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Company Name *</label>
+                                            <input type="text" id="companyName1" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                                            <input type="text" id="location1" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Start Date *</label>
+                                            <input type="month" id="startDate1" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                                            <input type="month" id="endDate1" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                            <div class="mt-2">
+                                                <label class="flex items-center">
+                                                    <input type="checkbox" id="currentJob1" class="mr-2 text-purple-600 focus:ring-purple-500">
+                                                    <span class="text-sm text-gray-600">Currently working here</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Key Responsibilities & Achievements *</label>
+                                        <textarea id="responsibilities1" rows="4" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Describe your key responsibilities and achievements (3-5 bullet points)..."></textarea>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Technologies/Tools Used</label>
+                                        <input type="text" id="technologies1" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="e.g., React, Node.js, AWS, Docker...">
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Impact of Your Work</label>
+                                        <textarea id="impact1" rows="2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="e.g., Improved efficiency by 30%, reduced processing time by 2 hours..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="work-experience-item border border-gray-200 p-4 rounded-lg mb-4">
+                                    <h4 class="font-medium text-gray-800 mb-3">Position 2 (Previous)</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
+                                            <input type="text" id="jobTitle2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                                            <input type="text" id="companyName2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                                            <input type="text" id="location2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                                            <input type="month" id="startDate2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                                            <input type="month" id="endDate2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Key Responsibilities & Achievements</label>
+                                        <textarea id="responsibilities2" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Describe your key responsibilities and achievements..."></textarea>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Technologies/Tools Used</label>
+                                        <input type="text" id="technologies2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    </div>
+                                </div>
+
+                                <div class="work-experience-item border border-gray-200 p-4 rounded-lg mb-4">
+                                    <h4 class="font-medium text-gray-800 mb-3">Position 3 (Earlier)</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
+                                            <input type="text" id="jobTitle3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                                            <input type="text" id="companyName3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                                            <input type="text" id="location3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                                            <input type="month" id="startDate3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                                            <input type="month" id="endDate3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Key Responsibilities & Achievements</label>
+                                        <textarea id="responsibilities3" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Describe your key responsibilities and achievements..."></textarea>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Technologies/Tools Used</label>
+                                        <input type="text" id="technologies3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Projects Section -->
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Key Projects</h3>
+                            <p class="text-sm text-gray-600 mb-4">Please describe your most significant projects (up to 3 projects)</p>
+                            
+                            <div class="space-y-4">
+                                <div class="border border-gray-200 p-4 rounded-lg">
+                                    <h4 class="font-medium text-gray-800 mb-3">Project 1</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Project Name</label>
+                                            <input type="text" id="projectName1" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Technologies Used</label>
+                                            <input type="text" id="projectTech1" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Project Description & Your Contribution</label>
+                                        <textarea id="projectDesc1" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Brief description of the project and your specific contribution..."></textarea>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Outcomes/Impact</label>
+                                        <textarea id="projectImpact1" rows="2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="What were the outcomes or impact of this project?"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="border border-gray-200 p-4 rounded-lg">
+                                    <h4 class="font-medium text-gray-800 mb-3">Project 2</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Project Name</label>
+                                            <input type="text" id="projectName2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Technologies Used</label>
+                                            <input type="text" id="projectTech2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Project Description & Your Contribution</label>
+                                        <textarea id="projectDesc2" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Outcomes/Impact</label>
+                                        <textarea id="projectImpact2" rows="2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="border border-gray-200 p-4 rounded-lg">
+                                    <h4 class="font-medium text-gray-800 mb-3">Project 3</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Project Name</label>
+                                            <input type="text" id="projectName3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Technologies Used</label>
+                                            <input type="text" id="projectTech3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Project Description & Your Contribution</label>
+                                        <textarea id="projectDesc3" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Outcomes/Impact</label>
+                                        <textarea id="projectImpact3" rows="2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Enhanced Technical Skills -->
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Detailed Technical Skills</h3>
+                            
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Programming Languages & Frameworks *</label>
+                                <textarea id="programmingFrameworks" rows="3" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="List all programming languages and frameworks you are proficient in..."></textarea>
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tools & Platforms with Experience Level</label>
+                                <textarea id="toolsPlatforms" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="e.g., AWS (3 years), Docker (2 years), Git (5 years)..."></textarea>
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Which tools or technologies do you have the most experience with? *</label>
+                                <textarea id="mostExperiencedTech" rows="2" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Describe the technologies you are most experienced with and your level of expertise..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- H1B Visa & Future Plans -->
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Future Plans</h3>
+                            
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Are you planning to apply for an H1B visa in the future? *</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="h1bPlans" value="yes" required class="mr-2 text-purple-600 focus:ring-purple-500" onchange="toggleH1BDetails(true)">
+                                        <span>Yes</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="h1bPlans" value="no" required class="mr-2 text-purple-600 focus:ring-purple-500" onchange="toggleH1BDetails(false)">
+                                        <span>No</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="h1bDetails" class="mt-4 hidden">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Please briefly describe your plan and timeline for H1B application *</label>
+                                <textarea id="h1bPlanDetails" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Describe your H1B visa plans and timeline in English..."></textarea>
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Why do you want to work at Oriontec? *</label>
+                                <textarea id="whyOriontec" rows="4" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Tell us what motivates you to join our team..."></textarea>
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Availability *</label>
+                                <select id="availability" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option value="">Select availability</option>
+                                    <option value="immediate">Immediate</option>
+                                    <option value="2-weeks">2 weeks notice</option>
+                                    <option value="1-month">1 month notice</option>
+                                    <option value="2-months">2 months notice</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Verification & Confirmation -->
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Verification & Confirmation</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Have you ever been involved in any criminal proceedings or disciplinary action? *</label>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center">
+                                            <input type="radio" name="criminalHistory" value="yes" required class="mr-2 text-purple-600 focus:ring-purple-500">
+                                            <span>Yes</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="criminalHistory" value="no" required class="mr-2 text-purple-600 focus:ring-purple-500">
+                                            <span>No</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="flex items-start">
+                                        <input type="checkbox" id="authorizeVerification" required class="mr-2 mt-1 text-purple-600 focus:ring-purple-500">
+                                        <span class="text-sm text-gray-700">Do you authorize the company to verify all the information you have provided in this application? *</span>
+                                    </label>
+                                </div>
+
+                                <div>
+                                    <label class="flex items-start">
+                                        <input type="checkbox" id="provideDocuments" required class="mr-2 mt-1 text-purple-600 focus:ring-purple-500">
+                                        <span class="text-sm text-gray-700">Are you willing to provide original documents and certificates for verification upon request? *</span>
+                                    </label>
+                                </div>
+
+                                <div>
+                                    <label class="flex items-start">
+                                        <input type="checkbox" id="confirmAccuracy" required class="mr-2 mt-1 text-purple-600 focus:ring-purple-500">
+                                        <span class="text-sm text-gray-700">Do you confirm that all information provided in this application is true and accurate to the best of your knowledge? *</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Salary Section (Final Step) -->
+                        <div id="salarySection" class="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-lg border-2 border-green-200">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">💰 Final Step: Salary Expectations</h3>
+                            <p class="text-sm text-gray-600 mb-4">Based on your complete application, please specify your salary expectations:</p>
+                            
+                            <div id="experienceError" class="hidden bg-red-50 border-l-4 border-red-400 p-4 mb-4">
+                                <p class="text-red-800">Sorry, minimum 6 months of experience is required for this position.</p>
+                            </div>
+                            
+                            <div id="salaryInputSection">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Monthly Salary Expectation (USD) *</label>
+                                    <div class="relative">
+                                        <span class="absolute left-3 top-3 text-gray-500">$</span>
+                                        <input type="number" id="salaryExpectation" min="500" max="15000" required class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    </div>
+                                    <p id="salaryProposal" class="text-sm text-blue-600 mt-1"></p>
+                                    <p class="text-xs text-gray-500 mt-2">💡 This will be shown in your application summary for final review</p>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div id="formError" class="hidden bg-red-50 border-l-4 border-red-400 p-4">
+                            <p class="text-red-800">Please fill in all required fields before proceeding.</p>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition duration-300">
+                            Continue to Review
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Step 4: Final Submission -->
+                <div id="step4" class="step-content hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Application Summary</h2>
+                    <div id="applicationSummary" class="space-y-4 mb-6">
+                        <!-- Summary will be populated by JavaScript -->
+                    </div>
+                    
+                    <!-- Verification Disclaimer -->
+                    <div class="bg-red-50 border-l-4 border-red-400 p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-red-800 mb-3">⚠️ Important Verification Notice</h3>
+                        <p class="text-red-700 text-sm leading-relaxed mb-4">
+                            <strong>Please read carefully:</strong><br>
+                            Our company conducts thorough background and document verification before finalizing any job offer. Our verification team may contact you or visit your location physically/remotely to authenticate the documents and information you have submitted. Providing false or misleading information will result in immediate disqualification from the recruitment process.
+                        </p>
+                        <p class="text-red-700 text-sm font-medium">
+                            By submitting this application, you agree to cooperate fully with our verification procedures.
+                        </p>
+                        <div class="mt-4">
+                            <label class="flex items-start">
+                                <input type="checkbox" id="agreeToVerification" required class="mr-2 mt-1 text-red-600 focus:ring-red-500">
+                                <span class="text-sm text-red-700 font-medium">I have read and agree to the verification procedures outlined above *</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                        <p class="text-blue-800">
+                            <strong>Final Step:</strong> Review your information and submit your application. A PDF document will be generated for your records.
+                        </p>
+                    </div>
+                    
+                    <button onclick="submitFinalApplication()" class="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-green-700 hover:to-blue-700 transition duration-300">
+                        Submit Application
+                    </button>
+                </div>
+
+                <!-- Application Tracking Section -->
+                <div id="trackingSection" class="hidden mt-8 pt-8 border-t border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Track Your Application</h3>
+                    <div class="flex space-x-4">
+                        <input type="text" id="trackingNumber" placeholder="Enter Application Number" class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <button onclick="trackApplication()" class="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition duration-300">
+                            Track
+                        </button>
+                    </div>
+                    <div id="trackingResult" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-2xl p-8 max-w-md mx-4">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Application Submitted!</h3>
+                    <p class="text-gray-600 mb-6">Your application has been successfully submitted. A PDF document has been generated and your application is now being processed.</p>
+                    <button onclick="closeModal()" class="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition duration-300">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Login Modal -->
+        <div id="adminLoginModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-2xl p-8 max-w-md mx-4">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Admin Access</h3>
+                <form id="adminLoginForm">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                            <input type="text" id="adminUsername" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                            <input type="password" id="adminPassword" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                        <div id="adminLoginError" class="hidden bg-red-50 border-l-4 border-red-400 p-4">
+                            <p class="text-red-800">Invalid credentials. Please try again.</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-4 mt-6">
+                        <button type="button" onclick="closeAdminLogin()" class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition duration-300">
+                            Cancel
+                        </button>
+                        <button type="submit" class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition duration-300">
+                            Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-2xl p-8 max-w-6xl mx-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800">Admin Dashboard</h3>
+                    <button onclick="closeAdminDashboard()" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Admin Controls -->
+                <div class="mb-6">
+                    <div class="flex space-x-4 mb-4">
+                        <button onclick="loadAllApplications()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300">
+                            Refresh Applications
+                        </button>
+                        <select id="statusFilter" onchange="filterApplications()" class="px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="">All Status</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Submitted">Submitted</option>
+                            <option value="Under Review">Under Review</option>
+                            <option value="Interview Scheduled">Interview Scheduled</option>
+                            <option value="Accepted">Accepted</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                        <select id="roleFilter" onchange="filterApplications()" class="px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="">All Roles</option>
+                            <option value="multimedia-designer">Multimedia Designer</option>
+                            <option value="web-designer">Web Designer</option>
+                            <option value="frontend-developer">Front-End Developer</option>
+                            <option value="backend-developer">Back-End Developer</option>
+                            <option value="fullstack-developer">Full-Stack Developer</option>
+                            <option value="ui-ux-designer">UI/UX Designer</option>
+                            <option value="graphic-designer">Graphic Designer</option>
+                            <option value="mobile-developer">Mobile App Developer</option>
+                            <option value="digital-marketing">Digital Marketing Specialist</option>
+                            <option value="seo-specialist">SEO Specialist</option>
+                            <option value="content-writer">Content Writer</option>
+                            <option value="project-manager">Project Manager (Tech)</option>
+                            <option value="devops-engineer">DevOps Engineer</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Applications List -->
+                <div id="applicationsList" class="space-y-4">
+                    <p class="text-gray-500 text-center">Loading applications...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Detail Modal -->
+        <div id="applicationDetailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-2xl p-8 max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800">Application Details</h3>
+                    <button onclick="closeApplicationDetail()" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="applicationDetailContent">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize EmailJS with correct public key
+        emailjs.init('B6ah3SqfJ7Psmz0kT');
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDVmXF8KdScaXAVqmpgB5CaJMjFLr00hDw",
+            authDomain: "h1bvisa-73e93.firebaseapp.com",
+            projectId: "h1bvisa-73e93",
+            storageBucket: "h1bvisa-73e93.firebasestorage.app",
+            messagingSenderId: "697062091568",
+            appId: "1:697062091568:web:70061eb70023788b8bf6f5"
+        };
+
+        // Initialize Firebase (Demo mode)
+        let db;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+        } catch (error) {
+            console.log('Firebase demo mode - using local storage');
+            db = null;
+        }
+
+        let applicationData = {};
+        let currentStep = 1;
+
+        // Step 1: Initial Form Submission
+        document.getElementById('initialForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('firstName').value;
+            const dob = document.getElementById('dob').value;
+            const email = document.getElementById('email').value;
+
+            // Generate unique application number and badge number
+            const applicationNumber = 'ORT' + Date.now().toString().slice(-8);
+            const badgeNumber = 'BDG' + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+            applicationData = {
+                firstName,
+                dob,
+                email,
+                applicationNumber,
+                badgeNumber,
+                timestamp: new Date().toISOString(),
+                status: 'In Progress'
+            };
+
+            // Display application number
+            document.getElementById('applicationNumber').textContent = applicationNumber;
+            document.getElementById('badgeNumber').textContent = badgeNumber;
+
+            // Save to Firebase/localStorage
+            saveApplicationData();
+
+            // Send confirmation email with await to ensure it's sent
+            console.log('📧 Attempting to send confirmation email...');
+            await sendConfirmationEmail();
+
+            nextStep(2);
+        });
+
+        // Job role salary ranges
+        const salaryRanges = {
+            'multimedia-designer': { min: 500, max: 4400, level: 'Entry-Level' },
+            'web-designer': { min: 1200, max: 5000, level: 'Entry to Mid-Level' },
+            'frontend-developer': { min: 2000, max: 7000, level: 'Entry to Mid-Level' },
+            'backend-developer': { min: 3000, max: 9000, level: 'Mid-Level to Senior' },
+            'fullstack-developer': { min: 3500, max: 10000, level: 'Mid-Level to Senior' },
+            'ui-ux-designer': { min: 2000, max: 6000, level: 'Entry to Mid-Level' },
+            'graphic-designer': { min: 1000, max: 4500, level: 'Entry-Level to Mid-Level' },
+            'mobile-developer': { min: 3000, max: 8000, level: 'Mid-Level' },
+            'digital-marketing': { min: 1500, max: 5500, level: 'Entry to Mid-Level' },
+            'seo-specialist': { min: 1200, max: 4000, level: 'Entry to Mid-Level' },
+            'content-writer': { min: 1000, max: 3500, level: 'Entry-Level to Mid-Level' },
+            'project-manager': { min: 4000, max: 11000, level: 'Mid-Level to Senior' },
+            'devops-engineer': { min: 4500, max: 12000, level: 'Mid-Level to Senior' }
+        };
+
+        // Role-specific skills
+        const roleSkills = {
+            'multimedia-designer': ['Adobe Creative Suite', 'Video Editing', '3D Modeling', 'Animation', 'Graphic Design'],
+            'web-designer': ['HTML/CSS', 'JavaScript', 'Responsive Design', 'UI Design', 'Adobe Creative Suite'],
+            'frontend-developer': ['HTML/CSS', 'JavaScript', 'React/Vue/Angular', 'Responsive Design', 'Git'],
+            'backend-developer': ['Node.js/Python/Java', 'Database Management', 'API Development', 'Server Management', 'Git'],
+            'fullstack-developer': ['Frontend Frameworks', 'Backend Development', 'Database Design', 'DevOps', 'Git'],
+            'ui-ux-designer': ['User Research', 'Wireframing', 'Prototyping', 'Design Systems', 'Usability Testing'],
+            'graphic-designer': ['Adobe Creative Suite', 'Typography', 'Brand Design', 'Print Design', 'Digital Design'],
+            'mobile-developer': ['iOS/Android Development', 'React Native/Flutter', 'Mobile UI/UX', 'App Store Optimization'],
+            'digital-marketing': ['SEO/SEM', 'Social Media Marketing', 'Content Marketing', 'Analytics', 'Email Marketing'],
+            'seo-specialist': ['Keyword Research', 'On-page SEO', 'Link Building', 'Analytics', 'Technical SEO'],
+            'content-writer': ['Content Strategy', 'SEO Writing', 'Copywriting', 'Research Skills', 'CMS'],
+            'project-manager': ['Agile/Scrum', 'Project Planning', 'Risk Management', 'Team Leadership', 'Communication'],
+            'devops-engineer': ['CI/CD', 'Docker/Kubernetes', 'Cloud Platforms', 'Infrastructure as Code', 'Monitoring']
+        };
+
+        // Step 3: Detailed Form
+        document.getElementById('detailedForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate required fields
+            const requiredFields = [
+                'jobRole', 'totalExperience', 'relevantExperience', 'highestDegree',
+                'phoneNumber', 'country', 'whyOriontec', 'availability', 'salaryExpectation',
+                'professionalSummary', 'keyTechnicalSkills', 'jobTitle1', 'companyName1',
+                'startDate1', 'responsibilities1', 'programmingFrameworks', 'mostExperiencedTech'
+            ];
+            
+            let isValid = true;
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('border-red-500');
+                } else {
+                    field.classList.remove('border-red-500');
+                }
+            });
+
+            // Validate radio buttons
+            const h1bPlans = document.querySelector('input[name="h1bPlans"]:checked');
+            const criminalHistory = document.querySelector('input[name="criminalHistory"]:checked');
+            
+            if (!h1bPlans) {
+                isValid = false;
+                document.querySelector('input[name="h1bPlans"]').closest('div').classList.add('border-red-500');
+            }
+            
+            if (!criminalHistory) {
+                isValid = false;
+                document.querySelector('input[name="criminalHistory"]').closest('div').classList.add('border-red-500');
+            }
+
+            // Validate checkboxes
+            const requiredCheckboxes = ['authorizeVerification', 'provideDocuments', 'confirmAccuracy'];
+            requiredCheckboxes.forEach(checkboxId => {
+                const checkbox = document.getElementById(checkboxId);
+                if (!checkbox.checked) {
+                    isValid = false;
+                    checkbox.classList.add('border-red-500');
+                } else {
+                    checkbox.classList.remove('border-red-500');
+                }
+            });
+
+            // Validate H1B details if yes is selected
+            if (h1bPlans && h1bPlans.value === 'yes') {
+                const h1bDetails = document.getElementById('h1bPlanDetails');
+                if (!h1bDetails.value.trim()) {
+                    isValid = false;
+                    h1bDetails.classList.add('border-red-500');
+                } else {
+                    h1bDetails.classList.remove('border-red-500');
+                }
+            }
+
+            const totalExperience = parseFloat(document.getElementById('totalExperience').value);
+            
+            if (totalExperience < 0.5) {
+                document.getElementById('experienceError').classList.remove('hidden');
+                isValid = false;
+            } else {
+                document.getElementById('experienceError').classList.add('hidden');
+            }
+
+            if (!isValid) {
+                document.getElementById('formError').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('formError').classList.add('hidden');
+
+            // Collect all form data
+            applicationData = {
+                ...applicationData,
+                // Job and Experience
+                jobRole: document.getElementById('jobRole').value,
+                totalExperience: totalExperience,
+                relevantExperience: parseFloat(document.getElementById('relevantExperience').value),
+                previousJobTitle: document.getElementById('previousJobTitle').value,
+                previousCompany: document.getElementById('previousCompany').value,
+                achievements: document.getElementById('achievements').value,
+                
+                // Contact Information
+                phoneNumber: document.getElementById('phoneNumber').value,
+                country: document.getElementById('country').value,
+                linkedinProfile: document.getElementById('linkedinProfile').value,
+                portfolio: document.getElementById('portfolio').value,
+                githubProfile: document.getElementById('githubProfile').value,
+                
+                // Professional Overview
+                professionalSummary: document.getElementById('professionalSummary').value,
+                keyTechnicalSkills: document.getElementById('keyTechnicalSkills').value,
+                
+                // Work Experience
+                workExperience: {
+                    position1: {
+                        jobTitle: document.getElementById('jobTitle1').value,
+                        companyName: document.getElementById('companyName1').value,
+                        location: document.getElementById('location1').value,
+                        startDate: document.getElementById('startDate1').value,
+                        endDate: document.getElementById('endDate1').value,
+                        currentJob: document.getElementById('currentJob1').checked,
+                        responsibilities: document.getElementById('responsibilities1').value,
+                        technologies: document.getElementById('technologies1').value,
+                        impact: document.getElementById('impact1').value
+                    },
+                    position2: {
+                        jobTitle: document.getElementById('jobTitle2').value,
+                        companyName: document.getElementById('companyName2').value,
+                        location: document.getElementById('location2').value,
+                        startDate: document.getElementById('startDate2').value,
+                        endDate: document.getElementById('endDate2').value,
+                        responsibilities: document.getElementById('responsibilities2').value,
+                        technologies: document.getElementById('technologies2').value
+                    },
+                    position3: {
+                        jobTitle: document.getElementById('jobTitle3').value,
+                        companyName: document.getElementById('companyName3').value,
+                        location: document.getElementById('location3').value,
+                        startDate: document.getElementById('startDate3').value,
+                        endDate: document.getElementById('endDate3').value,
+                        responsibilities: document.getElementById('responsibilities3').value,
+                        technologies: document.getElementById('technologies3').value
+                    }
+                },
+                
+                // Projects
+                projects: {
+                    project1: {
+                        name: document.getElementById('projectName1').value,
+                        technologies: document.getElementById('projectTech1').value,
+                        description: document.getElementById('projectDesc1').value,
+                        impact: document.getElementById('projectImpact1').value
+                    },
+                    project2: {
+                        name: document.getElementById('projectName2').value,
+                        technologies: document.getElementById('projectTech2').value,
+                        description: document.getElementById('projectDesc2').value,
+                        impact: document.getElementById('projectImpact2').value
+                    },
+                    project3: {
+                        name: document.getElementById('projectName3').value,
+                        technologies: document.getElementById('projectTech3').value,
+                        description: document.getElementById('projectDesc3').value,
+                        impact: document.getElementById('projectImpact3').value
+                    }
+                },
+                
+                // Technical Skills
+                programmingLanguages: document.getElementById('programmingLanguages').value,
+                toolsSoftware: document.getElementById('toolsSoftware').value,
+                programmingFrameworks: document.getElementById('programmingFrameworks').value,
+                toolsPlatforms: document.getElementById('toolsPlatforms').value,
+                mostExperiencedTech: document.getElementById('mostExperiencedTech').value,
+                
+                // Education
+                highestDegree: document.getElementById('highestDegree').value,
+                fieldOfStudy: document.getElementById('fieldOfStudy').value,
+                university: document.getElementById('university').value,
+                graduationYear: document.getElementById('graduationYear').value,
+                
+                // Future Plans
+                h1bPlans: h1bPlans ? h1bPlans.value : '',
+                h1bPlanDetails: document.getElementById('h1bPlanDetails').value,
+                whyOriontec: document.getElementById('whyOriontec').value,
+                availability: document.getElementById('availability').value,
+                salaryExpectation: document.getElementById('salaryExpectation').value,
+                
+                // Verification
+                criminalHistory: criminalHistory ? criminalHistory.value : '',
+                authorizeVerification: document.getElementById('authorizeVerification').checked,
+                provideDocuments: document.getElementById('provideDocuments').checked,
+                confirmAccuracy: document.getElementById('confirmAccuracy').checked,
+                
+                skills: getSelectedSkills()
+            };
+
+            generateSummary();
+            nextStep(4);
+        });
+
+        function updateSalaryRange() {
+            const selectedRole = document.getElementById('jobRole').value;
+            const salaryRangeInfo = document.getElementById('salaryRangeInfo');
+            const salaryRangeText = document.getElementById('salaryRangeText');
+            const skillsSection = document.getElementById('skillsSection');
+            
+            if (selectedRole && salaryRanges[selectedRole]) {
+                const range = salaryRanges[selectedRole];
+                salaryRangeText.textContent = `$${range.min} - $${range.max} (${range.level})`;
+                salaryRangeInfo.classList.remove('hidden');
+                
+                // Generate random salary proposal within range
+                const randomSalary = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                document.getElementById('salaryExpectation').value = randomSalary;
+                document.getElementById('salaryProposal').textContent = `Our proposal: $${randomSalary} (You can edit this amount)`;
+                
+                // Update skills section
+                updateSkillsSection(selectedRole);
+            } else {
+                salaryRangeInfo.classList.add('hidden');
+                skillsSection.innerHTML = '';
+            }
+        }
+
+        function updateSkillsSection(role) {
+            const skillsSection = document.getElementById('skillsSection');
+            const skills = roleSkills[role] || [];
+            
+            if (skills.length > 0) {
+                skillsSection.innerHTML = `
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Required Skills for this Role *</label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        ${skills.map(skill => `
+                            <label class="flex items-center">
+                                <input type="checkbox" name="skills" value="${skill}" class="mr-2 text-purple-600 focus:ring-purple-500">
+                                <span class="text-sm">${skill}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Rate your overall skill level (1-10)</label>
+                        <input type="range" id="skillLevel" min="1" max="10" value="5" class="w-full" oninput="updateSkillLevel(this.value)">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>Beginner</span>
+                            <span id="skillLevelDisplay">5</span>
+                            <span>Expert</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function updateSkillLevel(value) {
+            document.getElementById('skillLevelDisplay').textContent = value;
+        }
+
+        function getSelectedSkills() {
+            const checkboxes = document.querySelectorAll('input[name="skills"]:checked');
+            const skills = Array.from(checkboxes).map(cb => cb.value);
+            const skillLevel = document.getElementById('skillLevel') ? document.getElementById('skillLevel').value : 5;
+            return { skills, skillLevel };
+        }
+
+        function nextStep(step) {
+            // Hide current step
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            // Show target step
+            document.getElementById(`step${step}`).classList.remove('hidden');
+
+            // Update step indicators
+            updateStepIndicators(step);
+            currentStep = step;
+
+            // Show tracking section after step 2
+            if (step >= 2) {
+                document.getElementById('trackingSection').classList.remove('hidden');
+            }
+        }
+
+        function updateStepIndicators(activeStep) {
+            for (let i = 1; i <= 4; i++) {
+                const indicator = document.getElementById(`step${i}-indicator`);
+                indicator.classList.remove('step-active', 'step-completed');
+                
+                if (i < activeStep) {
+                    indicator.classList.add('step-completed');
+                } else if (i === activeStep) {
+                    indicator.classList.add('step-active');
+                } else {
+                    indicator.classList.add('bg-white/30', 'text-white/60');
+                }
+            }
+        }
+
+        function generateSummary() {
+            const summary = document.getElementById('applicationSummary');
+            const roleText = document.getElementById('jobRole').selectedOptions[0]?.text || 'Not specified';
+            
+            summary.innerHTML = `
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-2">Personal Information</h4>
+                    <p><strong>Name:</strong> ${applicationData.firstName}</p>
+                    <p><strong>Email:</strong> ${applicationData.email}</p>
+                    <p><strong>Phone:</strong> ${applicationData.phoneNumber}</p>
+                    <p><strong>Country:</strong> ${applicationData.country}</p>
+                    <p><strong>Date of Birth:</strong> ${applicationData.dob}</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-2">Application Details</h4>
+                    <p><strong>Application Number:</strong> ${applicationData.applicationNumber}</p>
+                    <p><strong>Badge Number:</strong> ${applicationData.badgeNumber}</p>
+                    <p><strong>Position:</strong> ${roleText}</p>
+                    <p><strong>Total Experience:</strong> ${applicationData.totalExperience} years</p>
+                    <p><strong>Relevant Experience:</strong> ${applicationData.relevantExperience} years</p>
+                    <p><strong>Education:</strong> ${applicationData.highestDegree}</p>
+                    <p><strong>Salary Expectation:</strong> $${applicationData.salaryExpectation}</p>
+                    <p><strong>Availability:</strong> ${applicationData.availability}</p>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <p class="text-blue-800 text-sm">You can edit your salary expectation before final submission:</p>
+                    <div class="mt-2 flex items-center space-x-2">
+                        <span class="text-gray-700">$</span>
+                        <input type="number" id="finalSalaryEdit" value="${applicationData.salaryExpectation}" min="500" max="15000" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <button onclick="updateFinalSalary()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-300">Update</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateFinalSalary() {
+            const newSalary = document.getElementById('finalSalaryEdit').value;
+            applicationData.salaryExpectation = newSalary;
+            generateSummary();
+        }
+
+        // Admin Functions
+        let isAdminLoggedIn = false;
+        let allApplications = [];
+
+        function showAdminLogin() {
+            document.getElementById('adminLoginModal').classList.remove('hidden');
+        }
+
+        function closeAdminLogin() {
+            document.getElementById('adminLoginModal').classList.add('hidden');
+            document.getElementById('adminLoginError').classList.add('hidden');
+            document.getElementById('adminLoginForm').reset();
+        }
+
+        function closeAdminDashboard() {
+            document.getElementById('adminDashboard').classList.add('hidden');
+            isAdminLoggedIn = false;
+        }
+
+        function closeApplicationDetail() {
+            document.getElementById('applicationDetailModal').classList.add('hidden');
+        }
+
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            // Simple admin credentials (in production, use proper authentication)
+            if (username === 'admin' && password === 'oriontec2024') {
+                isAdminLoggedIn = true;
+                closeAdminLogin();
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                loadAllApplications();
+            } else {
+                document.getElementById('adminLoginError').classList.remove('hidden');
+            }
+        });
+
+        function loadAllApplications() {
+            const applicationsList = document.getElementById('applicationsList');
+            applicationsList.innerHTML = '<p class="text-gray-500 text-center">Loading applications...</p>';
+            
+            allApplications = [];
+            
+            if (db) {
+                // Load from Firebase
+                db.collection('applications').get()
+                    .then(querySnapshot => {
+                        querySnapshot.forEach(doc => {
+                            allApplications.push({ id: doc.id, ...doc.data() });
+                        });
+                        displayApplications(allApplications);
+                    })
+                    .catch(error => {
+                        console.error('Firebase error:', error);
+                        loadFromLocalStorage();
+                    });
+            } else {
+                loadFromLocalStorage();
+            }
+        }
+
+        function loadFromLocalStorage() {
+            // Load from localStorage
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('application_')) {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        allApplications.push(data);
+                    } catch (error) {
+                        console.error('Error parsing application data:', error);
+                    }
+                }
+            }
+            displayApplications(allApplications);
+        }
+
+        function displayApplications(applications) {
+            const applicationsList = document.getElementById('applicationsList');
+            
+            if (applications.length === 0) {
+                applicationsList.innerHTML = '<p class="text-gray-500 text-center">No applications found.</p>';
+                return;
+            }
+
+            applicationsList.innerHTML = applications.map(app => `
+                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-300">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-800">${app.firstName || 'N/A'}</h4>
+                            <p class="text-sm text-gray-600">Application: ${app.applicationNumber}</p>
+                            <p class="text-sm text-gray-600">Position: ${app.jobRole ? document.querySelector(`option[value="${app.jobRole}"]`)?.text || app.jobRole : 'N/A'}</p>
+                            <p class="text-sm text-gray-600">Experience: ${app.totalExperience || 'N/A'} years</p>
+                            <p class="text-sm text-gray-600">Salary: $${app.salaryExpectation || 'N/A'}</p>
+                            <p class="text-sm text-gray-600">Submitted: ${app.submissionDate ? new Date(app.submissionDate).toLocaleDateString() : new Date(app.timestamp).toLocaleDateString()}</p>
+                        </div>
+                        <div class="flex flex-col items-end space-y-2">
+                            <span class="px-2 py-1 text-xs rounded-full ${getStatusColor(app.status)}">${app.status}</span>
+                            <div class="flex space-x-2">
+                                <button onclick="viewApplicationDetail('${app.applicationNumber}')" class="text-blue-600 hover:text-blue-800 text-sm">View</button>
+                                <select onchange="updateApplicationStatus('${app.applicationNumber}', this.value)" class="text-xs border border-gray-300 rounded px-2 py-1">
+                                    <option value="">Update Status</option>
+                                    <option value="In Progress" ${app.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                    <option value="Submitted" ${app.status === 'Submitted' ? 'selected' : ''}>Submitted</option>
+                                    <option value="Under Review" ${app.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
+                                    <option value="Interview Scheduled" ${app.status === 'Interview Scheduled' ? 'selected' : ''}>Interview Scheduled</option>
+                                    <option value="Accepted" ${app.status === 'Accepted' ? 'selected' : ''}>Accepted</option>
+                                    <option value="Rejected" ${app.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'In Progress': 'bg-yellow-100 text-yellow-800',
+                'Submitted': 'bg-blue-100 text-blue-800',
+                'Under Review': 'bg-purple-100 text-purple-800',
+                'Interview Scheduled': 'bg-orange-100 text-orange-800',
+                'Accepted': 'bg-green-100 text-green-800',
+                'Rejected': 'bg-red-100 text-red-800'
+            };
+            return colors[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        function filterApplications() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const roleFilter = document.getElementById('roleFilter').value;
+            
+            let filtered = allApplications;
+            
+            if (statusFilter) {
+                filtered = filtered.filter(app => app.status === statusFilter);
+            }
+            
+            if (roleFilter) {
+                filtered = filtered.filter(app => app.jobRole === roleFilter);
+            }
+            
+            displayApplications(filtered);
+        }
+
+        function updateApplicationStatus(applicationNumber, newStatus) {
+            if (!newStatus) return;
+            
+            // Update in memory
+            const appIndex = allApplications.findIndex(app => app.applicationNumber === applicationNumber);
+            if (appIndex !== -1) {
+                allApplications[appIndex].status = newStatus;
+                allApplications[appIndex].lastUpdated = new Date().toISOString();
+                
+                // Update in Firebase/localStorage
+                if (db) {
+                    db.collection('applications').doc(applicationNumber).update({
+                        status: newStatus,
+                        lastUpdated: new Date().toISOString()
+                    }).then(() => {
+                        console.log('Status updated in Firebase');
+                        loadAllApplications();
+                    }).catch(error => {
+                        console.error('Firebase update error:', error);
+                        updateLocalStorage(applicationNumber, allApplications[appIndex]);
+                    });
+                } else {
+                    updateLocalStorage(applicationNumber, allApplications[appIndex]);
+                }
+            }
+        }
+
+        function updateLocalStorage(applicationNumber, data) {
+            localStorage.setItem(`application_${applicationNumber}`, JSON.stringify(data));
+            loadAllApplications();
+        }
+
+        function viewApplicationDetail(applicationNumber) {
+            const app = allApplications.find(a => a.applicationNumber === applicationNumber);
+            if (!app) return;
+            
+            const detailContent = document.getElementById('applicationDetailContent');
+            const roleText = app.jobRole ? (document.querySelector(`option[value="${app.jobRole}"]`)?.text || app.jobRole) : 'N/A';
+            
+            detailContent.innerHTML = `
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-800 mb-3">Personal Information</h4>
+                            <p><strong>Name:</strong> ${app.firstName || 'N/A'}</p>
+                            <p><strong>Email:</strong> ${app.email || 'N/A'}</p>
+                            <p><strong>Phone:</strong> ${app.phoneNumber || 'N/A'}</p>
+                            <p><strong>Country:</strong> ${app.country || 'N/A'}</p>
+                            <p><strong>Date of Birth:</strong> ${app.dob || 'N/A'}</p>
+                            <p><strong>LinkedIn:</strong> ${app.linkedinProfile ? `<a href="${app.linkedinProfile}" target="_blank" class="text-blue-600">View Profile</a>` : 'N/A'}</p>
+                            <p><strong>Portfolio:</strong> ${app.portfolio ? `<a href="${app.portfolio}" target="_blank" class="text-blue-600">View Portfolio</a>` : 'N/A'}</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-800 mb-3">Application Details</h4>
+                            <p><strong>Application Number:</strong> ${app.applicationNumber}</p>
+                            <p><strong>Badge Number:</strong> ${app.badgeNumber}</p>
+                            <p><strong>Position:</strong> ${roleText}</p>
+                            <p><strong>Status:</strong> <span class="px-2 py-1 text-xs rounded-full ${getStatusColor(app.status)}">${app.status}</span></p>
+                            <p><strong>Submitted:</strong> ${app.submissionDate ? new Date(app.submissionDate).toLocaleDateString() : new Date(app.timestamp).toLocaleDateString()}</p>
+                            <p><strong>Availability:</strong> ${app.availability || 'N/A'}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-800 mb-3">Professional Experience</h4>
+                        <p><strong>Total Experience:</strong> ${app.totalExperience || 'N/A'} years</p>
+                        <p><strong>Relevant Experience:</strong> ${app.relevantExperience || 'N/A'} years</p>
+                        <p><strong>Previous Job Title:</strong> ${app.previousJobTitle || 'N/A'}</p>
+                        <p><strong>Previous Company:</strong> ${app.previousCompany || 'N/A'}</p>
+                        <p><strong>Salary Expectation:</strong> $${app.salaryExpectation || 'N/A'}</p>
+                        ${app.achievements ? `<p><strong>Achievements:</strong> ${app.achievements}</p>` : ''}
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-800 mb-3">Education & Skills</h4>
+                        <p><strong>Highest Degree:</strong> ${app.highestDegree || 'N/A'}</p>
+                        <p><strong>Field of Study:</strong> ${app.fieldOfStudy || 'N/A'}</p>
+                        <p><strong>University:</strong> ${app.university || 'N/A'}</p>
+                        <p><strong>Graduation Year:</strong> ${app.graduationYear || 'N/A'}</p>
+                        <p><strong>Programming Languages:</strong> ${app.programmingLanguages || 'N/A'}</p>
+                        <p><strong>Tools & Software:</strong> ${app.toolsSoftware || 'N/A'}</p>
+                        ${app.skills && app.skills.skills ? `<p><strong>Skills:</strong> ${app.skills.skills.join(', ')}</p>` : ''}
+                        ${app.skills && app.skills.skillLevel ? `<p><strong>Skill Level:</strong> ${app.skills.skillLevel}/10</p>` : ''}
+                    </div>
+                    
+                    ${app.whyOriontec ? `
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-800 mb-3">Why Oriontec?</h4>
+                        <p class="text-gray-700">${app.whyOriontec}</p>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            document.getElementById('applicationDetailModal').classList.remove('hidden');
+        }
+
+        function toggleH1BDetails(show) {
+            const h1bDetails = document.getElementById('h1bDetails');
+            if (show) {
+                h1bDetails.classList.remove('hidden');
+                document.getElementById('h1bPlanDetails').required = true;
+            } else {
+                h1bDetails.classList.add('hidden');
+                document.getElementById('h1bPlanDetails').required = false;
+                document.getElementById('h1bPlanDetails').value = '';
+            }
+        }
+
+        async function submitFinalApplication() {
+            // Final validation for verification agreement
+            const agreeToVerification = document.getElementById('agreeToVerification');
+            if (!agreeToVerification.checked) {
+                alert('Please agree to the verification procedures before submitting your application.');
+                agreeToVerification.focus();
+                return;
+            }
+
+            // Show loading state
+            const submitButton = document.querySelector('button[onclick="submitFinalApplication()"]');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = '📧 Sending Email & Submitting...';
+            submitButton.disabled = true;
+
+            applicationData.status = 'Submitted';
+            applicationData.submissionDate = new Date().toISOString();
+            applicationData.agreeToVerification = true;
+
+            // Save final application
+            saveApplicationData();
+
+            // Generate PDF
+            generatePDF();
+
+            // Send final confirmation email with await to ensure it's sent
+            console.log('📧 Attempting to send final confirmation email...');
+            await sendFinalConfirmationEmail();
+
+            // Restore button state
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+
+            // Show success modal
+            document.getElementById('successModal').classList.remove('hidden');
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            let yPosition = 30;
+
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(102, 126, 234);
+            doc.text('ORIONTEC', 20, yPosition);
+            yPosition += 15;
+            doc.setFontSize(16);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Official Job Application Document', 20, yPosition);
+            yPosition += 20;
+
+            // Application Header Info
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Application Number: ${applicationData.applicationNumber}`, 20, yPosition);
+            doc.text(`Badge Number: ${applicationData.badgeNumber}`, 120, yPosition);
+            yPosition += 10;
+            doc.text(`Application Date: ${new Date().toLocaleDateString()}`, 20, yPosition);
+            doc.text(`Status: ${applicationData.status}`, 120, yPosition);
+            yPosition += 20;
+
+            // Personal Information
+            doc.setFontSize(14);
+            doc.setTextColor(102, 126, 234);
+            doc.text('PERSONAL INFORMATION', 20, yPosition);
+            yPosition += 10;
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Name: ${applicationData.firstName}`, 20, yPosition);
+            yPosition += 7;
+            doc.text(`Email: ${applicationData.email}`, 20, yPosition);
+            yPosition += 7;
+            doc.text(`Phone: ${applicationData.phoneNumber || 'N/A'}`, 20, yPosition);
+            yPosition += 7;
+            doc.text(`Country: ${applicationData.country || 'N/A'}`, 20, yPosition);
+            yPosition += 7;
+            doc.text(`Date of Birth: ${applicationData.dob}`, 20, yPosition);
+            yPosition += 15;
+
+            // Professional Information
+            doc.setFontSize(14);
+            doc.setTextColor(102, 126, 234);
+            doc.text('PROFESSIONAL INFORMATION', 20, yPosition);
+            yPosition += 10;
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            const roleText = applicationData.jobRole ? (document.querySelector(`option[value="${applicationData.jobRole}"]`)?.text || applicationData.jobRole) : 'N/A';
+            doc.text(`Position Applied: ${roleText}`, 20, yPosition);
+            yPosition += 7;
+            doc.text(`Total Experience: ${applicationData.totalExperience || 'N/A'} years`, 20, yPosition);
+            yPosition += 7;
+            doc.text(`Relevant Experience: ${applicationData.relevantExperience || 'N/A'} years`, 20, yPosition);
+            yPosition += 7;
+            doc.text(`Previous Job Title: ${applicationData.previousJobTitle || 'N/A'}`, 20, yPosition);
+            yPosition += 7;
+            doc.text(`Previous Company: ${applicationData.previousCompany || 'N/A'}`, 20, yPosition);
+            yPosition += 7;
+            doc.text(`Salary Expectation: $${applicationData.salaryExpectation || 'N/A'}`, 20, yPosition);
+            yPosition += 7;
+            doc.text(`Availability: ${applicationData.availability || 'N/A'}`, 20, yPosition);
+            yPosition += 15;
+
+            // Education
+            doc.setFontSize(14);
+            doc.setTextColor(102, 126, 234);
+            doc.text('EDUCATION', 20, yPosition);
+            yPosition += 10;
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Highest Degree: ${applicationData.highestDegree || 'N/A'}`, 20, yPosition);
+            yPosition += 7;
+            doc.text(`Field of Study: ${applicationData.fieldOfStudy || 'N/A'}`, 20, yPosition);
+            yPosition += 7;
+            doc.text(`University: ${applicationData.university || 'N/A'}`, 20, yPosition);
+            yPosition += 7;
+            doc.text(`Graduation Year: ${applicationData.graduationYear || 'N/A'}`, 20, yPosition);
+            yPosition += 15;
+
+            // Technical Skills
+            if (applicationData.programmingLanguages || applicationData.toolsSoftware) {
+                doc.setFontSize(14);
+                doc.setTextColor(102, 126, 234);
+                doc.text('TECHNICAL SKILLS', 20, yPosition);
+                yPosition += 10;
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+                if (applicationData.programmingLanguages) {
+                    doc.text(`Programming Languages: ${applicationData.programmingLanguages}`, 20, yPosition);
+                    yPosition += 7;
+                }
+                if (applicationData.toolsSoftware) {
+                    doc.text(`Tools & Software: ${applicationData.toolsSoftware}`, 20, yPosition);
+                    yPosition += 7;
+                }
+                if (applicationData.skills && applicationData.skills.skills && applicationData.skills.skills.length > 0) {
+                    doc.text(`Skills: ${applicationData.skills.skills.join(', ')}`, 20, yPosition);
+                    yPosition += 7;
+                    doc.text(`Skill Level: ${applicationData.skills.skillLevel}/10`, 20, yPosition);
+                    yPosition += 7;
+                }
+                yPosition += 8;
+            }
+
+            // Check if we need a new page
+            if (yPosition > 250) {
+                doc.addPage();
+                yPosition = 30;
+            }
+
+            // Additional Information
+            if (applicationData.achievements || applicationData.whyOriontec) {
+                doc.setFontSize(14);
+                doc.setTextColor(102, 126, 234);
+                doc.text('ADDITIONAL INFORMATION', 20, yPosition);
+                yPosition += 10;
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+                
+                if (applicationData.achievements) {
+                    doc.text('Key Achievements:', 20, yPosition);
+                    yPosition += 7;
+                    const achievementLines = doc.splitTextToSize(applicationData.achievements, 170);
+                    doc.text(achievementLines, 20, yPosition);
+                    yPosition += achievementLines.length * 5 + 5;
+                }
+                
+                if (applicationData.whyOriontec) {
+                    doc.text('Why Oriontec:', 20, yPosition);
+                    yPosition += 7;
+                    const whyLines = doc.splitTextToSize(applicationData.whyOriontec, 170);
+                    doc.text(whyLines, 20, yPosition);
+                    yPosition += whyLines.length * 5 + 5;
+                }
+            }
+
+            // Footer
+            doc.setFontSize(8);
+            doc.setTextColor(128, 128, 128);
+            doc.text('This is an official document generated by Oriontec Career Portal', 20, 280);
+            doc.text(`Generated on: ${new Date().toLocaleString()}`, 20, 285);
+
+            // Save PDF
+            doc.save(`Oriontec_Application_${applicationData.applicationNumber}.pdf`);
+        }
+
+        function saveApplicationData() {
+            if (db) {
+                // Save to Firebase
+                db.collection('applications').doc(applicationData.applicationNumber).set(applicationData)
+                    .then(() => console.log('Application saved to Firebase'))
+                    .catch(error => console.error('Firebase error:', error));
+            } else {
+                // Save to localStorage as fallback
+                localStorage.setItem(`application_${applicationData.applicationNumber}`, JSON.stringify(applicationData));
+            }
+        }
+
+        function trackApplication() {
+            const trackingNumber = document.getElementById('trackingNumber').value.trim();
+            const resultDiv = document.getElementById('trackingResult');
+
+            if (!trackingNumber) {
+                resultDiv.innerHTML = '<div class="bg-red-50 border-l-4 border-red-400 p-4"><p class="text-red-800">Please enter an application number.</p></div>';
+                return;
+            }
+
+            // Try to retrieve from Firebase or localStorage
+            let applicationInfo = null;
+            
+            if (db) {
+                db.collection('applications').doc(trackingNumber).get()
+                    .then(doc => {
+                        if (doc.exists) {
+                            displayTrackingResult(doc.data());
+                        } else {
+                            showTrackingNotFound();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Firebase error:', error);
+                        checkLocalStorage();
+                    });
+            } else {
+                checkLocalStorage();
+            }
+
+            function checkLocalStorage() {
+                const stored = localStorage.getItem(`application_${trackingNumber}`);
+                if (stored) {
+                    displayTrackingResult(JSON.parse(stored));
+                } else {
+                    showTrackingNotFound();
+                }
+            }
+
+            function displayTrackingResult(data) {
+                const statusColor = data.status === 'Submitted' ? 'green' : 'blue';
+                resultDiv.innerHTML = `
+                    <div class="bg-${statusColor}-50 border-l-4 border-${statusColor}-400 p-4">
+                        <h4 class="font-semibold text-${statusColor}-800 mb-2">Application Found</h4>
+                        <p class="text-${statusColor}-700"><strong>Name:</strong> ${data.firstName}</p>
+                        <p class="text-${statusColor}-700"><strong>Status:</strong> ${data.status}</p>
+                        <p class="text-${statusColor}-700"><strong>Badge Number:</strong> ${data.badgeNumber}</p>
+                        ${data.submissionDate ? `<p class="text-${statusColor}-700"><strong>Submitted:</strong> ${new Date(data.submissionDate).toLocaleDateString()}</p>` : ''}
+                    </div>
+                `;
+            }
+
+            function showTrackingNotFound() {
+                resultDiv.innerHTML = '<div class="bg-red-50 border-l-4 border-red-400 p-4"><p class="text-red-800">Application not found. Please check your application number.</p></div>';
+            }
+        }
+
+        // Reliable email sending with retry mechanism
+        async function sendEmailWithRetry(serviceId, templateId, templateParams, maxRetries = 3) {
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    console.log(`Email attempt ${attempt} to ${templateParams.to_email}`);
+                    const response = await emailjs.send(serviceId, templateId, templateParams);
+                    console.log(`✅ Email sent successfully on attempt ${attempt}:`, response);
+                    return { success: true, response };
+                } catch (error) {
+                    console.error(`❌ Email attempt ${attempt} failed:`, error);
+                    
+                    if (attempt === maxRetries) {
+                        console.error('🚨 All email attempts failed. Final error:', error);
+                        // Show user notification about email failure
+                        showEmailFailureNotification(templateParams.to_email);
+                        return { success: false, error };
+                    }
+                    
+                    // Wait before retry (exponential backoff)
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                }
+            }
+        }
+
+        function showEmailFailureNotification(email) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <div>
+                        <p class="font-semibold">Email Delivery Issue</p>
+                        <p class="text-sm">Failed to send email to ${email}. Please check your email address.</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            // Remove notification after 10 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 10000);
+        }
+
+        async function sendConfirmationEmail() {
+            console.log('🚀 Starting confirmation email process...');
+            
+            const templateParams = {
+                to_email: applicationData.email,
+                to_name: applicationData.firstName,
+                application_number: applicationData.applicationNumber,
+                badge_number: applicationData.badgeNumber,
+                from_name: 'Oriontec Career Portal',
+                reply_to: 'noreply@oriontec.com'
+            };
+
+            console.log('📧 Sending confirmation email with params:', templateParams);
+            
+            const result = await sendEmailWithRetry('service_vdu9nwo', 'template_nx0bm5n', templateParams);
+            
+            if (result.success) {
+                console.log('✅ Confirmation email delivered successfully!');
+                showEmailSuccessNotification('Confirmation email sent successfully!');
+            } else {
+                console.error('❌ Confirmation email failed after all retries');
+            }
+            
+            return result;
+        }
+
+        async function sendFinalConfirmationEmail() {
+            console.log('🚀 Starting final confirmation email process...');
+            
+            const templateParams = {
+                to_email: applicationData.email,
+                to_name: applicationData.firstName,
+                application_number: applicationData.applicationNumber,
+                status: 'Submitted',
+                from_name: 'Oriontec Career Portal',
+                reply_to: 'noreply@oriontec.com'
+            };
+
+            console.log('📧 Sending final confirmation email with params:', templateParams);
+            
+            const result = await sendEmailWithRetry('service_vdu9nwo', 'template_nx0bm5n', templateParams);
+            
+            if (result.success) {
+                console.log('✅ Final confirmation email delivered successfully!');
+                showEmailSuccessNotification('Application submitted! Confirmation email sent.');
+            } else {
+                console.error('❌ Final confirmation email failed after all retries');
+            }
+            
+            return result;
+        }
+
+        async function sendOTP() {
+            console.log('🚀 Starting OTP email process...');
+            
+            const otp = Math.floor(100000 + Math.random() * 900000);
+            const templateParams = {
+                to_email: applicationData.email,
+                to_name: applicationData.firstName,
+                otp_code: otp,
+                from_name: 'Oriontec Career Portal',
+                reply_to: 'noreply@oriontec.com'
+            };
+
+            console.log('📧 Sending OTP email with params:', templateParams);
+            
+            const result = await sendEmailWithRetry('service_vdu9nwo', 'template_ylm5krv', templateParams);
+            
+            if (result.success) {
+                console.log('✅ OTP email delivered successfully!');
+                showEmailSuccessNotification('OTP sent to your email!');
+            } else {
+                console.error('❌ OTP email failed after all retries');
+            }
+            
+            return { otp, emailResult: result };
+        }
+
+        function showEmailSuccessNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <p class="font-semibold">${message}</p>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            // Remove notification after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 5000);
+        }
+
+        function closeModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Oriontec Job Application System Initialized');
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96de8d01573a3aec',t:'MTc1NDk4Njc5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
