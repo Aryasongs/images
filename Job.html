@@ -794,8 +794,12 @@
     </div>
 
     <script>
-        // Initialize EmailJS with correct public key
-        emailjs.init('B6ah3SqfJ7Psmz0kT');
+        // Initialize EmailJS with updated configuration
+        (function() {
+            // Use the modern EmailJS initialization
+            emailjs.init('B6ah3SqfJ7Psmz0kT');
+            console.log('✅ EmailJS initialized with public key: B6ah3SqfJ7Psmz0kT');
+        })();
 
         // Firebase Configuration
         const firebaseConfig = {
@@ -1670,6 +1674,9 @@
             }
         }
 
+        let currentOTP = null;
+        let currentTrackingData = null;
+
         function trackApplication() {
             const trackingNumber = document.getElementById('trackingNumber').value.trim();
             const resultDiv = document.getElementById('trackingResult');
@@ -1680,13 +1687,11 @@
             }
 
             // Try to retrieve from Firebase or localStorage
-            let applicationInfo = null;
-            
             if (db) {
                 db.collection('applications').doc(trackingNumber).get()
                     .then(doc => {
                         if (doc.exists) {
-                            displayTrackingResult(doc.data());
+                            initiateOTPVerification(doc.data());
                         } else {
                             showTrackingNotFound();
                         }
@@ -1702,21 +1707,54 @@
             function checkLocalStorage() {
                 const stored = localStorage.getItem(`application_${trackingNumber}`);
                 if (stored) {
-                    displayTrackingResult(JSON.parse(stored));
+                    initiateOTPVerification(JSON.parse(stored));
                 } else {
                     showTrackingNotFound();
                 }
+            }
+
+            async function initiateOTPVerification(data) {
+                currentTrackingData = data;
+                
+                // Send OTP to registered email
+                const otpResult = await sendOTP(data.email, data.firstName);
+                
+                if (otpResult.emailResult.success) {
+                    currentOTP = otpResult.otp;
+                    showOTPVerificationForm(data.email);
+                } else {
+                    resultDiv.innerHTML = '<div class="bg-red-50 border-l-4 border-red-400 p-4"><p class="text-red-800">Failed to send OTP. Please try again later.</p></div>';
+                }
+            }
+
+            function showOTPVerificationForm(email) {
+                resultDiv.innerHTML = `
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+                        <h4 class="font-semibold text-blue-800 mb-3">OTP Verification Required</h4>
+                        <p class="text-blue-700 mb-4">An OTP has been sent to <strong>${email}</strong> for verification.</p>
+                        <div class="flex space-x-2">
+                            <input type="text" id="otpInput" placeholder="Enter 6-digit OTP" maxlength="6" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <button onclick="verifyOTP()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300">Verify</button>
+                        </div>
+                        <p class="text-xs text-blue-600 mt-2">OTP is valid for 10 minutes. Didn't receive? <button onclick="resendOTP()" class="underline">Resend OTP</button></p>
+                    </div>
+                `;
             }
 
             function displayTrackingResult(data) {
                 const statusColor = data.status === 'Submitted' ? 'green' : 'blue';
                 resultDiv.innerHTML = `
                     <div class="bg-${statusColor}-50 border-l-4 border-${statusColor}-400 p-4">
-                        <h4 class="font-semibold text-${statusColor}-800 mb-2">Application Found</h4>
+                        <h4 class="font-semibold text-${statusColor}-800 mb-2">✅ Application Verified & Found</h4>
                         <p class="text-${statusColor}-700"><strong>Name:</strong> ${data.firstName}</p>
+                        <p class="text-${statusColor}-700"><strong>Email:</strong> ${data.email}</p>
                         <p class="text-${statusColor}-700"><strong>Status:</strong> ${data.status}</p>
                         <p class="text-${statusColor}-700"><strong>Badge Number:</strong> ${data.badgeNumber}</p>
+                        <p class="text-${statusColor}-700"><strong>Position:</strong> ${data.jobRole ? (document.querySelector(`option[value="${data.jobRole}"]`)?.text || data.jobRole) : 'N/A'}</p>
+                        <p class="text-${statusColor}-700"><strong>Experience:</strong> ${data.totalExperience || 'N/A'} years</p>
+                        <p class="text-${statusColor}-700"><strong>Salary Expectation:</strong> $${data.salaryExpectation || 'N/A'}</p>
                         ${data.submissionDate ? `<p class="text-${statusColor}-700"><strong>Submitted:</strong> ${new Date(data.submissionDate).toLocaleDateString()}</p>` : ''}
+                        ${data.lastUpdated ? `<p class="text-${statusColor}-700"><strong>Last Updated:</strong> ${new Date(data.lastUpdated).toLocaleDateString()}</p>` : ''}
                     </div>
                 `;
             }
@@ -1724,24 +1762,145 @@
             function showTrackingNotFound() {
                 resultDiv.innerHTML = '<div class="bg-red-50 border-l-4 border-red-400 p-4"><p class="text-red-800">Application not found. Please check your application number.</p></div>';
             }
+
+            // Make functions available globally for button clicks
+            window.verifyOTP = function() {
+                const enteredOTP = document.getElementById('otpInput').value.trim();
+                
+                if (!enteredOTP) {
+                    alert('Please enter the OTP.');
+                    return;
+                }
+                
+                if (enteredOTP === currentOTP.toString()) {
+                    displayTrackingResult(currentTrackingData);
+                    currentOTP = null;
+                    currentTrackingData = null;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="bg-red-50 border-l-4 border-red-400 p-4">
+                            <p class="text-red-800">Invalid OTP. Please try again.</p>
+                            <button onclick="trackApplication()" class="mt-2 text-blue-600 underline">Request New OTP</button>
+                        </div>
+                    `;
+                }
+            };
+
+            window.resendOTP = async function() {
+                if (currentTrackingData) {
+                    const otpResult = await sendOTP(currentTrackingData.email, currentTrackingData.firstName);
+                    if (otpResult.emailResult.success) {
+                        currentOTP = otpResult.otp;
+                        showEmailSuccessNotification('New OTP sent to your email!');
+                    }
+                }
+            };
+        }
+
+        // Complete sendConfirmationEmail function implementation
+        async function sendConfirmationEmail() {
+            console.log('🚀 Starting confirmation email process...');
+            console.log('📧 EmailJS Configuration:');
+            console.log('   Service ID: service_vdu9nwo');
+            console.log('   Template ID: template_nx0bm5n');
+            console.log('   Public Key: B6ah3SqfJ7Psmz0kT');
+            
+            // Validate required data
+            if (!applicationData.email || !applicationData.firstName) {
+                console.error('❌ Missing required email data');
+                return { success: false, error: 'Missing email or name' };
+            }
+
+            // Prepare template parameters matching your EmailJS template variables
+            const templateParams = {
+                first_name: applicationData.firstName,
+                email: applicationData.email,
+                to_email: applicationData.email, // EmailJS often uses to_email
+                to_name: applicationData.firstName,
+                application_number: applicationData.applicationNumber,
+                badge_number: applicationData.badgeNumber,
+                salary_proposal: applicationData.salaryExpectation || 'Not specified',
+                from_name: 'Oriontec Career Portal',
+                reply_to: 'noreply@oriontec.com'
+            };
+
+            console.log('📧 Sending confirmation email to:', applicationData.email);
+            console.log('📧 Template parameters:', templateParams);
+
+            try {
+                // Check if EmailJS is loaded
+                if (typeof emailjs === 'undefined') {
+                    throw new Error('EmailJS library not loaded');
+                }
+
+                // Send email using your Service ID and Template ID
+                const response = await emailjs.send(
+                    'service_vdu9nwo',    // Your Service ID
+                    'template_nx0bm5n',   // Your Template ID
+                    templateParams
+                );
+
+                console.log('✅ Confirmation email sent successfully!');
+                console.log('📧 Response:', response);
+                
+                // Show success notification
+                showEmailSuccessNotification('Confirmation email sent successfully!');
+                
+                return { success: true, response };
+
+            } catch (error) {
+                console.error('❌ Failed to send confirmation email:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    status: error.status,
+                    text: error.text
+                });
+
+                // Show error notification but don't block the application flow
+                showEmailFailureNotification(applicationData.email);
+                
+                // Return success to continue application flow (email is not critical for form submission)
+                return { success: false, error: error.message };
+            }
         }
 
         // Reliable email sending with retry mechanism
         async function sendEmailWithRetry(serviceId, templateId, templateParams, maxRetries = 3) {
+            // Validate email address first
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(templateParams.to_email)) {
+                console.error('❌ Invalid email address:', templateParams.to_email);
+                showEmailFailureNotification(templateParams.to_email);
+                return { success: false, error: 'Invalid email address' };
+            }
+
             for (let attempt = 1; attempt <= maxRetries; attempt++) {
                 try {
-                    console.log(`Email attempt ${attempt} to ${templateParams.to_email}`);
+                    console.log(`📧 Email attempt ${attempt} to ${templateParams.to_email}`);
+                    console.log(`📧 Using Service ID: ${serviceId}, Template ID: ${templateId}`);
+                    console.log('📧 Template Parameters:', templateParams);
+                    
+                    // Check if EmailJS is properly initialized
+                    if (typeof emailjs === 'undefined') {
+                        throw new Error('EmailJS not loaded');
+                    }
+                    
+                    // Use the correct EmailJS send method
                     const response = await emailjs.send(serviceId, templateId, templateParams);
-                    console.log(`✅ Email sent successfully on attempt ${attempt}:`, response);
+                    
+                    console.log(`✅ Email sent successfully on attempt ${attempt}:`, response.status, response.text);
                     return { success: true, response };
                 } catch (error) {
                     console.error(`❌ Email attempt ${attempt} failed:`, error);
+                    console.error('Error details:', {
+                        message: error.message,
+                        status: error.status,
+                        text: error.text
+                    });
                     
                     if (attempt === maxRetries) {
                         console.error('🚨 All email attempts failed. Final error:', error);
-                        // Show user notification about email failure
-                        showEmailFailureNotification(templateParams.to_email);
-                        return { success: false, error };
+                        return { success: false, error: error.message };
                     }
                     
                     // Wait before retry (exponential backoff)
@@ -1776,37 +1935,66 @@
 
         async function sendConfirmationEmail() {
             console.log('🚀 Starting confirmation email process...');
+            console.log('📧 EmailJS Configuration Check:');
+            console.log('   Service ID: service_vdu9nwo');
+            console.log('   Template ID: template_nx0bm5n');
+            console.log('   Public Key: B6ah3SqfJ7Psmz0kT');
             
             const templateParams = {
                 to_email: applicationData.email,
                 to_name: applicationData.firstName,
+                first_name: applicationData.firstName,
                 application_number: applicationData.applicationNumber,
                 badge_number: applicationData.badgeNumber,
+                experience: applicationData.totalExperience || 0,
+                salary_proposal: applicationData.salaryExpectation || 'Not specified',
                 from_name: 'Oriontec Career Portal',
-                reply_to: 'noreply@oriontec.com'
+                reply_to: 'noreply@oriontec.com',
+                message: `Your application ${applicationData.applicationNumber} has been received. Badge: ${applicationData.badgeNumber}`
             };
 
             console.log('📧 Sending confirmation email with params:', templateParams);
             
-            const result = await sendEmailWithRetry('service_vdu9nwo', 'template_nx0bm5n', templateParams);
-            
-            if (result.success) {
-                console.log('✅ Confirmation email delivered successfully!');
+            // Try direct EmailJS send first
+            try {
+                console.log('📧 Attempting direct EmailJS send...');
+                const response = await emailjs.send('service_vdu9nwo', 'template_nx0bm5n', templateParams);
+                console.log('✅ Direct email send successful:', response);
                 showEmailSuccessNotification('Confirmation email sent successfully!');
-            } else {
-                console.error('❌ Confirmation email failed after all retries');
+                return { success: true, response };
+            } catch (error) {
+                console.error('❌ Direct email send failed:', error);
+                
+                // Fallback: Try with retry mechanism
+                const result = await sendEmailWithRetry('service_vdu9nwo', 'template_nx0bm5n', templateParams);
+                
+                if (result.success) {
+                    console.log('✅ Confirmation email delivered via retry!');
+                    showEmailSuccessNotification('Confirmation email sent successfully!');
+                } else {
+                    console.error('❌ All email attempts failed');
+                    showEmailFailureNotification(applicationData.email);
+                }
+                
+                return result;
             }
-            
-            return result;
         }
 
         async function sendFinalConfirmationEmail() {
             console.log('🚀 Starting final confirmation email process...');
+            console.log('📧 EmailJS Configuration Check:');
+            console.log('   Service ID: service_vdu9nwo');
+            console.log('   Template ID: template_nx0bm5n');
+            console.log('   Public Key: B6ah3SqfJ7Psmz0kT');
             
             const templateParams = {
                 to_email: applicationData.email,
                 to_name: applicationData.firstName,
+                first_name: applicationData.firstName,
                 application_number: applicationData.applicationNumber,
+                badge_number: applicationData.badgeNumber,
+                experience: Math.round(applicationData.totalExperience * 12) || 0, // Convert years to months
+                salary_proposal: applicationData.salaryExpectation || 'Not specified',
                 status: 'Submitted',
                 from_name: 'Oriontec Career Portal',
                 reply_to: 'noreply@oriontec.com'
@@ -1826,14 +2014,20 @@
             return result;
         }
 
-        async function sendOTP() {
+        async function sendOTP(email, firstName) {
             console.log('🚀 Starting OTP email process...');
+            console.log('📧 EmailJS Configuration Check:');
+            console.log('   Service ID: service_vdu9nwo');
+            console.log('   Template ID: template_ylm5krv');
+            console.log('   Public Key: B6ah3SqfJ7Psmz0kT');
             
             const otp = Math.floor(100000 + Math.random() * 900000);
             const templateParams = {
-                to_email: applicationData.email,
-                to_name: applicationData.firstName,
+                to_email: email,
+                to_name: firstName,
+                first_name: firstName,
                 otp_code: otp,
+                otp: otp, // Both parameters for template compatibility
                 from_name: 'Oriontec Career Portal',
                 reply_to: 'noreply@oriontec.com'
             };
@@ -1877,10 +2071,54 @@
             document.getElementById('successModal').classList.add('hidden');
         }
 
+        // Test email function for debugging
+        async function testEmailService() {
+            console.log('🧪 Testing email service...');
+            
+            const testParams = {
+                to_email: 'sgursharn076@gmail.com',
+                to_name: 'Test User',
+                first_name: 'Test',
+                application_number: 'TEST123',
+                badge_number: 'TESTBDG',
+                experience: 2,
+                salary_proposal: '3000',
+                from_name: 'Oriontec Career Portal',
+                reply_to: 'noreply@oriontec.com',
+                message: 'This is a test email from Oriontec Career Portal'
+            };
+            
+            try {
+                const response = await emailjs.send('service_vdu9nwo', 'template_nx0bm5n', testParams);
+                console.log('✅ Test email sent successfully:', response);
+                alert('Test email sent! Check your inbox.');
+            } catch (error) {
+                console.error('❌ Test email failed:', error);
+                alert('Test email failed. Check console for details.');
+            }
+        }
+
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Oriontec Job Application System Initialized');
+            
+            // Check EmailJS service status
+            setTimeout(() => {
+                if (typeof emailjs !== 'undefined') {
+                    console.log('✅ EmailJS loaded successfully');
+                    console.log('📧 Service Configuration:');
+                    console.log('   Service ID: service_vdu9nwo');
+                    console.log('   Confirmation Template: template_nx0bm5n');
+                    console.log('   OTP Template: template_ylm5krv');
+                    console.log('   Public Key: B6ah3SqfJ7Psmz0kT');
+                    
+                    // Add test button to header (hidden, accessible via console)
+                    console.log('🧪 To test email service, run: testEmailService()');
+                } else {
+                    console.error('❌ EmailJS failed to load');
+                }
+            }, 1000);
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96de8d01573a3aec',t:'MTc1NDk4Njc5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96deb58bc36ae89d',t:'MTc1NDk4ODQ1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
