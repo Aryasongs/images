@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch the Falling Objects Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            height: 100vh;
+            user-select: none;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .score-display {
+            color: #4CAF50;
+        }
+
+        .lives-display {
+            color: #f44336;
+        }
+
+        .best-score {
+            color: #FFD700;
+            font-size: 14px;
+        }
+
+        .game-area {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 20px;
+            overflow: hidden;
+        }
+
+        /* Adjust for desktop with controls */
+        @media (min-width: 768px) {
+            .game-area {
+                bottom: 120px;
+            }
+        }
+
+        .basket {
+            position: absolute;
+            bottom: 20px;
+            width: 80px;
+            height: 60px;
+            background: #8B4513;
+            border-radius: 10px 10px 40px 40px;
+            border: 3px solid #654321;
+            transition: left 0.05s ease-out;
+            z-index: 100;
+        }
+
+        .basket::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 10px;
+            right: 10px;
+            height: 10px;
+            background: #A0522D;
+            border-radius: 5px;
+        }
+
+        .falling-object {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            font-size: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            animation: fall linear;
+        }
+
+        @keyframes fall {
+            from {
+                transform: translateY(-50px);
+            }
+            to {
+                transform: translateY(calc(100vh + 50px));
+            }
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Show controls only on desktop */
+        @media (min-width: 768px) {
+            .controls {
+                display: flex;
+                height: 120px;
+            }
+        }
+
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 2000;
+        }
+
+        .game-over h2 {
+            font-size: 48px;
+            color: #f44336;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .final-score {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .restart-btn {
+            background: linear-gradient(145deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .sound-toggle {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            z-index: 1001;
+        }
+
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 3000;
+        }
+
+        .start-screen h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .start-screen p {
+            font-size: 18px;
+            text-align: center;
+            margin: 10px 20px;
+            line-height: 1.5;
+        }
+
+        .start-btn {
+            background: linear-gradient(145deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 20px 40px;
+            font-size: 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 30px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        @media (max-width: 480px) {
+            .game-header {
+                font-size: 16px;
+                padding: 8px 15px;
+            }
+            
+            .control-btn {
+                width: 70px;
+                height: 70px;
+                font-size: 25px;
+            }
+            
+            .basket {
+                width: 70px;
+                height: 50px;
+            }
+            
+            .falling-object {
+                width: 35px;
+                height: 35px;
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="start-screen" id="startScreen">
+        <h1>🍎 Catch the Falling Objects! 🍊</h1>
+        <p>Catch fruits to score points!</p>
+        <p>Avoid bombs (💣) - they cost 2 lives!</p>
+        <p>Missing fruits costs 1 life!</p>
+        <p>Swipe left/right to move basket!</p>
+        <p>You have 5 lives. Good luck! 🍀</p>
+        <button class="start-btn" onclick="startGame()">START GAME</button>
+    </div>
+
+    <div class="game-container" id="gameContainer" style="display: none;">
+        <div class="game-header">
+            <div class="score-display">Score: <span id="score">0</span></div>
+            <div class="best-score">Best: <span id="bestScore">0</span></div>
+            <div class="lives-display">Lives: <span id="lives">5</span></div>
+        </div>
+
+        <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔊</button>
+
+        <div class="game-area" id="gameArea">
+            <div class="basket" id="basket"></div>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" id="leftBtn">←</button>
+            <button class="control-btn" id="rightBtn">→</button>
+        </div>
+
+        <div class="game-over" id="gameOver">
+            <h2>GAME OVER!</h2>
+            <div class="final-score">Final Score: <span id="finalScore">0</span></div>
+            <div class="final-score">Best Score: <span id="finalBestScore">0</span></div>
+            <button class="restart-btn" onclick="restartGame()">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        let gameState = {
+            score: 0,
+            lives: 5,
+            speed: 3000,
+            isPlaying: false,
+            basketPosition: 50,
+            soundEnabled: true,
+            fruitsCaught: 0
+        };
+
+        // Fruit emojis (20 different types)
+        const fruits = ['🍎', '🍊', '🍌', '🍇', '🍓', '🥝', '🍑', '🍒', '🥭', '🍍', 
+                       '🥥', '🍈', '🍉', '🍋', '🍐', '🥑', '🍅', '🫐', '🥕', '🌽'];
+        
+        const bomb = '💣';
+
+        // DOM elements
+        const startScreen = document.getElementById('startScreen');
+        const gameContainer = document.getElementById('gameContainer');
+        const gameArea = document.getElementById('gameArea');
+        const basket = document.getElementById('basket');
+        const scoreElement = document.getElementById('score');
+        const livesElement = document.getElementById('lives');
+        const bestScoreElement = document.getElementById('bestScore');
+        const gameOverScreen = document.getElementById('gameOver');
+        const finalScoreElement = document.getElementById('finalScore');
+        const finalBestScoreElement = document.getElementById('finalBestScore');
+        const soundToggle = document.getElementById('soundToggle');
+        const leftBtn = document.getElementById('leftBtn');
+        const rightBtn = document.getElementById('rightBtn');
+
+        // Load best score from localStorage
+        let bestScore = localStorage.getItem('catchGameBestScore') || 0;
+        bestScoreElement.textContent = bestScore;
+
+        // Audio context for sound effects
+        let audioContext;
+        let backgroundMusic;
+
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(frequency, duration, type = 'sine') {
+            if (!gameState.soundEnabled || !audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            oscillator.type = type;
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playBackgroundMusic() {
+            if (!gameState.soundEnabled || !audioContext) return;
+            
+            // Simple background music loop
+            const playNote = (freq, time, duration) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.setValueAtTime(freq, time);
+                osc.type = 'triangle';
+                gain.gain.setValueAtTime(0.1, time);
+                gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
+                osc.start(time);
+                osc.stop(time + duration);
+            };
+
+            const notes = [262, 294, 330, 349, 392, 440, 494, 523];
+            let noteIndex = 0;
+            
+            const playMusicLoop = () => {
+                if (gameState.isPlaying) {
+                    playNote(notes[noteIndex], audioContext.currentTime, 0.5);
+                    noteIndex = (noteIndex + 1) % notes.length;
+                    setTimeout(playMusicLoop, 600);
+                }
+            };
+            
+            playMusicLoop();
+        }
+
+        function startGame() {
+            initAudio();
+            startScreen.style.display = 'none';
+            gameContainer.style.display = 'block';
+            
+            gameState = {
+                score: 0,
+                lives: 5,
+                speed: 3000,
+                isPlaying: true,
+                basketPosition: 50,
+                soundEnabled: true,
+                fruitsCaught: 0
+            };
+            
+            updateDisplay();
+            playBackgroundMusic();
+            spawnObjects();
+        }
+
+        function updateDisplay() {
+            scoreElement.textContent = gameState.score;
+            livesElement.textContent = gameState.lives;
+            basket.style.left = gameState.basketPosition + '%';
+        }
+
+        function moveBasket(direction) {
+            if (!gameState.isPlaying) return;
+            
+            const moveAmount = 4; // Smaller, smoother movements
+            if (direction === 'left' && gameState.basketPosition > 0) {
+                gameState.basketPosition = Math.max(0, gameState.basketPosition - moveAmount);
+            } else if (direction === 'right' && gameState.basketPosition < 90) {
+                gameState.basketPosition = Math.min(90, gameState.basketPosition + moveAmount);
+            }
+            updateDisplay();
+        }
+
+        function spawnObjects() {
+            if (!gameState.isPlaying) return;
+            
+            const object = document.createElement('div');
+            object.className = 'falling-object';
+            
+            // 15% chance for bomb, 85% for fruit
+            const isBomb = Math.random() < 0.15;
+            object.textContent = isBomb ? bomb : fruits[Math.floor(Math.random() * fruits.length)];
+            object.dataset.type = isBomb ? 'bomb' : 'fruit';
+            
+            // Random horizontal position
+            const leftPosition = Math.random() * 90;
+            object.style.left = leftPosition + '%';
+            object.style.animationDuration = gameState.speed + 'ms';
+            
+            gameArea.appendChild(object);
+            
+            // Check for collisions during fall
+            const checkCollision = () => {
+                if (!gameState.isPlaying || !object.parentNode) return;
+                
+                const objectRect = object.getBoundingClientRect();
+                const basketRect = basket.getBoundingClientRect();
+                
+                // Check if object reached bottom
+                if (objectRect.top > window.innerHeight) {
+                    if (object.dataset.type === 'fruit') {
+                        gameState.lives--;
+                        playSound(200, 0.3, 'sawtooth'); // Miss sound
+                    }
+                    object.remove();
+                    checkGameOver();
+                    return;
+                }
+                
+                // Check collision with basket
+                if (objectRect.bottom >= basketRect.top &&
+                    objectRect.right >= basketRect.left &&
+                    objectRect.left <= basketRect.right) {
+                    
+                    if (object.dataset.type === 'fruit') {
+                        gameState.score += 10;
+                        gameState.fruitsCaught++;
+                        playSound(800, 0.2); // Catch sound
+                        
+                        // Increase speed every 5 fruits
+                        if (gameState.fruitsCaught % 5 === 0) {
+                            gameState.speed = Math.max(1000, gameState.speed - 200);
+                        }
+                    } else {
+                        gameState.lives -= 2;
+                        playSound(150, 0.5, 'sawtooth'); // Bomb sound
+                    }
+                    
+                    object.remove();
+                    updateDisplay();
+                    checkGameOver();
+                    return;
+                }
+                
+                requestAnimationFrame(checkCollision);
+            };
+            
+            requestAnimationFrame(checkCollision);
+            
+            // Spawn next object
+            setTimeout(() => {
+                spawnObjects();
+            }, Math.random() * 1000 + 500);
+        }
+
+        function checkGameOver() {
+            if (gameState.lives <= 0) {
+                gameState.isPlaying = false;
+                
+                // Update best score
+                if (gameState.score > bestScore) {
+                    bestScore = gameState.score;
+                    localStorage.setItem('catchGameBestScore', bestScore);
+                }
+                
+                finalScoreElement.textContent = gameState.score;
+                finalBestScoreElement.textContent = bestScore;
+                gameOverScreen.style.display = 'flex';
+                
+                // Clear all falling objects
+                document.querySelectorAll('.falling-object').forEach(obj => obj.remove());
+            }
+        }
+
+        function restartGame() {
+            gameOverScreen.style.display = 'none';
+            bestScoreElement.textContent = bestScore;
+            startGame();
+        }
+
+        function toggleSound() {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            soundToggle.textContent = gameState.soundEnabled ? '🔊' : '🔇';
+        }
+
+        // Control event listeners
+        leftBtn.addEventListener('mousedown', () => moveBasket('left'));
+        rightBtn.addEventListener('mousedown', () => moveBasket('right'));
+
+        // Touch events for mobile
+        leftBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveBasket('left');
+        });
+
+        rightBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveBasket('right');
+        });
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') moveBasket('left');
+            if (e.key === 'ArrowRight') moveBasket('right');
+        });
+
+        // Enhanced swipe controls with high sensitivity
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let isMoving = false;
+        let moveInterval;
+
+        gameArea.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            isMoving = false;
+        });
+
+        gameArea.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!gameState.isPlaying) return;
+            
+            const touchCurrentX = e.touches[0].clientX;
+            const touchCurrentY = e.touches[0].clientY;
+            const diffX = touchCurrentX - touchStartX;
+            const diffY = Math.abs(touchCurrentY - touchStartY);
+            
+            // Only respond to horizontal swipes (ignore vertical scrolling)
+            if (diffY < 100 && Math.abs(diffX) > 10) {
+                isMoving = true;
+                
+                // Clear any existing movement interval
+                if (moveInterval) clearInterval(moveInterval);
+                
+                // Continuous smooth movement based on swipe direction and speed
+                const moveSpeed = Math.min(Math.abs(diffX) / 10, 5); // Speed based on swipe distance
+                const direction = diffX > 0 ? 'right' : 'left';
+                
+                // Start continuous movement
+                moveInterval = setInterval(() => {
+                    moveBasket(direction);
+                }, 50); // Very smooth 20fps movement
+                
+                // Single immediate movement for instant response
+                moveBasket(direction);
+            }
+        });
+
+        gameArea.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            
+            // Clear continuous movement
+            if (moveInterval) {
+                clearInterval(moveInterval);
+                moveInterval = null;
+            }
+            
+            // If it was just a tap (not a swipe), still move slightly
+            if (!isMoving) {
+                const touchEndX = e.changedTouches[0].clientX;
+                const diff = touchStartX - touchEndX;
+                
+                // Very sensitive - even small movements trigger basket movement
+                if (Math.abs(diff) > 5) {
+                    if (diff > 0) {
+                        moveBasket('left');
+                    } else {
+                        moveBasket('right');
+                    }
+                }
+            }
+            
+            isMoving = false;
+        });
+
+        // Prevent zoom on double tap
+        document.addEventListener('touchend', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96e51d6c97956ce7',t:'MTc1NTA1NTYyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
