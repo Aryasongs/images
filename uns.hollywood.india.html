@@ -24,7 +24,7 @@
         }
         .ticker-content {
             display: flex;
-            animation: ticker 60s linear infinite;
+            animation: ticker 80s linear infinite;
         }
         @keyframes ticker {
             0% { transform: translateX(100%); }
@@ -61,12 +61,12 @@
             <div class="max-w-7xl mx-auto px-4 flex space-x-8 text-sm font-bold uppercase py-3 whitespace-nowrap">
                 <a href="javascript:void(0)" onclick="navigateTo('home')" class="nav-link text-red-700">Home</a>
                 <a href="#" class="nav-link">News</a>
-                <a href="#" class="nav-link">Sport</a>
-                <a href="#" class="nav-link">Reel</a>
+                <a href="#" class="nav-link">Diplomacy</a>
+                <a href="#" class="nav-link">Environment</a>
                 <a href="#" class="nav-link border-b-4 border-red-700">Entertainment</a>
-                <a href="#" class="nav-link">Worklife</a>
-                <a href="#" class="nav-link">Travel</a>
-                <a href="#" class="nav-link">Culture</a>
+                <a href="#" class="nav-link">Hollywood</a>
+                <a href="#" class="nav-link">Science</a>
+                <a href="#" class="nav-link">Govt</a>
             </div>
         </nav>
         <!-- Breaking News Ticker -->
@@ -89,17 +89,17 @@
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-12 text-sm">
                 <div class="space-y-2">
                     <a href="javascript:void(0)" onclick="navigateTo('home')" class="block hover:underline font-bold">Latest Headlines</a>
-                    <a href="#" class="block hover:underline">Music News</a>
-                    <a href="#" class="block hover:underline">Hollywood Updates</a>
+                    <a href="#" class="block hover:underline">Hollywood News</a>
+                    <a href="#" class="block hover:underline">Kids & Family</a>
                 </div>
                 <div class="space-y-2">
-                    <a href="#" class="block hover:underline">Punjabi Cinema</a>
-                    <a href="#" class="block hover:underline">Global Charts</a>
-                    <a href="#" class="block hover:underline">Reel Spotlight</a>
+                    <a href="#" class="block hover:underline">Government Policy</a>
+                    <a href="#" class="block hover:underline">Industry Insights</a>
+                    <a href="#" class="block hover:underline">Global Events</a>
                 </div>
             </div>
-            <div class="pt-8 border-t border-gray-200 text-xs text-gray-600">
-                <p>Copyright © 2024 UNS Movies Hollywood. All rights reserved. The UNS is not responsible for the content of external sites.</p>
+            <div class="pt-8 border-t border-gray-200 text-xs text-gray-600 text-center">
+                <p>Copyright © 2025 UNS Movies Hollywood. All rights reserved. Content curated for entertainment and news purposes.</p>
             </div>
         </div>
     </footer>
@@ -108,6 +108,36 @@
     <script>
         const articles = [
             {
+                id: 'india-oman-fta',
+                category: 'Diplomacy',
+                title: "India and Oman to Sign Historic Free Trade Agreement Today",
+                author: 'UNS Global Desk',
+                date: 'Dec 18, 2025',
+                image: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&q=80&w=1200',
+                excerpt: 'Commerce Minister Piyush Goyal confirms the FTA will open doors in textiles, automobiles, and renewable energy sectors.',
+                content: `<p class="font-bold">India and Oman are set to formalize a comprehensive Free Trade Agreement (FTA) today, marking a significant milestone in bilateral relations.</p><p>The agreement, confirmed by Commerce Minister Piyush Goyal, aims to eliminate trade barriers and boost exports in key sectors including jewelry, footwear, and green energy. Speaking at the India-Oman Business Forum in Muscat, officials emphasized that this partnership will provide Indian businesses unparalleled access to the Middle Eastern market.</p>`
+            },
+            {
+                id: 'trump-peace-claims',
+                category: 'World',
+                title: "Trump Claims Credit for 'Settling 8 Global Conflicts' in Address to Nation",
+                author: 'Political Correspondent',
+                date: 'Dec 18, 2025',
+                image: 'https://images.unsplash.com/photo-1541872703-74c5e443d1f9?auto=format&fit=crop&q=80&w=1200',
+                excerpt: 'US President Donald Trump reiterates his administration\'s role in ending the war in Gaza and restoring American strength.',
+                content: `<p>In a televised address from Washington, President Donald Trump claimed that his administration has successfully mediated eight major global conflicts in the past ten months. He specifically pointed to the cessation of hostilities in Gaza as a primary achievement.</p><p>"I restored American strength and brought peace to regions that haven't seen it in millennia," the President stated. Critics and allies alike are closely analyzing the geopolitical shifts resulting from these recent diplomatic maneuvers.</p>`
+            },
+            {
+                id: 'delhi-fog-pollution',
+                category: 'Environment',
+                title: "Severe Air Quality and Dense Fog Paralyze Delhi-NCR",
+                author: 'Health & Climate Desk',
+                date: 'Dec 18, 2025',
+                image: 'https://images.unsplash.com/photo-1518131344445-564346950346?auto=format&fit=crop&q=80&w=1200',
+                excerpt: 'Visibility at Palam Airport drops to 100 meters as the AQI remains in the "Very Poor" category, affecting travel and health.',
+                content: `<p>Residents of the national capital woke up to a thick blanket of fog today as visibility plummeted to near-zero levels in several areas. The India Meteorological Department (IMD) has issued alerts for the coming days as winter conditions intensify.</p><p>Compounding the weather issues, the Air Quality Index (AQI) was recorded at 358, classified as "Very Poor." Schools in the region have been directed to operate in hybrid mode to safeguard student health against the toxic smog.</p>`
+            },
+            {
                 id: 'samaiira-karan-aujla',
                 category: 'Influencer Findings',
                 title: "Samaiira’s Reel for Karan Aujla Gets the Star’s Attention on Instagram",
@@ -115,58 +145,55 @@
                 date: 'Dec 18, 2024',
                 image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=1200',
                 excerpt: 'Instagram creator Samaiira catches the spotlight after a viral reel interaction with Punjabi sensation Karan Aujla.',
-                content: `
-                    <p class="font-bold">In a fresh update from the world of social media and music collaborations, Instagram creator Samaiira has caught the spotlight after creating a reel dedicated to Punjabi music sensation Karan Aujla.</p>
-                    <p>The reel, which showcases her creative expression and admiration for the artist, has gone viral among fans — and most notably, received a comment from Karan Aujla himself.</p>
-                    <p>According to UNS Movies’ influencer findings, Samaiira’s reel stood out for its strong visual storytelling, trend-aligned execution, and genuine fan connection. The interaction from Karan Aujla has further amplified the reel’s reach, making it a talking point within the Punjabi music and Instagram creator community.</p>
-                    <div class="bg-gray-50 border-l-4 border-red-700 p-6 my-8 italic text-xl">
-                        "This moment highlights how organic fan-made content can bridge the gap between artists and creators."
-                    </div>
-                    <p>Karan Aujla’s engagement not only validated Samaiira’s effort but also encouraged emerging influencers who are leveraging reels to connect with major artists. This interaction represents a new-age endorsement where a single comment from a global artist can significantly elevate a creator’s digital presence.</p>
-                `
+                content: `<p class="font-bold">Instagram creator Samaiira has caught the spotlight after creating a reel dedicated to Punjabi music sensation Karan Aujla.</p><p>The reel has gone viral among fans and received a comment from Karan Aujla himself. This moment highlights how organic fan-made content can bridge the gap between artists and creators.</p>`
             },
             {
-                id: 'vancouver-tour-records',
-                category: 'Music',
-                title: "Karan Aujla's 'Making Memories' Tour Smashes Records in Vancouver",
-                author: 'Global Music Editor',
-                date: 'Dec 17, 2024',
-                image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=1200',
-                excerpt: 'The Punjabi superstar sells out the Rogers Arena in record time, marking a historic moment for South Asian music in Canada.',
-                content: `
-                    <p>Punjabi music sensation Karan Aujla continues to redefine global stardom. His latest stop in Vancouver for the 'Making Memories' tour saw unprecedented demand, with tickets selling out in less than 15 minutes.</p>
-                    <p>Industry analysts at UNS Movies note that this level of demand is typically reserved for A-list Hollywood pop stars. Aujla’s ability to draw such a massive, diverse crowd in North America signals a permanent shift in the music landscape.</p>
-                    <p>Fans travelled from as far as Toronto and Seattle to witness the performance, which featured a high-octane blend of folk-infused Punjabi beats and modern hip-hop production.</p>
-                `
+                id: 'ai-word-of-the-year',
+                category: 'Science',
+                title: "Cambridge Dictionary Crowns 'Slop' as 2025 Word of the Year",
+                author: 'Linguistics Team',
+                date: 'Dec 17, 2025',
+                image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1200',
+                excerpt: 'The term, used to describe low-quality AI-generated content, highlights the growing cultural fatigue with synthetic media.',
+                content: `<p>Cambridge Dictionary has officially named "slop" its Word of the Year for 2025. The term refers to unappealing, mass-produced content generated by AI tools without human oversight.</p><p>Linguists noted that words like "clanker" and "vibe coding" also made the shortlist, reflecting how artificial intelligence has permeated everyday language and social interaction over the last twelve months.</p>`
             },
             {
-                id: 'marvel-cameo-rumors',
+                id: 'traditional-medicine-summit',
+                category: 'Health',
+                title: "WHO Convenes Global Summit on Traditional Medicine in India",
+                author: 'Medical Correspondent',
+                date: 'Dec 17, 2025',
+                image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=1200',
+                excerpt: 'Over 100 countries meet to integrate ancient wisdom with modern science to improve global health outcomes.',
+                content: `<p>The World Health Organization (WHO), in partnership with the Government of India, opened the Second Global Summit on Traditional Medicine today. The summit aims to establish scientific frameworks for integrating traditional practices like Ayurveda and TCM into modern healthcare systems.</p><p>Dr. Tedros Adhanom Ghebreyesus stated that harnessing innovation from AI to genomics can unlock the potential of traditional medicine for more sustainable health solutions.</p>`
+            },
+            {
+                id: 'fashion-covers-2025',
                 category: 'Hollywood',
-                title: "Director Hints at Punjabi Superstar Cameo in Next Marvel Film",
-                author: 'Hollywood Insider',
-                date: 'Dec 16, 2024',
-                image: 'https://images.unsplash.com/photo-1598897349388-00fc82d5612f?auto=format&fit=crop&q=80&w=1200',
-                excerpt: 'Exclusive: A prominent MCU director mentions Karan Aujla as a "cultural icon" suitable for a special sequence.',
-                content: `
-                    <p>Rumors are swirling in the Hollywood backlots after a prominent Marvel Studios director praised Karan Aujla in a recent interview. While no official confirmation has been made, the director referred to the "Aujla effect" as something that could translate beautifully to the big screen.</p>
-                    <p>UNS Movies Hollywood sources suggest that discussions may have taken place regarding a musical sequence or a high-profile cameo in an upcoming Phase 6 project.</p>
-                    <p>This wouldn't be the first time Hollywood has looked toward the Punjabi industry for global appeal, but an Aujla-Marvel collaboration would undoubtedly be the biggest crossover to date.</p>
-                `
-            },
-            {
-                id: 'luxury-lifestyle-aujla',
-                category: 'Lifestyle',
-                title: "Inside the Luxury Lifestyle of Karan Aujla: Cars, Mansions & Style",
-                author: 'Luxury & Trends Desk',
-                date: 'Dec 15, 2024',
-                image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=1200',
-                excerpt: 'From custom Rolls Royces to high-end fashion, we peek into the life of the man who defined modern Punjabi luxury.',
-                content: `
-                    <p>Karan Aujla isn't just about the music; he is a brand that represents luxury and aspiration. From his penchant for custom-designed watches to his impressive fleet of exotic cars, every aspect of his life is curated.</p>
-                    <p>His recent appearance in Dubai wearing a custom-tailored Italian suit sparked a trend among young fashion enthusiasts. UNS Movies explores how Aujla has effectively merged traditional sensibilities with ultra-modern high-fashion, making him a staple at international fashion weeks.</p>
-                `
+                title: "Meghan Markle and Rihanna Lead Most Memorable Magazine Covers of 2025",
+                author: 'Style Desk',
+                date: 'Dec 16, 2025',
+                image: 'https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?auto=format&fit=crop&q=80&w=1200',
+                excerpt: 'A look back at the iconic fashion moments that defined the year, from Harper’s Bazaar to British Vogue.',
+                content: `<p>As the year draws to a close, fashion critics are celebrating the most impactful magazine covers of 2025. Meghan Markle's "Art Issue" for Harper's Bazaar and Rihanna’s bold Homme Girls shoot stand out as cultural touchstones.</p><p>The year was also marked by a push for diversity, with Glamour UK featuring trans activists and new-age icons like Sabrina Carpenter dominating global editions of Vogue.</p>`
             }
         ];
+
+        // Generate more mock articles to reach a high count
+        const categories = ['Hollywood', 'Kids', 'Government', 'Music', 'Economy', 'Science'];
+        for(let i = 1; i <= 60; i++) {
+            const cat = categories[i % categories.length];
+            articles.push({
+                id: `article-extra-${i}`,
+                category: cat,
+                title: `${cat} Digest: Breaking News Story #${i} by UNS Movies`,
+                author: 'Staff Writer',
+                date: 'Dec 18, 2025',
+                image: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=400',
+                excerpt: `In-depth coverage of ${cat} trends, policy shifts, and industry news for late 2025.`,
+                content: `<p>Continuing our series of reports, this article looks at how ${cat} is evolving in the digital age. From new regulations to technological breakthroughs, we bring you the latest from the ground.</p>`
+            });
+        }
 
         function navigateTo(route, id = null) {
             const content = document.getElementById('app-content');
@@ -181,23 +208,24 @@
 
         function renderHome() {
             const featured = articles[0];
-            const others = articles.slice(1);
+            const others = articles.slice(1, 15); // Show first 15 for home
+            const listOnly = articles.slice(15);
             
             let html = `
                 <main class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 fade-in">
-                    <!-- Main Story -->
                     <div class="lg:col-span-8 space-y-8">
+                        <!-- Featured Hero -->
                         <section class="bg-white p-6 shadow-sm border border-gray-100 cursor-pointer group" onclick="navigateTo('article', '${featured.id}')">
                             <nav class="text-xs text-red-700 mb-4 uppercase tracking-widest font-bold">${featured.category}</nav>
-                            <h1 class="article-title text-4xl font-bold leading-tight mb-4 group-hover:underline">${featured.title}</h1>
+                            <h1 class="article-title text-4xl md:text-5xl font-bold leading-tight mb-4 group-hover:underline">${featured.title}</h1>
                             <div class="aspect-video bg-gray-200 overflow-hidden mb-4">
                                 <img src="${featured.image}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                             </div>
-                            <p class="text-lg text-gray-700">${featured.excerpt}</p>
+                            <p class="text-lg text-gray-700 font-medium">${featured.excerpt}</p>
                         </section>
 
-                        <!-- Secondary Headlines -->
-                        <h2 class="text-2xl font-bold border-b-4 border-red-700 pb-2 mb-6">Latest Headlines</h2>
+                        <!-- Main Grid -->
+                        <h2 class="text-2xl font-bold border-b-4 border-red-700 pb-2 mb-6 uppercase tracking-tight">Top Stories</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             ${others.map(art => `
                                 <div class="bg-white p-4 border border-gray-200 hover:shadow-md transition cursor-pointer group" onclick="navigateTo('article', '${art.id}')">
@@ -205,7 +233,24 @@
                                         <img src="${art.image}" class="w-full h-full object-cover group-hover:scale-105 transition">
                                     </div>
                                     <p class="text-xs text-red-700 font-bold uppercase mb-1">${art.category}</p>
-                                    <h3 class="font-bold text-lg leading-tight group-hover:underline">${art.title}</h3>
+                                    <h3 class="font-bold text-xl leading-tight group-hover:underline">${art.title}</h3>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <!-- Long Feed -->
+                        <h2 class="text-2xl font-bold border-b-4 border-gray-300 pb-2 mb-6 uppercase tracking-tight">More News</h2>
+                        <div class="space-y-4">
+                            ${listOnly.map(art => `
+                                <div class="flex items-center space-x-4 border-b border-gray-100 py-4 cursor-pointer group" onclick="navigateTo('article', '${art.id}')">
+                                    <div class="w-24 h-24 bg-gray-100 flex-shrink-0">
+                                        <img src="${art.image}" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-[10px] text-red-700 font-bold uppercase">${art.category}</p>
+                                        <h4 class="font-bold group-hover:underline text-lg leading-tight">${art.title}</h4>
+                                        <p class="text-sm text-gray-500 line-clamp-1">${art.excerpt}</p>
+                                    </div>
                                 </div>
                             `).join('')}
                         </div>
@@ -213,23 +258,16 @@
 
                     <!-- Sidebar -->
                     <aside class="lg:col-span-4 space-y-8">
-                        <section class="bg-white p-6 shadow-sm border border-gray-100">
-                            <h3 class="text-xl font-bold mb-6 border-b-2 border-red-700 pb-1">Most Read</h3>
+                        <section class="bg-white p-6 shadow-sm border border-gray-100 sticky top-24">
+                            <h3 class="text-xl font-bold mb-6 border-b-2 border-red-700 pb-1">Trending Now</h3>
                             <div class="space-y-6">
-                                ${articles.map((art, idx) => `
+                                ${articles.slice(0, 8).map((art, idx) => `
                                     <div class="flex items-start space-x-4 cursor-pointer group" onclick="navigateTo('article', '${art.id}')">
-                                        <span class="text-3xl font-bold text-gray-300">${idx + 1}</span>
-                                        <p class="font-bold group-hover:text-red-700">${art.title}</p>
+                                        <span class="text-3xl font-bold text-gray-200">${idx + 1}</span>
+                                        <p class="font-bold group-hover:text-red-700 text-sm leading-snug">${art.title}</p>
                                     </div>
                                 `).join('')}
                             </div>
-                        </section>
-                        <section class="bg-gray-900 text-white p-6">
-                            <h3 class="text-xl font-bold mb-4">UNS Reel Spotlight</h3>
-                            <div class="aspect-[9/16] bg-black mb-4 flex items-center justify-center text-center p-4">
-                                <p class="text-sm opacity-60">Watch: Samaiira's viral reel featuring Karan Aujla</p>
-                            </div>
-                            <button onclick="window.open('https://instagram.com')" class="w-full py-2 bg-pink-600 font-bold rounded">View on Instagram</button>
                         </section>
                     </aside>
                 </main>
@@ -245,58 +283,45 @@
                 <main class="max-w-4xl mx-auto px-4 py-8 fade-in">
                     <button onclick="navigateTo('home')" class="text-sm font-bold text-red-700 uppercase tracking-widest mb-8 flex items-center hover:underline">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                        Back to Entertainment
+                        Back to Home
                     </button>
                     
                     <article class="bg-white p-6 md:p-12 shadow-sm border border-gray-100">
-                        <nav class="text-xs text-gray-500 mb-6 uppercase tracking-widest font-bold">
-                            ${article.category}
-                        </nav>
+                        <nav class="text-xs text-gray-500 mb-6 uppercase tracking-widest font-bold">${article.category}</nav>
                         <h1 class="article-title text-4xl md:text-5xl font-bold leading-tight mb-6">${article.title}</h1>
-                        
-                        <div class="flex items-center space-x-4 mb-8 border-t border-b border-gray-100 py-4">
-                            <div class="text-sm">
-                                <p class="font-bold">${article.author}</p>
-                                <p class="text-gray-500">${article.date}</p>
+                        <div class="mb-8 border-t border-b border-gray-100 py-4 flex justify-between items-center">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold">${article.author}</span>
+                                <span class="text-xs text-gray-400">UNS Verification Service</span>
                             </div>
+                            <span class="text-sm text-gray-500">${article.date}</span>
                         </div>
-
                         <div class="mb-8 overflow-hidden rounded">
                             <img src="${article.image}" class="w-full h-auto">
                         </div>
-
                         <div class="space-y-6 text-xl leading-relaxed text-gray-800">
                             ${article.content}
+                            <hr class="border-gray-100">
+                            <p class="text-base text-gray-600 italic">For more exclusive reporting and live updates on global events, follow UNS Movies Hollywood, your premium source for verified news across diplomacy, economy, and entertainment.</p>
                         </div>
                     </article>
-
-                    <div class="mt-12">
-                        <h2 class="text-2xl font-bold mb-6">More from UNS Movies</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            ${articles.filter(a => a.id !== id).slice(0, 2).map(art => `
-                                <div class="bg-white p-4 border border-gray-200 cursor-pointer group" onclick="navigateTo('article', '${art.id}')">
-                                    <h4 class="font-bold group-hover:underline">${art.title}</h4>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
                 </main>
             `;
             document.getElementById('app-content').innerHTML = html;
         }
 
-        // Initialize Ticker
         function initTicker() {
             const tickerContainer = document.getElementById('ticker-container');
             const items = [
-                "Karan Aujla's 'Making Memories' Tour smashes ticket records in Vancouver.",
-                "Hollywood legends join forces for new UNS Movies documentary.",
-                "Influencer Samaiira hints at exclusive collaboration with major Punjabi label.",
-                "Oscars 2025: UNS Movies Hollywood's early predictions revealed.",
-                "New Aujla single leaked? Global fans in a frenzy over 15-second snippet."
+                "BREAKING: India and Oman set to sign Free Trade Agreement in Muscat today.",
+                "WEATHER: Dense fog alerts issued for Delhi-NCR; travel visibility drops to 100m.",
+                "DIPLOMACY: US President Trump addresses nation on global peace initiatives.",
+                "SCIENCE: 'Slop' named Cambridge Dictionary Word of the Year for 2025.",
+                "HEALTH: WHO Summit in India highlights integration of Traditional Medicine.",
+                "ENTERTAINMENT: Early predictions for 2025 Academy Awards favor sci-fi epics."
             ];
             tickerContainer.innerHTML = items.map(item => `
-                <span class="text-red-700 px-4 uppercase tracking-widest">Breaking:</span> ${item} <span class="mx-4 text-gray-300">|</span>
+                <span class="text-red-700 px-4 uppercase tracking-widest font-black">Flash:</span> ${item} <span class="mx-4 text-gray-300">|</span>
             `).join('');
         }
 
