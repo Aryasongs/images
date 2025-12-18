@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNS Movies Hollywood | Entertainment News</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Reith+Sans:wght@400;700&family=Reith+Serif:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Reith Sans', Arial, Helvetica, sans-serif;
+            background-color: #f6f6f6;
+        }
+        .bbc-red { background-color: #bb1919; }
+        .article-title { font-family: 'Reith Serif', Georgia, serif; }
+        .nav-link:hover { border-bottom: 4px solid #bb1919; }
+        .sticky-header { position: sticky; top: 0; z-index: 50; }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="text-gray-900">
+
+    <!-- Header / Navigation -->
+    <header class="bg-white border-b border-gray-200 sticky-header">
+        <div class="bbc-red text-white py-2">
+            <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <span class="font-bold text-2xl tracking-tighter">UNS <span class="font-light">MOVIES</span></span>
+                    <span class="hidden md:inline-block border-l border-white/30 pl-4 text-sm font-medium italic">Hollywood</span>
+                </div>
+                <div class="flex items-center space-x-6 text-sm">
+                    <button class="hover:underline">Sign in</button>
+                    <div class="h-4 w-px bg-white/30"></div>
+                    <button class="flex items-center space-x-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <span>Search</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <nav class="bg-white shadow-sm overflow-x-auto">
+            <div class="max-w-7xl mx-auto px-4 flex space-x-8 text-sm font-bold uppercase py-3 whitespace-nowrap">
+                <a href="#" class="nav-link text-red-700">Home</a>
+                <a href="#" class="nav-link">News</a>
+                <a href="#" class="nav-link">Sport</a>
+                <a href="#" class="nav-link">Reel</a>
+                <a href="#" class="nav-link">Worklife</a>
+                <a href="#" class="nav-link">Travel</a>
+                <a href="#" class="nav-link">Future</a>
+                <a href="#" class="nav-link">Culture</a>
+                <a href="#" class="nav-link">TV</a>
+                <a href="#" class="nav-link">Weather</a>
+                <a href="#" class="nav-link border-b-4 border-red-700">Entertainment</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Article Section -->
+        <article class="lg:col-span-8 bg-white p-6 md:p-10 shadow-sm border border-gray-100">
+            <!-- Breadcrumbs -->
+            <nav class="flex text-xs text-gray-500 mb-6 uppercase tracking-widest font-bold">
+                <a href="#" class="hover:underline">Entertainment</a>
+                <span class="mx-2">/</span>
+                <a href="#" class="hover:underline text-red-700">Influencer Findings</a>
+            </nav>
+
+            <!-- Headline -->
+            <h1 class="article-title text-4xl md:text-5xl font-bold leading-tight mb-6">
+                Samaiira’s Reel for Karan Aujla Gets the Star’s Attention on Instagram
+            </h1>
+
+            <!-- Author & Date -->
+            <div class="flex items-center space-x-4 mb-8 border-t border-b border-gray-100 py-4">
+                <div class="text-sm">
+                    <p class="font-bold">UNS Movies Entertainment Desk</p>
+                    <p class="text-gray-500" id="current-date"></p>
+                </div>
+                <div class="flex space-x-2 ml-auto">
+                    <button class="p-2 rounded-full bg-blue-600 text-white hover:bg-blue-700">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+                    </button>
+                    <button class="p-2 rounded-full bg-blue-800 text-white hover:bg-blue-900">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Image Placeholder -->
+            <div class="mb-8 relative group">
+                <div class="aspect-video bg-gray-200 overflow-hidden flex items-center justify-center relative">
+                    <!-- Symbolic Image Representation -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div class="z-10 text-center px-4">
+                        <div class="bg-red-600 text-white text-[10px] font-bold px-2 py-1 mb-2 inline-block uppercase">Social Media Viral</div>
+                        <p class="text-white font-bold text-xl drop-shadow-lg">Influencer Samaiira & Punjabi Star Karan Aujla</p>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=1200" alt="Instagram Reels Interaction" class="object-cover w-full h-full opacity-70 group-hover:scale-105 transition-transform duration-700">
+                </div>
+                <p class="mt-2 text-xs text-gray-500 italic">Image: Organic fan interactions are reshaping music promotion on Instagram.</p>
+            </div>
+
+            <!-- Content Body -->
+            <div class="space-y-6 text-lg leading-relaxed text-gray-800">
+                <p class="font-bold">In a fresh update from the world of social media and music collaborations, Instagram creator <span class="text-red-700">Samaiira</span> has caught the spotlight after creating a reel dedicated to Punjabi music sensation <span class="text-red-700">Karan Aujla</span>.</p>
+                
+                <p>The reel, which showcases her creative expression and admiration for the artist, has gone viral among fans — and most notably, received a comment from Karan Aujla himself.</p>
+
+                <p>According to UNS Movies’ influencer findings, Samaiira’s reel stood out for its strong visual storytelling, trend-aligned execution, and genuine fan connection. The interaction from Karan Aujla has further amplified the reel’s reach, making it a talking point within the Punjabi music and Instagram creator community.</p>
+
+                <div class="bg-gray-50 border-l-4 border-red-700 p-6 my-8 italic text-xl article-title">
+                    "This moment highlights how organic fan-made content can bridge the gap between artists and creators. Karan Aujla’s engagement not only validated Samaiira’s effort but also encouraged emerging influencers."
+                </div>
+
+                <!-- Highlights Section -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                    <h2 class="text-xl font-bold mb-4 border-b pb-2">Why this matters</h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-4">🎵</span>
+                            <div>
+                                <span class="font-bold">Digital Music Promotion:</span> Shows the growing power of Instagram reels in music promotion and discovery.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-4">🌍</span>
+                            <div>
+                                <span class="font-bold">Direct Access:</span> Highlights artist–fan interaction in the digital era, breaking down traditional barriers.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-4">🚀</span>
+                            <div>
+                                <span class="font-bold">Career Growth:</span> Significantly boosts visibility for upcoming influencers like Samaiira.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- UNS Take -->
+                <div class="my-8">
+                    <h3 class="text-xs font-bold text-red-700 uppercase tracking-widest mb-2">UNS Movies Take</h3>
+                    <p class="bg-gray-900 text-white p-6 rounded-sm text-lg">
+                        Such interactions are becoming a new-age endorsement, where a single comment from a global artist can significantly elevate a creator’s digital presence and lend instant credibility to their brand.
+                    </p>
+                </div>
+
+                <!-- External Link -->
+                <div class="flex flex-col sm:flex-row items-center justify-between border-t border-b border-gray-100 py-6 gap-4">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-8 h-8 text-pink-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        <span class="font-bold">View the viral reel:</span>
+                    </div>
+                    <a href="https://www.instagram.com/reel/DR38PFuEpsK/?igsh=aTFxeWw5MjYwbWc0" target="_blank" class="bg-pink-600 text-white px-8 py-3 rounded font-bold hover:bg-pink-700 transition flex items-center">
+                        Open Instagram
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </a>
+                </div>
+
+                <p class="text-sm text-gray-500 pt-8 border-t">
+                    Stay tuned with <span class="font-bold">UNS Movies</span> for more updates on influencer culture, music trends, and viral entertainment stories.
+                </p>
+            </div>
+        </article>
+
+        <!-- Sidebar -->
+        <aside class="lg:col-span-4 space-y-8">
+            <!-- Most Read -->
+            <section class="bg-white p-6 shadow-sm border border-gray-100">
+                <h3 class="text-xl font-bold mb-6 border-b-2 border-red-700 pb-1">Most Read</h3>
+                <div class="space-y-6">
+                    <div class="flex items-start space-x-4">
+                        <span class="text-3xl font-bold text-gray-300">1</span>
+                        <p class="font-bold hover:text-red-700 cursor-pointer">Karan Aujla announces world tour dates for 2025</p>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <span class="text-3xl font-bold text-gray-300">2</span>
+                        <p class="font-bold hover:text-red-700 cursor-pointer">Top 10 Indian influencers to watch this summer</p>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <span class="text-3xl font-bold text-gray-300">3</span>
+                        <p class="font-bold hover:text-red-700 cursor-pointer">UNS Movies Exclusive: The rise of Punjabi Hip-Hop</p>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <span class="text-3xl font-bold text-gray-300">4</span>
+                        <p class="font-bold hover:text-red-700 cursor-pointer">How to get your favorite star to notice your reels</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Video Section -->
+            <section class="bg-gray-900 text-white p-6">
+                <h3 class="text-xl font-bold mb-4 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-red-600" fill="currentColor" viewBox="0 0 24 24"><path d="M10 15.5l5.5-3.5L10 8.5v7zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path></svg>
+                    Top Entertainment Video
+                </h3>
+                <div class="aspect-video bg-gray-800 relative cursor-pointer group mb-4">
+                    <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover opacity-60">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center group-hover:scale-110 transition">
+                            <svg class="w-6 h-6" fill="white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-sm font-bold leading-snug">The Evolution of Music Content Creation: A UNS Special Report</p>
+            </section>
+
+            <!-- Social Plugin -->
+            <div class="border-t-4 border-red-700 pt-4">
+                <p class="font-bold text-sm uppercase tracking-widest mb-4">Follow UNS Movies Hollywood</p>
+                <div class="grid grid-cols-4 gap-2">
+                    <div class="bg-blue-600 h-10 flex items-center justify-center text-white cursor-pointer hover:opacity-90">FB</div>
+                    <div class="bg-black h-10 flex items-center justify-center text-white cursor-pointer hover:opacity-90">X</div>
+                    <div class="bg-pink-600 h-10 flex items-center justify-center text-white cursor-pointer hover:opacity-90">IG</div>
+                    <div class="bg-red-600 h-10 flex items-center justify-center text-white cursor-pointer hover:opacity-90">YT</div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Related News -->
+    <section class="max-w-7xl mx-auto px-4 py-12 border-t border-gray-200">
+        <h2 class="text-3xl font-bold mb-8 article-title">More on this story</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="group cursor-pointer">
+                <div class="aspect-video bg-gray-200 mb-3 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition">
+                </div>
+                <p class="text-red-700 text-xs font-bold uppercase mb-1">Music Business</p>
+                <h4 class="font-bold leading-tight group-hover:underline">The changing face of music marketing in the streaming era</h4>
+            </div>
+            <div class="group cursor-pointer">
+                <div class="aspect-video bg-gray-200 mb-3 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition">
+                </div>
+                <p class="text-red-700 text-xs font-bold uppercase mb-1">Culture</p>
+                <h4 class="font-bold leading-tight group-hover:underline">Why Punjabi music is dominating global charts</h4>
+            </div>
+            <div class="group cursor-pointer">
+                <div class="aspect-video bg-gray-200 mb-3 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition">
+                </div>
+                <p class="text-red-700 text-xs font-bold uppercase mb-1">Influencers</p>
+                <h4 class="font-bold leading-tight group-hover:underline">Viral content tips from UNS Movies finding experts</h4>
+            </div>
+            <div class="group cursor-pointer">
+                <div class="aspect-video bg-gray-200 mb-3 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition">
+                </div>
+                <p class="text-red-700 text-xs font-bold uppercase mb-1">Social Media</p>
+                <h4 class="font-bold leading-tight group-hover:underline">Instagram updates its algorithm for creators</h4>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 border-t border-gray-300 mt-12 py-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="font-bold text-3xl mb-8">UNS Movies Hollywood</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-12 text-sm">
+                <div class="space-y-2">
+                    <a href="#" class="block hover:underline">Home</a>
+                    <a href="#" class="block hover:underline">News</a>
+                    <a href="#" class="block hover:underline">Sport</a>
+                    <a href="#" class="block hover:underline">Reel</a>
+                </div>
+                <div class="space-y-2">
+                    <a href="#" class="block hover:underline">Worklife</a>
+                    <a href="#" class="block hover:underline">Travel</a>
+                    <a href="#" class="block hover:underline">Future</a>
+                    <a href="#" class="block hover:underline">Culture</a>
+                </div>
+                <div class="space-y-2">
+                    <a href="#" class="block hover:underline">Music</a>
+                    <a href="#" class="block hover:underline">TV</a>
+                    <a href="#" class="block hover:underline">Weather</a>
+                    <a href="#" class="block hover:underline">Sounds</a>
+                </div>
+                <div class="space-y-2">
+                    <a href="#" class="block hover:underline">Privacy Policy</a>
+                    <a href="#" class="block hover:underline">Cookies</a>
+                    <a href="#" class="block hover:underline">About Us</a>
+                    <a href="#" class="block hover:underline">Contact UNS</a>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-gray-200 text-xs text-gray-600">
+                <p>Copyright © 2024 UNS Movies. The UNS is not responsible for the content of external sites.</p>
+                <p class="mt-2 font-bold">Read about our approach to external linking.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set dynamic current date
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-GB', options);
+    </script>
+</body>
+</html>
+
