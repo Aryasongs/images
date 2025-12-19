@@ -98,7 +98,6 @@
             align-items: center;
             overflow: hidden;
             animation: logoReveal 1.2s var(--ease-in-out-expo) forwards;
-            box-shadow: 0 0 0 rgba(234, 179, 8, 0);
         }
         .sp-text {
             font-weight: 900;
@@ -107,15 +106,6 @@
             transform: translateY(100%);
             animation: textSlideUp 0.8s 0.4s var(--ease-in-out-expo) forwards;
         }
-        .loading-shimmer {
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 200%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: shimmerEffect 2s 1.5s infinite linear;
-        }
         @keyframes logoReveal {
             0% { transform: scale(0.8) rotate(-10deg); opacity: 0; border-radius: 60px; }
             100% { transform: scale(1) rotate(0deg); opacity: 1; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
@@ -123,10 +113,6 @@
         @keyframes textSlideUp {
             0% { transform: translateY(100%); }
             100% { transform: translateY(0); }
-        }
-        @keyframes shimmerEffect {
-            0% { left: -100%; }
-            100% { left: 100%; }
         }
         .loader-status {
             font-size: 10px;
@@ -175,9 +161,13 @@
             opacity: 1;
             transform: translateY(0);
         }
+        
+        /* Streaming Colors */
         .spotify-color { color: #1DB954; }
         .apple-color { color: #FC3C44; }
         .saavn-color { color: #00B2B2; }
+        .boomplay-color { color: #00AFFF; }
+        .shazam-color { color: #0088FF; }
         
         .page-content { display: none; }
         .page-content.active { display: block; }
@@ -200,7 +190,6 @@
         <div class="loader-content">
             <div class="sp-logo-frame">
                 <div class="sp-text">SP</div>
-                <div class="loading-shimmer"></div>
             </div>
             <div class="loader-status">SharanRecords</div>
         </div>
@@ -217,9 +206,12 @@
                 <a href="javascript:void(0)" onclick="navigateToSection('about')" class="hover:text-white transition-colors">Bio</a>
                 <a href="javascript:void(0)" onclick="navigateToSection('contact')" class="hover:text-white transition-colors">Booking</a>
             </div>
-            <a href="javascript:void(0)" onclick="navigateToSection('contact')" class="px-6 py-2 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all">
-                Book Artist
-            </a>
+            <div class="flex items-center gap-4">
+                <a href="https://www.instagram.com/sharnpooni89?igsh=a3M1OXRpN28xOWN2&utm_source=qr" target="_blank" class="text-white hover:text-yellow-500 transition-colors hidden sm:block"><i class="fab fa-instagram"></i></a>
+                <a href="javascript:void(0)" onclick="navigateToSection('contact')" class="px-6 py-2 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+                    Book Now
+                </a>
+            </div>
         </div>
     </nav>
 
@@ -235,12 +227,20 @@
                 <div class="max-w-2xl text-left">
                     <span class="inline-block px-3 py-1 bg-yellow-500/10 text-yellow-500 text-xs font-bold tracking-[0.3em] uppercase mb-4 border border-yellow-500/20 rounded">Punjabi Music Artist</span>
                     <h1 class="text-6xl md:text-8xl font-extrabold mb-6 leading-[0.9] tracking-tighter text-white text-shadow-lg">Sharan <br><span class="text-yellow-500">Pooni</span></h1>
+                    
+                    <!-- Quick Social Link Row -->
+                    <div class="flex items-center gap-6 mb-8 text-xl text-gray-400">
+                        <a href="https://www.instagram.com/sharnpooni89?igsh=a3M1OXRpN28xOWN2&utm_source=qr" target="_blank" class="hover:text-pink-500 transition-colors"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/share/1A2avVFzPs/?mibextid=wwXIfr" target="_blank" class="hover:text-blue-600 transition-colors"><i class="fab fa-facebook"></i></a>
+                        <a href="https://snapchat.com/t/sNCMHVcF" target="_blank" class="hover:text-yellow-400 transition-colors"><i class="fab fa-snapchat"></i></a>
+                    </div>
+
                     <div class="mb-8 h-[35px] overflow-hidden text-left">
                         <iframe src="https://bandsintown.com/artist/id_15625448/track_button?actor_type=ARTIST&background_color=rgba(0,180,179,1)&hover_color=rgba(0,180,179,1)&font=Helvetica&bitIcon=show&text=FOLLOW&text_color=rgba(255,255,255,1)&locale=en&display_tracker_count=hide&size=large" title="newsletter-widget" height="35" width="200" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
                     </div>
                     <div class="flex flex-wrap gap-4">
                         <a href="#live" class="bg-yellow-500 text-black px-10 py-4 rounded-full font-bold flex items-center gap-3 hover:scale-105 transition-transform uppercase tracking-widest text-xs">Live Dates</a>
-                        <a href="#music" class="px-10 py-4 rounded-full font-bold border border-white/20 hover:bg-white/10 transition-all text-white uppercase tracking-widest text-xs">Listen Now</a>
+                        <a href="#music" class="px-10 py-4 rounded-full font-bold border border-white/20 hover:bg-white/10 transition-all text-white uppercase tracking-widest text-xs">Explore Music</a>
                     </div>
                 </div>
             </div>
@@ -257,7 +257,7 @@
                 </div>
                 <div class="grid lg:grid-cols-3 gap-8 items-stretch reveal">
                     <div class="glass-card p-10 rounded-[2.5rem] flex flex-col justify-center text-center">
-                        <div class="text-yellow-500 font-extrabold text-5xl mb-2 uppercase">Dec 31</div>
+                        <div class="text-yellow-500 font-extrabold text-5xl mb-2 uppercase text-shadow">Dec 31</div>
                         <div class="text-xl font-bold uppercase tracking-widest text-white/80">Wednesday</div>
                         <div class="h-px bg-white/10 w-12 mx-auto my-6"></div>
                         <div class="text-2xl font-light text-gray-400 uppercase">7:00 PM</div>
@@ -282,46 +282,105 @@
             </div>
         </section>
 
-        <!-- Music Section -->
-        <section id="music" class="py-32 px-6">
+        <!-- Music & Streaming Grid -->
+        <section id="music" class="py-32 px-6 bg-[#080808]">
             <div class="max-w-7xl mx-auto">
-                <div class="flex flex-col md:flex-row items-center gap-16 bg-[#111] rounded-[3rem] p-8 md:p-16 border border-white/5 reveal">
-                    <div class="w-full md:w-1/2">
-                        <img src="https://aryasongs.github.io/images/IMG_7943.jpeg" alt="Paper" class="w-full aspect-square object-cover rounded-2xl shadow-2xl" loading="lazy">
-                    </div>
-                    <div class="w-full md:w-1/2 text-left">
-                        <h5 class="text-yellow-500 font-bold tracking-widest uppercase text-sm mb-4">Latest Single</h5>
-                        <h2 class="text-5xl md:text-6xl font-extrabold mb-6 tracking-tight text-white uppercase">Paper</h2>
-                        <div class="flex flex-col gap-4">
-                            <a href="https://open.spotify.com/album/7yk8ot7uGQcsQAbeYRj7AJ?si=FrkCummgQc2R7km6XShcOQ" target="_blank" class="flex items-center justify-between p-5 bg-white/5 rounded-2xl hover:bg-white/10 transition-all border border-white/5 group text-white">
-                                <span class="flex items-center gap-4 font-bold"><i class="fab fa-spotify spotify-color text-2xl"></i> Listen on Spotify</span>
-                                <i class="fas fa-external-link-alt text-xs opacity-50"></i>
-                            </a>
-                            <a href="https://music.apple.com/in/artist/sharan-pooni/1860157374" target="_blank" class="flex items-center justify-between p-5 bg-white/5 rounded-2xl hover:bg-white/10 transition-all border border-white/5 group text-white">
-                                <span class="flex items-center gap-4 font-bold"><i class="fab fa-apple apple-color text-2xl"></i> Stream on Apple Music</span>
-                                <i class="fas fa-external-link-alt text-xs opacity-50"></i>
-                            </a>
-                        </div>
-                    </div>
+                <div class="text-center mb-20 reveal">
+                    <h2 class="text-5xl font-extrabold text-white tracking-tighter uppercase mb-4">Streaming Everywhere</h2>
+                    <div class="w-20 h-1 bg-yellow-500 mx-auto rounded-full"></div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 reveal">
+                    <!-- Spotify -->
+                    <a href="https://open.spotify.com/album/7yk8ot7uGQcsQAbeYRj7AJ?si=FrkCummgQc2R7km6XShcOQ" target="_blank" class="glass-card p-10 rounded-3xl text-center group">
+                        <i class="fab fa-spotify spotify-color text-5xl mb-6 group-hover:scale-110 transition-transform"></i>
+                        <h3 class="font-bold text-lg mb-1">Spotify</h3>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest">Listen to 'Paper'</p>
+                    </a>
+                    <!-- Apple Music -->
+                    <a href="https://music.apple.com/in/artist/sharan-pooni/1860157374" target="_blank" class="glass-card p-10 rounded-3xl text-center group">
+                        <i class="fab fa-apple apple-color text-5xl mb-6 group-hover:scale-110 transition-transform"></i>
+                        <h3 class="font-bold text-lg mb-1">Apple Music</h3>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest">Official Page</p>
+                    </a>
+                    <!-- JioSaavn -->
+                    <a href="https://www.saavn.com/s/artist/sharan-pooni-albums/e-CPFg,HknU_" target="_blank" class="glass-card p-10 rounded-3xl text-center group">
+                        <i class="fas fa-music saavn-color text-5xl mb-6 group-hover:scale-110 transition-transform"></i>
+                        <h3 class="font-bold text-lg mb-1">JioSaavn</h3>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest">Punjabi Hits</p>
+                    </a>
+                    <!-- Boomplay -->
+                    <a href="https://www.boomplay.com/share/artist/121166255?srModel=COPYLINK&srList=IOS" target="_blank" class="glass-card p-10 rounded-3xl text-center group">
+                        <i class="fas fa-play-circle boomplay-color text-5xl mb-6 group-hover:scale-110 transition-transform"></i>
+                        <h3 class="font-bold text-lg mb-1">Boomplay</h3>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest">Global Stream</p>
+                    </a>
+                    <!-- Shazam -->
+                    <a href="https://www.shazam.com/track/852125315?referrer=share" target="_blank" class="glass-card p-10 rounded-3xl text-center group">
+                        <i class="fas fa-bolt shazam-color text-5xl mb-6 group-hover:scale-110 transition-transform"></i>
+                        <h3 class="font-bold text-lg mb-1">Shazam</h3>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest">Identify Music</p>
+                    </a>
                 </div>
             </div>
         </section>
 
-        <!-- BIO SECTION -->
-        <section id="about" class="py-32 px-6 bg-[#050505]">
+        <!-- FULL A-Z BIOGRAPHY SECTION -->
+        <section id="about" class="py-32 px-6 bg-[#050505] overflow-hidden">
             <div class="max-w-7xl mx-auto text-left">
-                <div class="grid lg:grid-cols-12 gap-16 text-left">
-                    <div class="lg:col-span-5 reveal">
-                        <div class="sticky top-32 text-left">
-                            <img src="https://aryasongs.github.io/images/IMG_7943.jpeg" alt="Sharan Pooni" class="w-full rounded-[2.5rem] shadow-2xl grayscale hover:grayscale-0 transition-all duration-700" loading="lazy">
+                <!-- Bio Header -->
+                <div class="flex flex-col md:flex-row items-center gap-12 mb-24 reveal">
+                    <div class="w-full md:w-1/3">
+                        <div class="relative group">
+                            <div class="absolute -inset-4 bg-yellow-500/5 rounded-full blur-3xl group-hover:bg-yellow-500/10 transition-all"></div>
+                            <img src="https://aryasongs.github.io/images/IMG_7943.jpeg" alt="Sharan Pooni Profile" class="w-full rounded-[3rem] shadow-2xl relative z-10">
                         </div>
                     </div>
-                    <div class="lg:col-span-7 reveal text-left">
-                        <h2 class="text-5xl font-extrabold mb-8 text-white uppercase tracking-tighter">Biography</h2>
-                        <div class="space-y-6 text-gray-400 text-lg leading-relaxed text-left">
-                            <p class="punjabi-text text-2xl text-white italic border-l-4 border-yellow-500 pl-6 mb-8 uppercase">"ਸ਼ਰਨ ਪੂਨੀ, ਬੰਗਾ (ਪੰਜਾਬ) ਦਾ ਇੱਕ ਉਭਰਦਾ ਪੰਜਾਬੀ ਕਲਾਕਾਰ ਹੈ, ਜੋ ਆਪਣੀ ਭਾਵੁਕ ਆਵਾਜ਼ ਲਈ ਜਾਣਿਆ ਜਾਂਦਾ ਹੈ।"</p>
-                            <p>Sharan Pooni, born Gursharan Singh, is an emerging Punjabi music artist from Banga. Known for his debut "Paper" featuring Jass Bajwa, Sharan represents the new wave of soulful Punjabi music.</p>
-                            <p>As a singer, lyricist, and producer, he maintains creative control over his sound, blending real-life stories with emotionally rich melodies.</p>
+                    <div class="w-full md:w-2/3 text-left">
+                        <h2 class="text-6xl md:text-8xl font-extrabold text-white tracking-tighter uppercase mb-6 leading-none">The <span class="text-yellow-500">Story</span></h2>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 py-8 border-y border-white/5">
+                            <div>
+                                <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500 font-bold mb-2">Real Name</p>
+                                <p class="text-white font-bold">Gursharan Singh</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500 font-bold mb-2">Birth Date</p>
+                                <p class="text-white font-bold">Feb 02, 2006</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500 font-bold mb-2">Hometown</p>
+                                <p class="text-white font-bold">Banga, Punjab</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500 font-bold mb-2">Profession</p>
+                                <p class="text-white font-bold">Music Artist</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bio Content Chapters -->
+                <div class="grid lg:grid-cols-12 gap-16 text-left">
+                    <div class="lg:col-span-8 space-y-16 reveal">
+                        <div class="space-y-6">
+                            <h3 class="text-3xl font-extrabold text-white uppercase tracking-tight">The Roots of Gursharan Singh</h3>
+                            <div class="space-y-4 text-gray-400 text-lg leading-relaxed">
+                                <p>Born on February 02, 2006, in Banga, Punjab, Gursharan Singh's journey began with the simplicity of rural life and a government school education where his passion for music first stirred.</p>
+                                <p>Sharan evolved into a Lyricist, Composer, and Music Producer, specializing in emotional Punjabi music that bridges traditional heritage and modern soundscapes.</p>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <h3 class="text-3xl font-extrabold text-white uppercase tracking-tight">Paper: A Landmark Breakthrough</h3>
+                            <div class="space-y-4 text-gray-400 text-lg leading-relaxed">
+                                <p>Sharan's official entry into the industry featured a landmark collaboration on the track "Paper" with the legendary Jass Bajwa, instantly establishing him as a soulful storyteller.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-4 reveal">
+                        <div class="sticky top-32 p-8 bg-yellow-500 rounded-[2rem] text-black shadow-2xl">
+                            <p class="text-[10px] uppercase tracking-[0.4em] font-extrabold mb-4 opacity-50">Artist Quote</p>
+                            <p class="text-xl font-extrabold italic leading-tight">"Authenticity is the only currency in music. If you don't feel it, they won't hear it."</p>
+                            <p class="mt-4 font-black uppercase tracking-tighter">— Sharan Pooni</p>
                         </div>
                     </div>
                 </div>
@@ -336,36 +395,30 @@
                         <h2 class="text-5xl font-extrabold mb-8 text-white uppercase tracking-tight">Booking <span class="text-yellow-500">&</span> Inquiry</h2>
                         <p class="text-gray-400 text-lg mb-10">For live performances, corporate events, and collaborations, reach out to our management team directly.</p>
                         
-                        <div class="space-y-6">
+                        <!-- Contact Links -->
+                        <div class="space-y-6 mb-12">
                             <a href="tel:+917973418735" class="glass-card p-6 rounded-2xl flex items-center gap-6 group">
-                                <div class="w-12 h-12 bg-yellow-500/10 rounded-full flex items-center justify-center text-yellow-500 group-hover:bg-yellow-500 group-hover:text-black transition-all">
-                                    <i class="fas fa-phone-alt"></i>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-gray-500 uppercase font-bold tracking-widest">Phone / Manager</p>
-                                    <p class="text-xl font-bold text-white tracking-widest uppercase text-left">+91 79734 18735</p>
-                                </div>
+                                <div class="w-12 h-12 bg-yellow-500/10 rounded-full flex items-center justify-center text-yellow-500 group-hover:bg-yellow-500 group-hover:text-black transition-all"><i class="fas fa-phone-alt"></i></div>
+                                <div><p class="text-xs text-gray-500 uppercase font-bold tracking-widest">Manager</p><p class="text-xl font-bold text-white tracking-widest uppercase">+91 79734 18735</p></div>
                             </a>
-                            
                             <a href="https://wa.me/917973418735" target="_blank" class="glass-card p-6 rounded-2xl flex items-center gap-6 group">
-                                <div class="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-white transition-all">
-                                    <i class="fab fa-whatsapp text-xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-gray-500 uppercase font-bold tracking-widest">WhatsApp</p>
-                                    <p class="text-xl font-bold text-white uppercase text-left tracking-widest">Chat with Management</p>
-                                </div>
+                                <div class="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-white transition-all"><i class="fab fa-whatsapp text-xl"></i></div>
+                                <div><p class="text-xs text-gray-500 uppercase font-bold tracking-widest">WhatsApp</p><p class="text-xl font-bold text-white uppercase tracking-widest">Message Now</p></div>
                             </a>
-
                             <a href="mailto:sgursharn076@gmail.com" class="glass-card p-6 rounded-2xl flex items-center gap-6 group">
-                                <div class="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all">
-                                    <i class="fas fa-envelope"></i>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-gray-500 uppercase font-bold tracking-widest">Email Booking</p>
-                                    <p class="text-xl font-bold text-white lowercase text-left">sgursharn076@gmail.com</p>
-                                </div>
+                                <div class="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all"><i class="fas fa-envelope"></i></div>
+                                <div><p class="text-xs text-gray-500 uppercase font-bold tracking-widest">Email Booking</p><p class="text-xl font-bold text-white lowercase">sgursharn076@gmail.com</p></div>
                             </a>
+                        </div>
+
+                        <!-- Full Social Connect -->
+                        <div class="text-left">
+                            <h4 class="text-yellow-500 font-bold uppercase tracking-widest text-xs mb-6">Social Presence</h4>
+                            <div class="flex gap-4">
+                                <a href="https://www.instagram.com/sharnpooni89?igsh=a3M1OXRpN28xOWN2&utm_source=qr" target="_blank" class="w-14 h-14 glass-card rounded-2xl flex items-center justify-center text-2xl hover:text-pink-500 transition-colors"><i class="fab fa-instagram"></i></a>
+                                <a href="https://www.facebook.com/share/1A2avVFzPs/?mibextid=wwXIfr" target="_blank" class="w-14 h-14 glass-card rounded-2xl flex items-center justify-center text-2xl hover:text-blue-600 transition-colors"><i class="fab fa-facebook"></i></a>
+                                <a href="https://snapchat.com/t/sNCMHVcF" target="_blank" class="w-14 h-14 glass-card rounded-2xl flex items-center justify-center text-2xl hover:text-yellow-400 transition-colors"><i class="fab fa-snapchat"></i></a>
+                            </div>
                         </div>
                     </div>
 
@@ -373,27 +426,19 @@
                         <div class="glass-card p-8 md:p-12 rounded-[2.5rem] border-yellow-500/20 text-left">
                             <h3 class="text-2xl font-bold mb-8 text-white text-left uppercase tracking-tighter">Booking Form</h3>
                             <form id="booking-form" onsubmit="handleFormSubmit(event)" class="space-y-6 text-left">
-                                <div>
-                                    <label class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 block">Full Name</label>
-                                    <input type="text" id="form-name" required class="w-full p-4 rounded-xl text-white">
-                                </div>
-                                <div>
-                                    <label class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 block">City / Location</label>
-                                    <input type="text" id="form-city" required class="w-full p-4 rounded-xl text-white">
-                                </div>
-                                <div>
-                                    <label class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 block">Event Type</label>
+                                <div><label class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 block">Full Name</label><input type="text" id="form-name" required class="w-full p-4 rounded-xl text-white"></div>
+                                <div><label class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 block">City / Location</label><input type="text" id="form-city" required class="w-full p-4 rounded-xl text-white"></div>
+                                <div><label class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 block">Event Type</label>
                                     <select id="form-type" class="w-full p-4 rounded-xl text-white">
                                         <option value="Concert">Live Concert</option>
                                         <option value="Wedding">Wedding / Private</option>
                                         <option value="Corporate">Corporate Event</option>
-                                        <option value="Club">Club Performance</option>
                                         <option value="Other">Other Inquiry</option>
                                     </select>
                                 </div>
                                 <button type="submit" class="w-full bg-yellow-500 text-black py-4 rounded-xl font-bold hover:bg-yellow-400 transition-all uppercase tracking-widest text-xs">Submit Inquiry</button>
                             </form>
-                            <div id="form-message" class="mt-4 text-center text-sm font-bold hidden text-yellow-500">Inquiry sent successfully! Our team will contact you soon.</div>
+                            <div id="form-message" class="mt-4 text-center text-sm font-bold hidden text-yellow-500">Inquiry sent successfully!</div>
                         </div>
                     </div>
                 </div>
@@ -401,75 +446,20 @@
         </section>
     </main>
 
-    <!-- LEGAL CENTER PAGE (UPDATED) -->
+    <!-- LEGAL CENTER PAGE -->
     <main id="legal-page" class="page-content py-32 px-6">
         <div class="max-w-5xl mx-auto text-left">
-            <button onclick="showPage('home')" class="mb-10 text-yellow-500 font-bold flex items-center gap-2 hover:gap-4 transition-all uppercase tracking-widest text-xs">
-                <i class="fas fa-arrow-left"></i> Back To Home
-            </button>
+            <button onclick="showPage('home')" class="mb-10 text-yellow-500 font-bold flex items-center gap-2 hover:gap-4 transition-all uppercase tracking-widest text-xs"><i class="fas fa-arrow-left"></i> Back To Home</button>
             <h1 class="text-5xl md:text-7xl font-extrabold mb-10 text-white uppercase tracking-tight">Legal Center</h1>
-            
             <div class="grid md:grid-cols-4 gap-8">
-                <!-- Side Nav -->
                 <div class="md:col-span-1 space-y-2">
                     <a href="#privacy-policy" class="block p-4 bg-white/5 rounded-xl text-xs font-bold uppercase tracking-widest text-yellow-500 border-l-2 border-yellow-500">Privacy Policy</a>
-                    <a href="#terms-of-use" class="block p-4 hover:bg-white/5 rounded-xl text-xs font-bold uppercase tracking-widest text-gray-400">Terms of Use</a>
                     <a href="#booking-terms" class="block p-4 hover:bg-white/5 rounded-xl text-xs font-bold uppercase tracking-widest text-gray-400">Booking Terms</a>
-                    <a href="#ip-rights" class="block p-4 hover:bg-white/5 rounded-xl text-xs font-bold uppercase tracking-widest text-gray-400">IP Rights</a>
                 </div>
-
-                <!-- Legal Content -->
                 <div class="md:col-span-3 space-y-20 text-gray-400 leading-relaxed text-sm">
-                    <!-- Privacy Section -->
                     <section id="privacy-policy" class="scroll-mt-32">
                         <h2 class="text-2xl font-bold text-white mb-6 uppercase tracking-widest">Privacy Policy</h2>
-                        <div class="space-y-4">
-                            <p>Hamari website Sharan Pooni ki privacy ko utna hi mahatva deti hai jitna ham apne fans ki privacy ko. Yeh policy batati hai ki hum aapka data kaise handle karte hain.</p>
-                            <h3 class="text-white font-bold mt-4 uppercase text-xs tracking-widest">1. Information Collection</h3>
-                            <p>Hum sirf wohi information collect karte hain jo aap humein booking form ke zariye dete hain (Naam, Location, Contact). Hum automated trackers ya unnecessary cookies ka istemal nahi karte.</p>
-                            <h3 class="text-white font-bold mt-4 uppercase text-xs tracking-widest">2. Data Security</h3>
-                            <p>Aapka data SharanRecords ke secured server par rehta hai. Hum third-party marketing companies ko data kabhi nahi bechte.</p>
-                        </div>
-                    </section>
-
-                    <!-- Terms Section -->
-                    <section id="terms-of-use" class="scroll-mt-32">
-                        <h2 class="text-2xl font-bold text-white mb-6 uppercase tracking-widest">Terms & Conditions</h2>
-                        <div class="space-y-4">
-                            <p>Is website ka upyog karke aap hamare terms se sehmat hote hain.</p>
-                            <h3 class="text-white font-bold mt-4 uppercase text-xs tracking-widest">1. Content Usage</h3>
-                            <p>Website par maujood music, videos, aur images sirf personal use ke liye hain. Inka commercial istemal ya re-distribution bina SharanRecords ki likhit anumati ke allowed nahi hai.</p>
-                            <h3 class="text-white font-bold mt-4 uppercase text-xs tracking-widest">2. Website Availability</h3>
-                            <p>Hum bina kisi notice ke website ke features ya tour dates change karne ka adhikaar rakhte hain.</p>
-                        </div>
-                    </section>
-
-                    <!-- Booking Terms -->
-                    <section id="booking-terms" class="scroll-mt-32">
-                        <h2 class="text-2xl font-bold text-white mb-6 uppercase tracking-widest">Booking & Performance Terms</h2>
-                        <div class="space-y-4">
-                            <h3 class="text-white font-bold mt-4 uppercase text-xs tracking-widest">1. Confirmation</h3>
-                            <p>Website ke booking form se sirf inquiry hoti hai. Booking tabhi confirm maani jayegi jab 50% advance deposit aur management ke saath official contract sign hoga.</p>
-                            <h3 class="text-white font-bold mt-4 uppercase text-xs tracking-widest">2. Cancellations</h3>
-                            <p>Agar organizer event cancel karta hai, toh advance deposit non-refundable hoga, jab tak contract mein kuch aur na likha ho.</p>
-                            <h3 class="text-white font-bold mt-4 uppercase text-xs tracking-widest">3. Technical Rider</h3>
-                            <p>Live shows ke liye organizer ko Sharan Pooni ka official technical rider (Sound, Light, Stage) provide karna hoga.</p>
-                        </div>
-                    </section>
-
-                    <!-- IP Rights -->
-                    <section id="ip-rights" class="scroll-mt-32">
-                        <h2 class="text-2xl font-bold text-white mb-6 uppercase tracking-widest">Intellectual Property</h2>
-                        <div class="space-y-4 text-left">
-                            <p>Music labels, artworks, aur "SP" logo SharanRecords aur artist ki Intellectual Property hain. Music identifies as original work protected under Copyright Act 1957.</p>
-                            <p class="text-xs italic">For licensing inquiries: sgursharn076@gmail.com</p>
-                        </div>
-                    </section>
-
-                    <!-- Disclaimer -->
-                    <section id="music-disclaimer" class="scroll-mt-32 pt-10 border-t border-white/5">
-                        <h2 class="text-lg font-bold text-white mb-4 uppercase tracking-widest">Music Rights Disclaimer</h2>
-                        <p class="text-xs">Streaming services (Spotify, Apple Music etc.) provide content under their respective license agreements. Sharan Pooni and SharanRecords are not responsible for streaming availability in specific regions as it is controlled by the platforms.</p>
+                        <p>We collect booking information only to facilitate communication between SharanRecords and event organizers. Your data is never sold or leased to third parties.</p>
                     </section>
                 </div>
             </div>
@@ -486,13 +476,18 @@
                 <a href="javascript:void(0)" onclick="navigateToSection('about')" class="hover:text-white transition-colors">Bio</a>
                 <a href="javascript:void(0)" onclick="navigateToSection('contact')" class="hover:text-white transition-colors">Connect</a>
             </div>
+            
+            <div class="flex justify-center gap-6 mb-12 text-gray-400">
+                <a href="https://www.instagram.com/sharnpooni89?igsh=a3M1OXRpN28xOWN2&utm_source=qr" target="_blank" class="hover:text-pink-500 transition-colors"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.facebook.com/share/1A2avVFzPs/?mibextid=wwXIfr" target="_blank" class="hover:text-blue-600 transition-colors"><i class="fab fa-facebook"></i></a>
+                <a href="https://snapchat.com/t/sNCMHVcF" target="_blank" class="hover:text-yellow-400 transition-colors"><i class="fab fa-snapchat"></i></a>
+            </div>
+
             <div class="space-y-4">
                 <p class="text-gray-400 text-sm font-semibold tracking-wide">&copy; 2025 SharanRecords. All Rights Reserved.</p>
                 <div class="flex justify-center gap-6 text-[10px] text-gray-600 font-bold uppercase tracking-widest">
                     <a href="javascript:void(0)" onclick="showPage('legal')" class="hover:text-yellow-500 transition-colors">Legal Center</a>
-                    <a href="javascript:void(0)" onclick="showPage('legal')" class="hover:text-yellow-500 transition-colors">Booking Terms</a>
                 </div>
-                <p class="text-[9px] text-gray-700 uppercase tracking-[0.3em] pt-4">Label Credit: SharanRecords</p>
             </div>
         </div>
     </footer>
@@ -501,7 +496,6 @@
         const API_KEY = "3980fb67231ef697542591b23db68a94";
         const ARTIST_NAME = "Sharan Pooni";
 
-        // Modern Preloader Hiding logic
         window.addEventListener('load', () => {
             const preloader = document.getElementById('preloader');
             setTimeout(() => {
