@@ -13,7 +13,7 @@
     <meta name="description" content="Official website of Sharan Pooni, emerging Punjabi music artist, composer, and producer. Known for the soulful debut 'Paper' with Jass Bajwa.">
     <meta name="keywords" content="Sharan Pooni, Sharan Pooni Singer, Paper Sharan Pooni, SharanRecords, Punjabi Sad Music, Punjabi Singer Banga, Gursharan Singh, Jass Bajwa Paper">
     <meta name="author" content="SharanRecords">
-    <meta name="theme-color" content="#eab308">
+    <meta name="theme-color" content="#050505">
 
     <!-- Favicon (SP Yellow Logo) -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23eab308'/><text x='50%' y='50%' font-family='sans-serif' font-weight='900' font-size='50' fill='black' text-anchor='middle' dy='.3em'>SP</text></svg>">
@@ -51,6 +51,7 @@
             --accent: #eab308;
             --bg-dark: #050505;
             --bg-card: #111111;
+            --ease-in-out-expo: cubic-bezier(1, 0, 0, 1);
         }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -60,6 +61,88 @@
             overflow-x: hidden;
             touch-action: manipulation;
         }
+
+        /* MODERN LOADING ANIMATION */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: all 1.2s var(--ease-in-out-expo);
+        }
+        #preloader.loaded {
+            transform: scale(1.1);
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loader-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+        .sp-logo-frame {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            background-color: var(--accent);
+            border-radius: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            animation: logoReveal 1.2s var(--ease-in-out-expo) forwards;
+            box-shadow: 0 0 0 rgba(234, 179, 8, 0);
+        }
+        .sp-text {
+            font-weight: 900;
+            font-size: 48px;
+            color: black;
+            transform: translateY(100%);
+            animation: textSlideUp 0.8s 0.4s var(--ease-in-out-expo) forwards;
+        }
+        .loading-shimmer {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmerEffect 2s 1.5s infinite linear;
+        }
+        @keyframes logoReveal {
+            0% { transform: scale(0.8) rotate(-10deg); opacity: 0; border-radius: 60px; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        }
+        @keyframes textSlideUp {
+            0% { transform: translateY(100%); }
+            100% { transform: translateY(0); }
+        }
+        @keyframes shimmerEffect {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        .loader-status {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.6em;
+            color: var(--accent);
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeIn 0.5s 0.8s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* LAYOUT STYLES */
         .punjabi-text {
             font-family: 'Noto Sans Gurmukhi', sans-serif;
             line-height: 1.6;
@@ -112,6 +195,17 @@
 </head>
 <body class="antialiased">
 
+    <!-- Preloader Screen -->
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="sp-logo-frame">
+                <div class="sp-text">SP</div>
+                <div class="loading-shimmer"></div>
+            </div>
+            <div class="loader-status">SharanRecords</div>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 nav-blur">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -134,12 +228,11 @@
         <!-- Hero Section -->
         <section class="relative h-screen flex items-center overflow-hidden">
             <div class="absolute inset-0 z-0">
-                <!-- Primary Image: Eager loading for LCP -->
                 <img src="https://aryasongs.github.io/images/IMG_7943.jpeg" alt="Sharan Pooni" class="w-full h-full object-cover object-[center_20%] scale-100 transition-transform duration-1000" id="heroImage" fetchpriority="high">
                 <div class="absolute inset-0 hero-overlay"></div>
             </div>
             <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pt-20">
-                <div class="max-w-2xl">
+                <div class="max-w-2xl text-left">
                     <span class="inline-block px-3 py-1 bg-yellow-500/10 text-yellow-500 text-xs font-bold tracking-[0.3em] uppercase mb-4 border border-yellow-500/20 rounded">Punjabi Music Artist</span>
                     <h1 class="text-6xl md:text-8xl font-extrabold mb-6 leading-[0.9] tracking-tighter text-white text-shadow-lg">Sharan <br><span class="text-yellow-500">Pooni</span></h1>
                     <div class="mb-8 h-[35px] overflow-hidden">
@@ -156,7 +249,7 @@
         <!-- LIVE CONCERT SECTION -->
         <section id="live" class="py-32 px-6 bg-[#0a0a0a] relative overflow-hidden">
             <div class="max-w-7xl mx-auto">
-                <div class="flex flex-col lg:flex-row items-end justify-between mb-16 gap-6 reveal">
+                <div class="flex flex-col lg:flex-row items-end justify-between mb-16 gap-6 reveal text-left">
                     <div>
                         <h5 class="text-yellow-500 font-bold tracking-[0.4em] uppercase text-xs mb-2">Live Performance</h5>
                         <h2 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-white uppercase">The SP Back</h2>
@@ -164,10 +257,10 @@
                 </div>
                 <div class="grid lg:grid-cols-3 gap-8 items-stretch reveal">
                     <div class="glass-card p-10 rounded-[2.5rem] flex flex-col justify-center text-center">
-                        <div class="text-yellow-500 font-extrabold text-5xl mb-2">DEC 31</div>
+                        <div class="text-yellow-500 font-extrabold text-5xl mb-2 uppercase">Dec 31</div>
                         <div class="text-xl font-bold uppercase tracking-widest text-white/80">Wednesday</div>
                         <div class="h-px bg-white/10 w-12 mx-auto my-6"></div>
-                        <div class="text-2xl font-light text-gray-400">7:00 PM</div>
+                        <div class="text-2xl font-light text-gray-400 uppercase">7:00 PM</div>
                     </div>
                     <div class="glass-card p-10 rounded-[2.5rem] lg:col-span-2 flex flex-col md:flex-row items-center gap-10">
                         <div class="flex-1 text-white text-left">
@@ -182,7 +275,7 @@
                     </div>
                 </div>
                 <div id="tour-dates-container" class="mt-16 reveal">
-                    <h4 class="text-xl font-bold mb-8 uppercase tracking-widest text-gray-500">Upcoming Tour Dates</h4>
+                    <h4 class="text-xl font-bold mb-8 uppercase tracking-widest text-gray-500 text-left">Upcoming Tour Dates</h4>
                     <div id="events-loader" class="text-center py-10"><i class="fas fa-spinner fa-spin text-2xl text-yellow-500"></i></div>
                     <div id="events-list" class="space-y-4"></div>
                 </div>
@@ -194,9 +287,9 @@
             <div class="max-w-7xl mx-auto">
                 <div class="flex flex-col md:flex-row items-center gap-16 bg-[#111] rounded-[3rem] p-8 md:p-16 border border-white/5 reveal">
                     <div class="w-full md:w-1/2">
-                        <img src="https://aryasongs.github.io/images/IMG_7943.jpeg" alt="Paper" class="w-full aspect-square object-cover rounded-2xl shadow-2xl" loading="lazy" decoding="async">
+                        <img src="https://aryasongs.github.io/images/IMG_7943.jpeg" alt="Paper" class="w-full aspect-square object-cover rounded-2xl shadow-2xl" loading="lazy">
                     </div>
-                    <div class="w-full md:w-1/2">
+                    <div class="w-full md:w-1/2 text-left">
                         <h5 class="text-yellow-500 font-bold tracking-widest uppercase text-sm mb-4">Latest Single</h5>
                         <h2 class="text-5xl md:text-6xl font-extrabold mb-6 tracking-tight text-white uppercase">Paper</h2>
                         <div class="flex flex-col gap-4">
@@ -217,16 +310,16 @@
         <!-- BIO SECTION -->
         <section id="about" class="py-32 px-6 bg-[#050505]">
             <div class="max-w-7xl mx-auto text-left">
-                <div class="grid lg:grid-cols-12 gap-16">
+                <div class="grid lg:grid-cols-12 gap-16 text-left">
                     <div class="lg:col-span-5 reveal">
                         <div class="sticky top-32">
-                            <img src="https://aryasongs.github.io/images/IMG_7943.jpeg" alt="Sharan Pooni" class="w-full rounded-[2.5rem] shadow-2xl transition-all duration-700" loading="lazy">
+                            <img src="https://aryasongs.github.io/images/IMG_7943.jpeg" alt="Sharan Pooni" class="w-full rounded-[2.5rem] shadow-2xl grayscale hover:grayscale-0 transition-all duration-700" loading="lazy">
                         </div>
                     </div>
-                    <div class="lg:col-span-7 reveal">
+                    <div class="lg:col-span-7 reveal text-left">
                         <h2 class="text-5xl font-extrabold mb-8 text-white uppercase tracking-tighter">Biography</h2>
                         <div class="space-y-6 text-gray-400 text-lg leading-relaxed">
-                            <p class="punjabi-text text-2xl text-white italic border-l-4 border-yellow-500 pl-6 mb-8">"ਸ਼ਰਨ ਪੂਨੀ, ਬੰਗਾ (ਪੰਜਾਬ) ਦਾ ਇੱਕ ਉਭਰਦਾ ਪੰਜਾਬੀ ਕਲਾਕਾਰ ਹੈ, ਜੋ ਆਪਣੀ ਭਾਵੁਕ ਸੰਗੀਤ ਲਈ ਜਾਣਿਆ ਜਾਂਦਾ ਹੈ।"</p>
+                            <p class="punjabi-text text-2xl text-white italic border-l-4 border-yellow-500 pl-6 mb-8 uppercase">"ਸ਼ਰਨ ਪੂਨੀ, ਬੰਗਾ (ਪੰਜਾਬ) ਦਾ ਇੱਕ ਉਭਰਦਾ ਪੰਜਾਬੀ ਕਲਾਕਾਰ ਹੈ, ਜੋ ਆਪਣੀ ਭਾਵੁਕ ਆਵਾਜ਼ ਲਈ ਜਾਣਿਆ ਜਾਂਦਾ ਹੈ।"</p>
                             <p>Sharan Pooni, born Gursharan Singh, is an emerging Punjabi music artist from Banga. Known for his debut "Paper" featuring Jass Bajwa, Sharan represents the new wave of soulful Punjabi music.</p>
                             <p>As a singer, lyricist, and producer, he maintains creative control over his sound, blending real-life stories with emotionally rich melodies.</p>
                         </div>
@@ -250,7 +343,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500 uppercase font-bold tracking-widest">Phone / Manager</p>
-                                    <p class="text-xl font-bold text-white">+91 79734 18735</p>
+                                    <p class="text-xl font-bold text-white tracking-widest uppercase">+91 79734 18735</p>
                                 </div>
                             </a>
                             
@@ -260,7 +353,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500 uppercase font-bold tracking-widest">WhatsApp</p>
-                                    <p class="text-xl font-bold text-white uppercase tracking-widest">Chat with Management</p>
+                                    <p class="text-xl font-bold text-white uppercase text-left tracking-widest">Chat with Management</p>
                                 </div>
                             </a>
 
@@ -270,7 +363,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500 uppercase font-bold tracking-widest">Email Booking</p>
-                                    <p class="text-xl font-bold text-white">sgursharn076@gmail.com</p>
+                                    <p class="text-xl font-bold text-white lowercase">sgursharn076@gmail.com</p>
                                 </div>
                             </a>
                         </div>
@@ -315,18 +408,14 @@
                 <i class="fas fa-arrow-left"></i> Back To Home
             </button>
             <h1 class="text-5xl font-extrabold mb-10 text-white uppercase tracking-tight">Privacy Policy</h1>
-            <div class="glass-card p-10 rounded-3xl space-y-8 text-gray-400 leading-relaxed">
+            <div class="glass-card p-10 rounded-3xl space-y-8 text-gray-400 leading-relaxed text-left">
                 <section>
                     <h2 class="text-xl font-bold text-white mb-4 uppercase tracking-widest text-sm">1. Data Collection</h2>
-                    <p>We collect information you provide directly through our booking form, including your name, city, and event details. This is used solely for the purpose of communication regarding artist bookings.</p>
+                    <p>Hamin aapke dwara booking form mein di gayi jaankari jaise naam, shehar aur event details collect karte hain. Iska istemal sirf booking communication ke liye kiya jata hai.</p>
                 </section>
                 <section>
                     <h2 class="text-xl font-bold text-white mb-4 uppercase tracking-widest text-sm">2. Usage of Data</h2>
-                    <p>Your contact details are shared only with Sharan Pooni's management team (SharanRecords). We do not sell or lease your personal information to third parties.</p>
-                </section>
-                <section>
-                    <h2 class="text-xl font-bold text-white mb-4 uppercase tracking-widest text-sm">3. External Links</h2>
-                    <p>Our site includes links to platforms like Spotify, Apple Music, and Bandsintown. Each platform has its own privacy policy which we do not control.</p>
+                    <p>Aapki contact details sirf Sharan Pooni ki management team (SharanRecords) ke saath share ki jati hain.</p>
                 </section>
             </div>
         </div>
@@ -339,14 +428,14 @@
                 <i class="fas fa-arrow-left"></i> Back To Home
             </button>
             <h1 class="text-5xl font-extrabold mb-10 text-white uppercase tracking-tight">Terms & Conditions</h1>
-            <div class="glass-card p-10 rounded-3xl space-y-8 text-gray-400 leading-relaxed">
+            <div class="glass-card p-10 rounded-3xl space-y-8 text-gray-400 leading-relaxed text-left">
                 <section>
                     <h2 class="text-xl font-bold text-white mb-4 uppercase tracking-widest text-sm">1. Intellectual Property</h2>
-                    <p>All music, images, and branding for "Sharan Pooni" is the property of SharanRecords. Unauthorized use is strictly prohibited.</p>
+                    <p>Sharan Pooni se judi sabhi music, images aur branding SharanRecords ki sampatti hain.</p>
                 </section>
                 <section>
                     <h2 class="text-xl font-bold text-white mb-4 uppercase tracking-widest text-sm">2. Booking Inquiries</h2>
-                    <p>Submitting a form does not constitute a contract. All bookings are subject to official confirmation via a signed agreement.</p>
+                    <p>Sabhi bookings management ke saath signed agreement ke baad hi confirm maani jayengi.</p>
                 </section>
             </div>
         </div>
@@ -376,6 +465,19 @@
     <script>
         const API_KEY = "3980fb67231ef697542591b23db68a94";
         const ARTIST_NAME = "Sharan Pooni";
+
+        // Modern Preloader Hiding logic
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            // Wait for animations to finish before unveiling
+            setTimeout(() => {
+                preloader.classList.add('loaded');
+                // Allow interactions after transition
+                setTimeout(() => {
+                    document.body.style.overflow = 'auto';
+                }, 1200);
+            }, 2500); // 2.5s for a cinematic feel
+        });
 
         function showPage(pageId) {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
@@ -417,7 +519,7 @@
                             <div class="flex flex-col md:flex-row items-center justify-between p-6 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all text-left">
                                 <div class="flex items-center gap-6 mb-4 md:mb-0 text-left w-full">
                                     <div class="text-center w-16">
-                                        <div class="text-yellow-500 font-bold text-xl leading-none uppercase">${date.toLocaleDateString('en-US', { month: 'short' })}</div>
+                                        <div class="text-yellow-500 font-bold text-xl leading-none uppercase tracking-tight">${date.toLocaleDateString('en-US', { month: 'short' })}</div>
                                         <div class="text-white font-extrabold text-2xl">${date.getDate()}</div>
                                     </div>
                                     <div><div class="font-bold text-lg text-white uppercase tracking-tight">${event.venue.name}</div><div class="text-sm text-gray-500 uppercase tracking-widest text-[10px]">${event.venue.city}, ${event.venue.country}</div></div>
