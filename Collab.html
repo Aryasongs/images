@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zeenat Bhagat X Sharan Pooni | Official Collaboration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&family=Cormorant+Garamond:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050505;
+            --accent-glow: rgba(234, 179, 8, 0.05);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .cinematic-bg {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, var(--accent-glow) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .artist-card {
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .artist-image {
+            width: 280px;
+            height: 380px;
+            object-fit: cover;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .avatar-placeholder {
+            width: 280px;
+            height: 380px;
+            background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+            border-radius: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .verified-tick {
+            width: 18px;
+            height: 18px;
+            fill: #0095f6;
+            display: inline-block;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .collab-x {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 200;
+            font-size: 8rem;
+            color: rgba(255, 255, 255, 0.05);
+            line-height: 1;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .song-title {
+            font-family: 'Cormorant Garamond', serif;
+            letter-spacing: -0.02em;
+        }
+
+        @media (max-width: 768px) {
+            body { overflow-y: auto; align-items: flex-start; padding: 4rem 0; }
+            .artist-image, .avatar-placeholder { width: 160px; height: 220px; }
+            .collab-x { font-size: 4rem; margin: 1rem 0; }
+            .collab-container { flex-direction: column; }
+        }
+
+        /* Subtle Entrance Animation */
+        .reveal {
+            animation: revealUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes revealUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cinematic-bg"></div>
+
+    <div class="max-w-6xl w-full px-6 text-center">
+        
+        <!-- Artist Profiles Section -->
+        <div class="collab-container flex items-center justify-center gap-8 md:gap-16 mb-20 reveal">
+            
+            <!-- Zeenat Bhagat -->
+            <div class="artist-card text-center">
+                <div class="avatar-placeholder mb-6 overflow-hidden">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.2">
+                        <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="white"/>
+                    </svg>
+                </div>
+                <h2 class="text-xl md:text-2xl font-bold tracking-tight">
+                    Zeenat Bhagat
+                    <svg class="verified-tick" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.9 14.7l-3.3-3.3c-.4-.4-.4-1 0-1.4s1-.4 1.4 0l2.6 2.6 5.3-5.3c.4-.4 1-.4 1.4 0s.4 1 0 1.4l-6 6c-.4.4-1 .4-1.4 0z"/>
+                    </svg>
+                </h2>
+                <p class="text-gray-500 text-xs uppercase tracking-[0.3em] font-bold mt-2">Singer & Lyricist</p>
+            </div>
+
+            <!-- Stylish X -->
+            <div class="collab-x italic">X</div>
+
+            <!-- Sharan Pooni -->
+            <div class="artist-card text-center">
+                <div class="mb-6 overflow-hidden rounded-[1.5rem]">
+                    <img src="https://aryasongs.github.io/images/IMG_7943.jpeg" 
+                         alt="Sharan Pooni" 
+                         class="artist-image hover:scale-105 transition-transform duration-700">
+                </div>
+                <h2 class="text-xl md:text-2xl font-bold tracking-tight">
+                    Sharan Pooni
+                    <svg class="verified-tick" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.9 14.7l-3.3-3.3c-.4-.4-.4-1 0-1.4s1-.4 1.4 0l2.6 2.6 5.3-5.3c.4-.4 1-.4 1.4 0s.4 1 0 1.4l-6 6c-.4.4-1 .4-1.4 0z"/>
+                    </svg>
+                </h2>
+                <p class="text-gray-500 text-xs uppercase tracking-[0.3em] font-bold mt-2">Lyricist & Producer</p>
+            </div>
+
+        </div>
+
+        <!-- Song Section -->
+        <div class="song-section reveal" style="animation-delay: 0.3s;">
+            <h1 class="song-title text-6xl md:text-8xl font-semibold italic text-white mb-4">
+                Still Yours
+            </h1>
+            <p class="text-yellow-500 font-black uppercase tracking-[0.6em] text-[10px] md:text-xs">
+                Coming Soon
+            </p>
+        </div>
+
+    </div>
+
+</body>
+</html>
+
