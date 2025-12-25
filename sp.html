@@ -1,4 +1,4 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@
     <title>Sharan Pooni | Official Artist Site</title>
     <meta name="title" content="Sharan Pooni | Official Artist Site">
     <meta name="description" content="Explore the journey of Sharan Pooni, a visionary Punjabi music artist and producer. Official home for 'Paper', 'Still Yours', and worldwide tour dates.">
-    <meta name="keywords" content="Sharan Pooni, Sharan Pooni Singer, Paper Sharan Pooni, Still Yours Sharan Pooni, SharanRecords, Punjabi Sad Music, Punjabi Music Producer, Jass Bajwa Collaboration, Banga Punjabi Artist">
+    <meta name="keywords" content="Sharan Pooni, Sharan Pooni Singer, Paper Sharan Pooni, Still Yours Sharan Pooni, SharanRecords, Punjabi Sad Music, Punjabi Music Producer, Jass Bajwa Collaboration, Banga Punjabi Artist, Zeenat Bhagat">
     <meta name="author" content="SharanRecords">
     <meta name="theme-color" content="#050505">
 
@@ -24,6 +24,13 @@
     <meta property="og:title" content="Sharan Pooni | Official Artist Site">
     <meta property="og:description" content="Experience the vibes of authentic Punjabi music. Singer, Lyricist, and Music Producer.">
     <meta property="og:image" content="https://aryasongs.github.io/images/IMG_7943.jpeg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://sharanpooni.com/">
+    <meta property="twitter:title" content="Sharan Pooni | Official Artist Site">
+    <meta property="twitter:description" content="Official website of Sharan Pooni. New release 'Still Yours' and official tour schedule.">
+    <meta property="twitter:image" content="https://aryasongs.github.io/images/IMG_7943.jpeg">
 
     <!-- Microsoft Clarity Analytics -->
     <script type="text/javascript">
@@ -45,7 +52,6 @@
             --bg-dark: #050505;
             --bg-card: #111111;
             --ease-in-out-expo: cubic-bezier(1, 0, 0, 1);
-            --verified-blue: #0095f6;
         }
         
         * { -webkit-tap-highlight-color: transparent; }
@@ -123,7 +129,7 @@
         }
         .mobile-menu-overlay.active { transform: translateY(0); }
         .menu-link {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: -0.04em;
@@ -153,37 +159,50 @@
         
         .spotify-color { color: #1DB954; }
         .apple-color { color: #FC3C44; }
+        .saavn-color { color: #00B2B2; }
         
         .page-content { display: none; }
         .page-content.active { display: block; }
         
-        /* Verification Tick Style */
-        .verified-badge {
-            color: var(--verified-blue);
-            font-size: 0.85em;
-            margin-left: 6px;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        /* Collab X Style */
-        .collab-x {
-            font-size: 5rem;
-            font-weight: 900;
-            color: rgba(255, 255, 255, 0.05);
-            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
-            line-height: 1;
-        }
+        input, select, textarea { background: rgba(255,255,255,0.03) !important; border: 1px solid rgba(255,255,255,0.08) !important; color: white !important; transition: all 0.3s; }
+        input:focus { border-color: var(--accent) !important; background: rgba(255,255,255,0.08) !important; outline: none; }
 
         @media (min-width: 768px) {
+            .tablet-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .tablet-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
             .menu-link { font-size: 5rem; }
-            .collab-x { font-size: 10rem; }
+        }
+
+        /* Verified Tick Style */
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #0095f6; /* Instagram Blue */
+            font-size: 0.8em;
+            margin-left: 8px;
+        }
+
+        /* Collab Section Styles */
+        .collab-x {
+            font-size: 12rem;
+            font-weight: 900;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            pointer-events: none;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body class="antialiased overflow-hidden">
 
-    <!-- Preloader -->
+    <!-- Cinematic Preloader -->
     <div id="preloader">
         <div class="loader-content">
             <div class="sp-logo-frame"><div class="sp-text">SP</div></div>
@@ -191,7 +210,7 @@
         </div>
     </div>
 
-    <!-- Navigation -->
+    <!-- Navigation Bar -->
     <nav class="fixed top-0 w-full z-[100] nav-blur h-20">
         <div class="max-w-7xl mx-auto px-6 md:px-12 h-full flex items-center justify-between">
             <a href="javascript:void(0)" onclick="showPage('home')" class="text-2xl font-black tracking-tighter uppercase relative z-[110]">
@@ -200,14 +219,17 @@
             
             <div class="hidden lg:flex items-center space-x-12 text-[10px] font-black uppercase tracking-[0.4em] text-gray-500">
                 <a href="javascript:void(0)" onclick="showPage('home')" class="hover:text-white transition-colors">Home</a>
-                <a href="javascript:void(0)" onclick="showPage('collab')" class="hover:text-yellow-500 transition-colors">Collab</a>
-                <a href="javascript:void(0)" onclick="navigateToSection('music')" class="hover:text-white transition-colors">Music</a>
+                <a href="javascript:void(0)" onclick="showPage('collab')" class="hover:text-white transition-colors">Collab</a>
+                <a href="javascript:void(0)" onclick="navigateToSection('music')" class="hover:text-white transition-colors text-yellow-500">Music</a>
                 <a href="javascript:void(0)" onclick="navigateToSection('live')" class="hover:text-white transition-colors">Tour</a>
                 <a href="javascript:void(0)" onclick="navigateToSection('about')" class="hover:text-white transition-colors">Bio</a>
-                <a href="javascript:void(0)" onclick="navigateToSection('contact')" class="hover:text-white transition-colors">Booking</a>
+                <a href="javascript:void(0)" onclick="navigateToSection('contact')" class="hover:text-white transition-colors text-white">Booking</a>
             </div>
 
             <div class="flex items-center gap-6 relative z-[110]">
+                <a href="javascript:void(0)" onclick="navigateToSection('contact')" class="hidden sm:inline-block px-8 py-2.5 bg-yellow-500 text-black rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 hover:bg-white transition-all">
+                    Inquire Now
+                </a>
                 <button id="menu-trigger" class="flex flex-col gap-1.5 p-2 focus:outline-none group">
                     <span class="w-8 h-0.5 bg-white transition-all duration-300"></span>
                     <span class="w-8 h-0.5 bg-white transition-all duration-300"></span>
@@ -221,225 +243,278 @@
     <div id="menu-overlay" class="mobile-menu-overlay">
         <div class="flex flex-col items-center">
             <div onclick="toggleMenu(); showPage('home')" class="menu-link">Home</div>
-            <div onclick="toggleMenu(); showPage('collab')" class="menu-link text-yellow-500 italic">Artist Collab</div>
-            <div onclick="toggleMenu(); navigateToSection('music')" class="menu-link">Music</div>
-            <div onclick="toggleMenu(); navigateToSection('live')" class="menu-link">Tour</div>
-            <div onclick="toggleMenu(); navigateToSection('about')" class="menu-link">The Story</div>
+            <div onclick="toggleMenu(); showPage('collab')" class="menu-link text-yellow-500">Artist Collab</div>
+            <div onclick="toggleMenu(); navigateToSection('announcement')" class="menu-link text-white/40">Announcement</div>
+            <div onclick="toggleMenu(); navigateToSection('music')" class="menu-link">Music Feed</div>
+            <div onclick="toggleMenu(); navigateToSection('live')" class="menu-link">Live Dates</div>
+            <div onclick="toggleMenu(); navigateToSection('about')" class="menu-link">The Journey</div>
             <div onclick="toggleMenu(); navigateToSection('contact')" class="menu-link">Booking</div>
-            <div onclick="toggleMenu(); showPage('legal')" class="menu-link text-white/20 text-2xl lowercase italic">Legal</div>
         </div>
     </div>
 
-    <!-- PAGE 1: HOME -->
+    <!-- MAIN HOME PAGE -->
     <main id="home-page" class="page-content active">
         <!-- Hero Section -->
         <section class="relative h-[100svh] flex items-center overflow-hidden">
             <div class="absolute inset-0 z-0 overflow-hidden">
-                <img src="https://aryasongs.github.io/images/IMG_7943.jpeg" alt="Sharan Pooni" class="w-full h-full object-cover object-[center_20%] scale-110" id="heroImage">
+                <img src="https://aryasongs.github.io/images/IMG_7943.jpeg" alt="Sharan Pooni" class="w-full h-full object-cover object-[center_20%] scale-110 transition-all duration-1000" id="heroImage" fetchpriority="high">
                 <div class="absolute inset-0 hero-overlay"></div>
             </div>
             <div class="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pt-20">
                 <div class="max-w-4xl text-left">
                     <span class="inline-block px-4 py-1 bg-yellow-500/10 text-yellow-500 text-[10px] font-black tracking-[0.4em] uppercase mb-6 rounded border border-yellow-500/20">Official Artist Portal</span>
                     <h1 class="text-7xl md:text-9xl lg:text-[10rem] font-black mb-6 leading-[0.85] tracking-tighter text-white">Sharan <br><span class="text-yellow-500">Pooni</span></h1>
+                    
                     <div class="flex items-center gap-8 mb-10 text-2xl text-gray-500">
                         <a href="https://www.instagram.com/sharnpooni89?igsh=a3M1OXRpN28xOWN2&utm_source=qr" target="_blank" class="hover:text-pink-500 transition-all"><i class="fab fa-instagram"></i></a>
                         <a href="https://www.facebook.com/share/1A2avVFzPs/?mibextid=wwXIfr" target="_blank" class="hover:text-blue-600 transition-all"><i class="fab fa-facebook"></i></a>
+                        <a href="https://snapchat.com/t/sNCMHVcF" target="_blank" class="hover:text-yellow-400 transition-all"><i class="fab fa-snapchat"></i></a>
+                    </div>
+
+                    <div class="mb-12 h-[40px] overflow-hidden">
+                        <iframe src="https://bandsintown.com/artist/id_15625448/track_button?actor_type=ARTIST&background_color=rgba(0,180,179,1)&hover_color=rgba(0,180,179,1)&font=Helvetica&bitIcon=show&text=FOLLOW&text_color=rgba(255,255,255,1)&locale=en&display_tracker_count=hide&size=large" title="bandsintown" height="35" width="200" scrolling="no" frameborder="0" allowtransparency="true"></iframe>
                     </div>
                     <div class="flex flex-wrap gap-4">
-                        <a href="javascript:void(0)" onclick="showPage('collab')" class="bg-yellow-500 text-black px-12 py-5 rounded-full font-black flex items-center gap-3 hover:scale-105 transition-all uppercase tracking-widest text-[11px]">View Collab</a>
-                        <a href="#music" class="px-12 py-5 rounded-full font-black border border-white/20 hover:bg-white/10 transition-all text-white uppercase tracking-widest text-[11px]">Explore Music</a>
+                        <a href="#announcement" class="bg-yellow-500 text-black px-12 py-5 rounded-full font-black flex items-center gap-3 hover:scale-105 hover:bg-white transition-all uppercase tracking-widest text-[11px]">Latest News</a>
+                        <a href="#music" class="px-12 py-5 rounded-full font-black border border-white/20 hover:bg-white/10 transition-all text-white uppercase tracking-widest text-[11px]">Discography</a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- OLD SECTIONS (Announcement, Music, Live, About, Contact) - INTACT -->
-        <!-- Announcement -->
-        <section id="announcement" class="py-32 px-6 md:px-12 bg-[#080808]">
+        <!-- ANNOUNCEMENT: STILL YOURS -->
+        <section id="announcement" class="py-32 px-6 md:px-12 bg-[#080808] relative">
             <div class="max-w-7xl mx-auto">
-                <div class="flex flex-col lg:flex-row items-center gap-16 reveal">
+                <div class="flex flex-col lg:flex-row items-center gap-16 lg:gap-24 reveal">
                     <div class="w-full lg:w-1/2">
                         <div class="relative overflow-hidden rounded-[3rem]">
-                            <img src="https://aryasongs.github.io/images/8B6958F4-A802-4886-A76E-96213F940229.jpeg" alt="Still Yours" class="w-full aspect-square object-cover shadow-2xl img-animate">
+                            <img src="https://aryasongs.github.io/images/8B6958F4-A802-4886-A76E-96213F940229.jpeg" alt="Still Yours" class="w-full aspect-square object-cover shadow-[0_0_80px_rgba(0,0,0,0.6)] img-animate">
                         </div>
                     </div>
                     <div class="w-full lg:w-1/2 text-left">
                         <span class="inline-block px-4 py-1 bg-yellow-500/10 text-yellow-500 text-[10px] font-black tracking-[0.5em] uppercase mb-8 rounded">Coming Soon</span>
                         <h2 class="text-7xl md:text-9xl font-black text-white tracking-tighter uppercase mb-8 leading-[0.8]">Still <br><span class="text-yellow-500">Yours</span></h2>
-                        <p class="text-white text-xl font-extrabold uppercase">Sharan Pooni • Zeenat Bhagat</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                            <div class="border-l-2 border-white/10 pl-6">
+                                <p class="text-gray-600 text-[10px] font-black uppercase tracking-[0.3em] mb-2">Credits</p>
+                                <p class="text-white text-xl font-extrabold uppercase">Sharan Pooni • Zeenat Bhagat</p>
+                            </div>
+                            <div class="border-l-2 border-white/10 pl-6">
+                                <p class="text-gray-600 text-[10px] font-black uppercase tracking-[0.3em] mb-2">Production</p>
+                                <p class="text-white text-xl font-extrabold uppercase">SharanRecords</p>
+                            </div>
+                        </div>
+                        <div class="p-10 glass-card rounded-[2.5rem] border-white/5">
+                            <p class="text-gray-400 text-lg leading-relaxed italic">"A cinematic exploration of love and legacy. Still Yours represents the next evolution of Sharan Pooni's signature emotional sound."</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- MUSIC SECTION WITH SPOTIFY DATA -->
         <section id="music" class="py-32 px-6 md:px-12 bg-[#050505]">
-            <!-- Content unchanged -->
-            <div class="max-w-7xl mx-auto reveal text-left">
-                <h5 class="text-yellow-500 font-bold uppercase text-[10px] tracking-[0.4em] mb-4">Live Feed</h5>
-                <h2 class="text-6xl md:text-8xl font-black text-white tracking-tighter uppercase mb-16">Paper</h2>
-                <div class="glass-card p-10 rounded-[3rem] flex flex-col md:flex-row gap-12 items-center">
-                    <img id="sp-album-img" src="https://i.scdn.co/image/ab67616d0000b273554e142fca94da1cb90838d9" class="w-full md:w-1/3 rounded-2xl shadow-2xl img-animate">
-                    <div class="flex-1">
-                        <h3 id="sp-album-name" class="text-4xl md:text-6xl font-black text-white uppercase mb-4 tracking-tighter">Paper</h3>
-                        <p id="sp-album-artists" class="text-xl text-yellow-500 font-bold mb-8">Sharan Pooni • Jass Bajwa</p>
-                        <a href="https://open.spotify.com/album/7yk8ot7uGQcsQAbeYRj7AJ" target="_blank" class="px-10 py-4 bg-spotify-color text-black font-black rounded-full text-xs uppercase tracking-widest">Listen on Spotify</a>
+            <div class="max-w-7xl mx-auto">
+                <div class="text-left mb-20 reveal">
+                    <h5 class="text-yellow-500 font-bold tracking-[0.4em] uppercase text-[10px] mb-2">Live Metadata</h5>
+                    <h2 class="text-6xl md:text-8xl font-black text-white tracking-tighter uppercase">Discography</h2>
+                </div>
+                <div class="reveal">
+                    <div class="flex flex-col lg:flex-row gap-16 items-center p-8 md:p-20 glass-card rounded-[4rem] bg-white/[0.01]">
+                        <div class="w-full lg:w-1/2 overflow-hidden rounded-[2.5rem]">
+                            <img id="sp-album-img" src="https://i.scdn.co/image/ab67616d0000b273554e142fca94da1cb90838d9" alt="Paper Album Art" class="w-full shadow-2xl img-animate">
+                        </div>
+                        <div class="flex-1 text-left">
+                            <div class="flex items-center gap-4 mb-10">
+                                <i class="fab fa-spotify spotify-color text-4xl"></i>
+                                <span class="text-[10px] font-black tracking-[0.6em] text-gray-700 uppercase">Authenticated Streaming</span>
+                            </div>
+                            <h3 id="sp-album-name" class="text-6xl md:text-8xl font-black text-white uppercase mb-6 tracking-tighter leading-none">Paper</h3>
+                            <p id="sp-album-artists" class="text-2xl md:text-3xl text-yellow-500 font-black mb-10 uppercase tracking-tighter">Sharan Pooni • Jass Bajwa</p>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-10 mb-12 py-10 border-y border-white/5 text-[9px] uppercase font-black text-gray-700">
+                                <div><p class="mb-2">Release Date</p><p class="text-white text-base">2025-11-15</p></div>
+                                <div><p class="mb-2">Total Tracks</p><p class="text-white text-base">1 Single</p></div>
+                                <div><p class="mb-2">Original Label</p><p class="text-white text-base tracking-widest">SRD</p></div>
+                            </div>
+                            <a href="https://open.spotify.com/album/7yk8ot7uGQcsQAbeYRj7AJ" target="_blank" class="inline-flex items-center gap-6 px-12 py-6 bg-spotify-color text-black font-black rounded-full text-[10px] uppercase tracking-[0.2em] hover:scale-105 hover:bg-white transition-all">PLAY ON SPOTIFY <i class="fas fa-play"></i></a>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Live Tour -->
+        <!-- TOUR SECTION -->
         <section id="live" class="py-32 px-6 md:px-12 bg-[#0a0a0a]">
-             <div class="max-w-7xl mx-auto">
-                <div id="tour-dates-container" class="reveal">
-                    <h2 class="text-6xl font-black text-white mb-12 tracking-tighter uppercase">The SP Back</h2>
-                    <div id="events-loader" class="text-center py-10"><i class="fas fa-spinner fa-spin text-yellow-500 text-3xl"></i></div>
+            <div class="max-w-7xl mx-auto">
+                <div class="mb-16 reveal text-left">
+                    <h5 class="text-yellow-500 font-bold tracking-[0.4em] uppercase text-[10px] mb-2 uppercase">Concert Spotlight</h5>
+                    <h2 class="text-6xl md:text-8xl font-black text-white tracking-tighter uppercase">The SP Back</h2>
+                </div>
+                <div class="grid lg:grid-cols-3 gap-8 items-stretch reveal">
+                    <div class="glass-card p-12 rounded-[3rem] flex flex-col justify-center text-center bg-yellow-500/[0.03] border-yellow-500/20">
+                        <div class="text-yellow-500 font-black text-7xl mb-2 uppercase tracking-tighter">Dec 31</div>
+                        <div class="text-2xl font-bold uppercase tracking-[0.3em] text-white">Wednesday</div>
+                        <div class="h-0.5 bg-yellow-500/20 w-16 mx-auto my-8"></div>
+                        <div class="text-3xl font-light text-gray-500 uppercase tracking-[0.4em]">7:00 PM</div>
+                    </div>
+                    <div class="glass-card p-12 rounded-[3rem] lg:col-span-2 flex flex-col md:flex-row items-center gap-12 bg-white/[0.01]">
+                        <div class="flex-1 text-white text-left">
+                            <h4 class="text-yellow-500 font-bold uppercase tracking-widest text-[10px] mb-6">Venue Confirmation</h4>
+                            <h3 class="text-3xl md:text-5xl font-black mb-6 tracking-tighter uppercase leading-tight">Jammu Kashmir - <br>Punjab Border</h3>
+                            <p class="text-gray-500 text-lg mb-10 leading-relaxed uppercase tracking-widest font-black opacity-50">FRVF+HQ9, Basohli 184201, PB</p>
+                            <a href="https://www.shazam.com/event/43233569-9f5c-4a3f-8104-febc4ad73fbf" target="_blank" class="inline-flex items-center gap-4 text-white font-black hover:text-yellow-500 transition-colors uppercase tracking-[0.3em] text-[9px] border-b border-white/10 pb-2">MAPS & DIRECTIONS <i class="fas fa-arrow-right text-[8px]"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div id="tour-dates-container" class="mt-24 reveal">
+                    <div class="flex items-center justify-between mb-12"><h4 class="text-xs font-black uppercase tracking-[0.5em] text-gray-700">Official Schedule</h4><div class="h-px bg-white/5 grow ml-10"></div></div>
+                    <div id="events-loader" class="text-center py-20 text-yellow-500 text-3xl"><i class="fas fa-circle-notch fa-spin"></i></div>
                     <div id="events-list" class="space-y-6"></div>
                 </div>
-             </div>
+            </div>
         </section>
 
-        <!-- Biography -->
-        <section id="about" class="py-32 px-6 md:px-12 bg-[#050505]">
+        <!-- BIO SECTION -->
+        <section id="about" class="py-32 px-6 md:px-12 bg-[#050505] overflow-hidden">
             <div class="max-w-7xl mx-auto">
-                <div class="grid lg:grid-cols-12 gap-16 reveal">
-                    <div class="lg:col-span-5"><img src="https://aryasongs.github.io/images/IMG_7943.jpeg" class="w-full rounded-[3rem] shadow-2xl img-animate" id="storyImage"></div>
-                    <div class="lg:col-span-7 text-left">
-                        <h2 class="text-6xl font-black text-white tracking-tighter uppercase mb-8">Biography</h2>
-                        <div class="space-y-6 text-gray-400 text-lg">
-                            <p>Born as <span class="text-white">Gursharan Singh</span> on Feb 02, 2006, in Banga, Sharan Pooni is a self-taught producer and visionary artist.</p>
-                            <p class="punjabi-text text-2xl text-yellow-500 italic">"ਸੰਗੀਤ ਸਿਰਫ ਆਵਾਜ਼ ਨਹੀਂ, ਇਹ ਮੇਰੀਆਂ ਭਾਵਨਾਵਾਂ ਦਾ ਪ੍ਰਗਟਾਵਾ ਹੈ।"</p>
+                <div class="flex flex-col lg:flex-row items-center gap-20 mb-32 reveal">
+                    <div class="w-full lg:w-2/5 overflow-hidden rounded-[4rem]"><img src="https://aryasongs.github.io/images/IMG_7943.jpeg" alt="Sharan Pooni" id="storyImage" class="w-full shadow-2xl img-animate"></div>
+                    <div class="w-full lg:w-3/5 text-left">
+                        <h2 class="text-7xl md:text-[9rem] font-black text-white tracking-tighter uppercase mb-10 leading-none">The <span class="text-yellow-500">Odyssey</span></h2>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 py-10 border-y border-white/5 text-[9px] uppercase tracking-[0.4em] text-gray-700 font-black">
+                            <div><p class="mb-2">Identity</p><p class="text-white text-sm uppercase">Gursharan Singh</p></div>
+                            <div><p class="mb-2">Timeline</p><p class="text-white text-sm">02.02.2006</p></div>
+                            <div><p class="mb-2">Heritage</p><p class="text-white text-sm uppercase">Banga, PB</p></div>
+                            <div><p class="mb-2">Role</p><p class="text-white text-sm uppercase">Music Producer</p></div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Contact -->
+        <!-- CONTACT SECTION -->
         <section id="contact" class="py-32 px-6 md:px-12 bg-[#0a0a0a]">
-            <div class="max-w-7xl mx-auto reveal text-left">
-                <h2 class="text-6xl font-black text-white uppercase tracking-tighter mb-12 leading-none">Booking <span class="text-yellow-500">&</span> Inquiry</h2>
-                <div class="grid md:grid-cols-2 gap-16">
-                    <div class="space-y-6">
-                        <div class="glass-card p-8 rounded-3xl"><p class="text-xs text-gray-500 uppercase mb-2">Management</p><p class="text-2xl font-black">+91 79734 18735</p></div>
-                        <div class="glass-card p-8 rounded-3xl"><p class="text-xs text-gray-500 uppercase mb-2">Email</p><p class="text-xl font-bold">sgursharn076@gmail.com</p></div>
+            <div class="max-w-7xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-20">
+                    <div class="reveal text-left">
+                        <h2 class="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter mb-10 leading-none">Global <br><span class="text-yellow-500">Booking</span></h2>
+                        <div class="space-y-6 text-left">
+                            <a href="tel:+917973418735" class="glass-card p-8 rounded-[2rem] flex items-center gap-8 group">
+                                <div class="w-16 h-16 bg-yellow-500/10 rounded-2xl flex items-center justify-center text-yellow-500 text-xl"><i class="fas fa-phone-alt"></i></div>
+                                <div><p class="text-[10px] text-gray-700 uppercase font-black tracking-widest mb-2">Official Line</p><p class="text-2xl font-black text-white uppercase">+91 79734 18735</p></div>
+                            </a>
+                            <a href="mailto:sgursharn076@gmail.com" class="glass-card p-8 rounded-[2rem] flex items-center gap-8 group">
+                                <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 text-xl"><i class="fas fa-envelope"></i></div>
+                                <div><p class="text-[10px] text-gray-700 uppercase font-black tracking-widest mb-2">Business Email</p><p class="text-xl font-bold text-white lowercase">sgursharn076@gmail.com</p></div>
+                            </a>
+                        </div>
                     </div>
-                    <div class="glass-card p-10 rounded-[3rem] bg-white/[0.01]">
-                        <form onsubmit="handleFormSubmit(event)" class="space-y-6">
-                            <input type="text" placeholder="Name" required class="w-full p-5 rounded-2xl">
-                            <input type="text" placeholder="City" required class="w-full p-5 rounded-2xl">
-                            <button type="submit" class="w-full bg-yellow-500 text-black py-5 rounded-2xl font-black uppercase text-[11px] tracking-widest">Submit Inquiry</button>
-                        </form>
-                        <div id="form-message" class="hidden text-yellow-500 mt-4 text-center font-bold">Sent!</div>
+                    <div class="reveal">
+                        <div class="glass-card p-10 md:p-16 rounded-[4rem] border-yellow-500/10 text-left bg-white/[0.01]">
+                            <h3 class="text-3xl font-black mb-10 text-white uppercase tracking-tighter">Inquiry Form</h3>
+                            <form id="booking-form" onsubmit="handleFormSubmit(event)" class="space-y-8">
+                                <div class="grid md:grid-cols-2 gap-8">
+                                    <div><label class="text-[9px] font-black uppercase tracking-[0.4em] text-gray-700 mb-3 block">Full Name</label><input type="text" id="form-name" required class="w-full p-5 rounded-2xl text-white"></div>
+                                    <div><label class="text-[9px] font-black uppercase tracking-[0.4em] text-gray-700 mb-3 block">Location</label><input type="text" id="form-city" required class="w-full p-5 rounded-2xl text-white"></div>
+                                </div>
+                                <button type="submit" class="w-full bg-yellow-500 text-black py-6 rounded-2xl font-black hover:bg-white transition-all uppercase tracking-[0.4em] text-[11px]">Send Request</button>
+                            </form>
+                            <div id="form-message" class="mt-8 text-center text-sm font-black hidden text-yellow-500 uppercase tracking-widest">Sent Successfully</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- NEW PAGE 2: ARTIST COLLABORATION (THE REQUESTED PAGE) -->
-    <main id="collab-page" class="page-content py-32 px-6 md:px-12 bg-black min-h-screen">
-        <div class="max-w-7xl mx-auto text-center">
-            <div class="mb-20 reveal">
-                <span class="inline-block px-4 py-1 bg-yellow-500/10 text-yellow-500 text-[10px] font-black tracking-[0.6em] uppercase mb-4 rounded">Elite Collaboration</span>
-                <h2 class="text-5xl md:text-8xl font-black text-white tracking-tighter uppercase leading-none">The <span class="text-yellow-500">Powerhouse</span> Project</h2>
+    <!-- ARTIST COLLABORATION PAGE (NEW) -->
+    <main id="collab-page" class="page-content py-32 px-6">
+        <div class="max-w-7xl mx-auto text-center relative overflow-hidden">
+            <!-- Background Decoration -->
+            <div class="absolute inset-0 z-0 opacity-10 flex items-center justify-center pointer-events-none">
+                <div class="text-[30rem] font-black text-white/50 tracking-tighter">COL</div>
             </div>
 
-            <!-- PROFILES GRID -->
-            <div class="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-0 reveal relative mb-32">
-                
-                <!-- ZEENAT BHAGAT (Singer & Lyricist) -->
-                <div class="w-full lg:w-2/5 group flex flex-col items-center">
-                    <div class="relative mb-10 overflow-hidden rounded-full w-64 h-64 md:w-80 md:h-80 bg-white/[0.05] border border-white/10 flex items-center justify-center">
-                        <!-- Blank DP Avatar SVG -->
-                        <svg class="w-1/2 h-1/2 text-white/20" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                        </svg>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            <div class="relative z-10 reveal">
+                <span class="inline-block px-4 py-1 bg-yellow-500/10 text-yellow-500 text-[11px] font-black tracking-[0.5em] uppercase mb-12 rounded border border-yellow-500/20">Artist Collaboration</span>
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-tight mb-24">Visionary <br><span class="text-yellow-500">Alliance</span></h1>
+
+                <!-- Profile Grid -->
+                <div class="relative flex flex-col md:flex-row items-center justify-center gap-12 lg:gap-32 mb-32">
+                    <div class="collab-x hidden lg:block">X</div>
+                    
+                    <!-- Zeenat Bhagat -->
+                    <div class="w-full md:w-1/3 text-center space-y-8 reveal">
+                        <div class="relative group mx-auto w-64 h-64 lg:w-80 lg:h-80 overflow-hidden rounded-full border-4 border-yellow-500/20 p-2">
+                            <img src="https://aryasongs.github.io/images/4993933C-05A9-46A2-AEBE-B408194F86CD.jpeg" alt="Zeenat Bhagat" class="w-full h-full object-cover rounded-full transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <div>
+                            <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter flex items-center justify-center">
+                                Zeenat Bhagat <span class="verified-badge"><i class="fas fa-check-circle"></i></span>
+                            </h2>
+                            <p class="text-yellow-500 font-black uppercase tracking-[0.3em] text-xs mt-2">Singer & Lyricist</p>
+                        </div>
                     </div>
-                    <h3 class="text-4xl md:text-5xl font-black text-white tracking-tighter flex items-center mb-2">
-                        Zeenat Bhagat
-                        <span class="verified-badge"><i class="fas fa-certificate relative"></i><i class="fas fa-check absolute text-[10px] text-white"></i></span>
-                    </h3>
-                    <p class="text-yellow-500 font-bold uppercase tracking-[0.3em] text-[11px]">Singer • Lyricist</p>
-                </div>
 
-                <!-- STYLISH "X" DIVIDER -->
-                <div class="collab-x hidden lg:block z-10">X</div>
-                <div class="collab-x lg:hidden py-10">X</div>
+                    <!-- Stylish X for Mobile -->
+                    <div class="lg:hidden text-6xl font-black text-white/20">X</div>
 
-                <!-- SHARAN POONI (Producer & Lyricist) -->
-                <div class="w-full lg:w-2/5 group flex flex-col items-center">
-                    <div class="relative mb-10 overflow-hidden rounded-full w-64 h-64 md:w-80 md:h-80 border-2 border-yellow-500 shadow-[0_0_50px_rgba(234,179,8,0.2)]">
-                        <img src="https://aryasongs.github.io/images/IMG_7943.jpeg" alt="Sharan Pooni" class="w-full h-full object-cover img-animate">
-                    </div>
-                    <h3 class="text-4xl md:text-5xl font-black text-white tracking-tighter flex items-center mb-2">
-                        Sharan Pooni
-                        <span class="verified-badge"><i class="fas fa-certificate relative"></i><i class="fas fa-check absolute text-[10px] text-white"></i></span>
-                    </h3>
-                    <p class="text-yellow-500 font-bold uppercase tracking-[0.3em] text-[11px]">Lyricist • Music Producer</p>
-                </div>
-
-            </div>
-
-            <!-- COLLAB SONG SECTION -->
-            <div class="reveal max-w-4xl mx-auto">
-                <div class="glass-card p-10 md:p-16 rounded-[4rem] border-white/5 relative overflow-hidden bg-gradient-to-br from-white/[0.02] to-transparent">
-                    <div class="absolute top-0 right-0 p-8 text-white/5 font-black text-9xl">01</div>
-                    <div class="text-left">
-                        <span class="text-xs font-black uppercase tracking-[0.5em] text-gray-500 mb-4 block">Coming Soon Project</span>
-                        <h4 class="text-5xl md:text-7xl font-black text-white tracking-tighter uppercase mb-6">Still Yours</h4>
-                        <p class="text-gray-400 text-lg md:text-xl leading-relaxed mb-10 max-w-2xl">
-                            The most anticipated collaboration in the modern Punjabi scene. A soulful dialogue between vocals and production that defines a new era.
-                        </p>
-                        <div class="flex items-center gap-4">
-                            <div class="h-1.5 w-12 bg-yellow-500 rounded-full"></div>
-                            <span class="text-[10px] font-black uppercase tracking-[0.4em] text-yellow-500">Locked at SharanRecords</span>
+                    <!-- Sharan Pooni -->
+                    <div class="w-full md:w-1/3 text-center space-y-8 reveal">
+                        <div class="relative group mx-auto w-64 h-64 lg:w-80 lg:h-80 overflow-hidden rounded-full border-4 border-yellow-500/20 p-2">
+                            <img src="https://aryasongs.github.io/images/IMG_7943.jpeg" alt="Sharan Pooni" class="w-full h-full object-cover rounded-full transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <div>
+                            <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter flex items-center justify-center">
+                                Sharan Pooni <span class="verified-badge"><i class="fas fa-check-circle"></i></span>
+                            </h2>
+                            <p class="text-yellow-500 font-black uppercase tracking-[0.3em] text-xs mt-2">Lyricist & Producer</p>
                         </div>
                     </div>
                 </div>
+
+                <!-- Collaborative Work -->
+                <div class="max-w-3xl mx-auto glass-card p-12 rounded-[3rem] border-yellow-500/20 bg-white/[0.01] reveal">
+                    <p class="text-[10px] font-black uppercase tracking-[0.5em] text-gray-500 mb-6 italic">Featured Collaborative Project</p>
+                    <h3 class="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-4">Still Yours</h3>
+                    <div class="flex items-center justify-center gap-4 mb-8">
+                        <span class="w-10 h-px bg-white/10"></span>
+                        <span class="text-yellow-500 font-black uppercase tracking-widest text-[11px] animate-pulse">Coming Soon</span>
+                        <span class="w-10 h-px bg-white/10"></span>
+                    </div>
+                    <p class="text-gray-400 text-lg leading-relaxed italic">"Two distinct voices, one haunting melody. A lyrical masterclass produced by Sharan Pooni featuring the soulful vocals of Zeenat Bhagat."</p>
+                </div>
             </div>
         </div>
     </main>
 
-    <!-- PAGE 3: LEGAL CENTER -->
-    <main id="legal-page" class="page-content py-32 px-6 md:px-12 bg-[#050505]">
-        <div class="max-w-5xl mx-auto text-left">
-            <button onclick="showPage('home')" class="mb-12 text-yellow-500 font-bold flex items-center gap-3 uppercase text-[10px] tracking-widest"><i class="fas fa-arrow-left text-[8px]"></i> Core Site</button>
+    <!-- LEGAL CENTER PAGE -->
+    <main id="legal-page" class="page-content py-32 px-6">
+        <div class="max-w-6xl mx-auto text-left">
+            <button onclick="showPage('home')" class="mb-12 text-yellow-500 font-bold flex items-center gap-3 hover:gap-6 transition-all uppercase tracking-[0.4em] text-[10px]"><i class="fas fa-arrow-left text-[8px]"></i> Core Site</button>
             <h1 class="text-6xl md:text-8xl font-black text-white uppercase tracking-tight mb-16">The <br><span class="text-yellow-500">Legal Center</span></h1>
-            <div class="grid md:grid-cols-4 gap-12">
+            <div class="grid md:grid-cols-4 gap-16">
                 <div class="md:col-span-1 space-y-4">
-                    <div class="p-5 bg-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest text-yellow-500 border-l-4 border-yellow-500">Full Compliance</div>
+                    <a href="#compliance" class="block p-5 bg-white/5 rounded-2xl text-[9px] font-black uppercase tracking-widest text-yellow-500 border-l-4 border-yellow-500">1. Compliance</a>
                 </div>
-                <div class="md:col-span-3 text-gray-400 text-sm space-y-20 leading-relaxed">
-                    <section id="privacy-full">
-                        <h2 class="text-2xl font-black text-white mb-6 uppercase tracking-widest">Protocol Version 4.0</h2>
-                        <p>A to Z legally protected framework for Sharan Pooni. Digital distribution, master rights, and intellectual property are registered under SharanRecords (SRD). No data mining or scraping is permitted on this portal.</p>
-                        <p class="mt-4">Booking forms use end-to-end encryption. Performance contracts are governed by Indian Contract Act, 1872.</p>
-                    </section>
+                <div class="md:col-span-3 space-y-24 text-gray-500 leading-relaxed text-lg text-left">
+                    <section id="compliance"><h2 class="text-3xl font-black text-white mb-10 uppercase tracking-[0.2em]">Global Compliance</h2><p>Official portal of Sharan Pooni managed by SharanRecords.</p></section>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Footer -->
+    <!-- Global Footer -->
     <footer class="py-24 px-6 border-t border-white/5 text-center bg-[#050505]">
         <div class="max-w-7xl mx-auto">
             <div class="text-4xl font-black mb-12 tracking-tighter uppercase text-white">SP<span class="text-yellow-500">.</span></div>
             <div class="flex flex-wrap justify-center gap-10 mb-16 text-[10px] font-black uppercase tracking-[0.4em] text-gray-700">
                 <a href="javascript:void(0)" onclick="navigateToSection('music')" class="hover:text-white transition-colors">Discography</a>
                 <a href="javascript:void(0)" onclick="navigateToSection('live')" class="hover:text-white transition-colors">Tour Schedule</a>
-                <a href="javascript:void(0)" onclick="showPage('collab')" class="hover:text-yellow-500 transition-colors">Artist Collab</a>
-                <a href="javascript:void(0)" onclick="navigateToSection('contact')" class="hover:text-white transition-colors">Contact</a>
+                <a href="javascript:void(0)" onclick="showPage('collab')" class="hover:text-white transition-colors">Collab</a>
+                <a href="javascript:void(0)" onclick="showPage('legal')" class="hover:text-white transition-colors">Legal</a>
             </div>
-            <div class="space-y-4">
-                <p class="text-gray-600 text-[11px] font-bold uppercase tracking-[0.2em]">&copy; 2025 SharanRecords. All Rights Reserved.</p>
-                <div class="flex justify-center gap-10">
-                    <a href="javascript:void(0)" onclick="showPage('legal')" class="text-[10px] text-gray-800 font-black uppercase tracking-widest hover:text-yellow-500">Legal Framework</a>
-                    <p class="text-[10px] text-gray-900 font-black uppercase tracking-widest">Label: SRD</p>
-                </div>
-            </div>
+            <p class="text-gray-600 text-[11px] font-bold uppercase tracking-[0.2em]">&copy; 2025 SharanRecords. All Rights Reserved.</p>
         </div>
     </footer>
 
@@ -447,10 +522,34 @@
         const API_KEY_BANDS = "3980fb67231ef697542591b23db68a94";
         const ARTIST_NAME = "Sharan Pooni";
 
+        // Scroll Reveal
         const scrollObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.1, rootMargin: "0px 0px -100px 0px" });
 
+        // Page System
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.getElementById(`${pageId}-page`).classList.add('active');
+            window.scrollTo(0, 0);
+            refreshObservers();
+        }
+
+        function navigateToSection(sectionId) {
+            showPage('home');
+            setTimeout(() => {
+                const element = document.getElementById(sectionId);
+                if (element) {
+                    const offset = 80;
+                    const pos = element.getBoundingClientRect().top + window.pageYOffset - offset;
+                    window.scrollTo({ top: pos, behavior: 'smooth' });
+                }
+            }, 150);
+        }
+
+        function refreshObservers() { document.querySelectorAll('.reveal, .img-animate').forEach(el => scrollObserver.observe(el)); }
+
+        // Menu
         const menuTrigger = document.getElementById('menu-trigger');
         const menuOverlay = document.getElementById('menu-overlay');
         function toggleMenu() {
@@ -463,36 +562,17 @@
         }
         menuTrigger.addEventListener('click', toggleMenu);
 
-        function showPage(pageId) {
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-            document.getElementById(`${pageId}-page`).classList.add('active');
-            window.scrollTo(0, 0);
-            refreshObservers();
-        }
-
-        function navigateToSection(sectionId) {
-            showPage('home');
-            setTimeout(() => {
-                const element = document.getElementById(sectionId);
-                if (element) window.scrollTo({ top: element.getBoundingClientRect().top + window.pageYOffset - 80, behavior: 'smooth' });
-            }, 150);
-        }
-
-        function refreshObservers() {
-            document.querySelectorAll('.reveal, .img-animate').forEach(el => scrollObserver.observe(el));
-        }
-
+        // API Init
         window.addEventListener('load', () => {
             refreshObservers();
-            const preloader = document.getElementById('preloader');
             setTimeout(() => {
-                preloader.classList.add('loaded');
+                document.getElementById('preloader').classList.add('loaded');
                 document.body.classList.remove('overflow-hidden');
                 loadTourData();
             }, 2500);
         });
 
-        function handleFormSubmit(e) { e.preventDefault(); document.getElementById('form-message').classList.remove('hidden'); setTimeout(() => document.getElementById('form-message').classList.add('hidden'), 5000); }
+        function handleFormSubmit(e) { e.preventDefault(); document.getElementById('form-message').classList.remove('hidden'); document.getElementById('booking-form').reset(); }
 
         async function loadTourData() {
             const list = document.getElementById('events-list');
@@ -503,10 +583,12 @@
                 if (events && events.length > 0) {
                     list.innerHTML = events.map(ev => {
                         const d = new Date(ev.datetime);
-                        return `<div class="flex flex-col md:flex-row items-center justify-between p-10 bg-white/[0.01] border border-white/5 rounded-[2.5rem] hover:bg-white/[0.03] transition-all text-left"><div class="flex items-center gap-8 w-full"><div class="text-center w-20"><div class="text-yellow-500 font-black text-2xl uppercase">${d.toLocaleDateString('en-US', { month: 'short' })}</div><div class="text-white font-black text-3xl">${d.getDate()}</div></div><div><div class="font-black text-xl text-white uppercase mb-1">${ev.venue.name}</div><div class="text-[10px] text-gray-700 uppercase font-black tracking-widest">${ev.venue.city}, ${ev.venue.country}</div></div></div><a href="${ev.url}" target="_blank" class="px-10 py-4 bg-white text-black font-black rounded-full text-[10px] hover:bg-yellow-500 transition-all uppercase tracking-widest">Get Entry</a></div>`;
+                        return `<div class="flex flex-col md:flex-row items-center justify-between p-10 bg-white/[0.01] border border-white/5 rounded-[2.5rem] hover:bg-white/[0.03] transition-all text-left"><div class="flex items-center gap-8 w-full text-left"><div class="text-center w-20"><div class="text-yellow-500 font-black text-2xl uppercase">${d.toLocaleDateString('en-US', { month: 'short' })}</div><div class="text-white font-black text-3xl">${d.getDate()}</div></div><div class="text-left"><div class="font-black text-xl text-white uppercase tracking-tighter mb-1">${ev.venue.name}</div><div class="text-[10px] text-gray-700 uppercase font-black tracking-widest">${ev.venue.city}, ${ev.venue.country}</div></div></div><a href="${ev.url}" target="_blank" class="mt-6 md:mt-0 px-10 py-4 bg-white text-black font-black rounded-full text-[10px] hover:bg-yellow-500 transition-all uppercase tracking-widest uppercase font-bold">Get Entry</a></div>`;
                     }).join('');
-                } else { list.innerHTML = `<div class="text-center py-20 text-gray-700 border border-dashed border-white/10 rounded-[3rem] uppercase font-black text-[10px] tracking-[0.4em]">No Live Dates</div>`; }
-            } catch (e) { list.innerHTML = '<p class="text-red-500 text-xs font-black uppercase text-center">Sync Error</p>'; }
+                } else {
+                    list.innerHTML = `<div class="text-center py-20 text-gray-700 border border-dashed border-white/5 rounded-[3rem] uppercase font-black tracking-[0.4em] text-[10px]">No Active Dates.</div>`;
+                }
+            } catch (e) { list.innerHTML = '<p class="text-red-500 text-xs font-black uppercase text-center uppercase font-bold">Sync Error</p>'; }
         }
 
         window.addEventListener('scroll', () => {
