@@ -24,13 +24,19 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .hero-gradient {
-            background: linear-gradient(rgba(0, 51, 102, 0.8), rgba(0, 51, 102, 0.8)), url('https://images.unsplash.com/photo-1590059536037-33230a7d979b?auto=format&fit=crop&q=80&w=1600');
+            background: linear-gradient(rgba(0, 51, 102, 0.85), rgba(0, 51, 102, 0.85)), url('https://images.unsplash.com/photo-1588410634141-860867493390?auto=format&fit=crop&q=80&w=1600');
             background-size: cover;
             background-position: center;
         }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            transition: all 0.3s ease;
+        .nri-badge {
+            background: linear-gradient(45deg, #ffd700, #ffa500);
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -44,9 +50,9 @@
             <span class="hidden md:inline">DISTRICT SHAHEED BHAGAT SINGH NAGAR</span>
         </div>
         <div class="flex gap-3">
-            <a href="#" class="hover:underline">Skip to main content</a>
+            <a href="#" class="hover:underline">English</a>
             <span>|</span>
-            <a href="#" class="hover:underline">A-</a> <span>A</span> <a href="#" class="hover:underline">A+</a>
+            <a href="#" class="hover:underline">ਪੰਜਾਬੀ</a>
         </div>
     </div>
 
@@ -62,159 +68,177 @@
             </div>
             <div class="hidden lg:flex gap-8 font-semibold text-sm text-gray-700">
                 <a href="#" class="text-blue-800 border-b-2 border-blue-800">HOME</a>
-                <a href="#" class="hover:text-blue-800">DIRECTORY</a>
+                <a href="#" class="hover:text-blue-800">INVESTOR CORNER</a>
+                <a href="#" class="hover:text-blue-800">NRI SERVICES</a>
                 <a href="#" class="hover:text-blue-800">DEPARTMENTS</a>
-                <a href="#" class="hover:text-blue-800">TOURISM</a>
-                <a href="#" class="hover:text-blue-800">SCHEMES</a>
             </div>
-            <button class="bg-blue-900 text-white px-4 py-2 rounded text-sm hover:bg-blue-800">
-                <i class="fa fa-search mr-2"></i>SEARCH
-            </button>
+            <div class="flex items-center gap-2">
+                 <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/93/Digital_India_logo.svg/1200px-Digital_India_logo.svg.png" class="h-8 hidden sm:block">
+            </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <header class="hero-gradient text-white py-16 px-6">
-        <div class="max-w-7xl mx-auto text-center">
-            <h2 class="text-4xl font-bold mb-4">Investment & Infrastructure Ranking 2024</h2>
-            <p class="text-xl opacity-90 mb-8">Comprehensive assessment of urban growth, NRI potential, and socio-economic indicators.</p>
-            <div class="flex justify-center gap-4">
-                <span class="bg-orange-500 px-4 py-1 rounded-full text-sm font-bold">DIGITAL PUNJAB</span>
-                <span class="bg-blue-500 px-4 py-1 rounded-full text-sm font-bold">INVEST SBS NAGAR</span>
+    <header class="hero-gradient text-white py-14 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="max-w-3xl">
+                <h2 class="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">Infrastructure & Investment Rankings 2025</h2>
+                <p class="text-lg opacity-90 mb-8 border-l-4 border-orange-500 pl-4 italic">
+                    Focusing on Banga's NRI Hub status and sustainable urban growth across SBS Nagar.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <div class="bg-white/10 backdrop-blur-md p-4 rounded-lg">
+                        <span class="block text-2xl font-bold">79.8%</span>
+                        <span class="text-xs uppercase tracking-wider">Literacy Rate</span>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md p-4 rounded-lg">
+                        <span class="block text-2xl font-bold">1st</span>
+                        <span class="text-xs uppercase tracking-wider">NRI Density Rank (Banga)</span>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Statistics Section -->
-    <section class="py-12 px-6 bg-white">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="stat-card bg-blue-50 p-6 rounded-lg border-l-4 border-blue-900 shadow-sm">
-                    <i class="fa fa-university text-3xl text-blue-900 mb-4"></i>
-                    <h3 class="text-lg font-bold">District Literacy</h3>
-                    <p class="text-3xl font-black text-blue-900">79.8%</p>
-                    <p class="text-sm text-gray-600 mt-2">Highest growth in Doaba region</p>
-                </div>
-                <div class="stat-card bg-green-50 p-6 rounded-lg border-l-4 border-green-700 shadow-sm">
-                    <i class="fa fa-chart-line text-3xl text-green-700 mb-4"></i>
-                    <h3 class="text-lg font-bold">BPL Percentage</h3>
-                    <p class="text-3xl font-black text-green-700">12.4%</p>
-                    <p class="text-sm text-gray-600 mt-2">Lower than state average poverty rate</p>
-                </div>
-                <div class="stat-card bg-orange-50 p-6 rounded-lg border-l-4 border-orange-500 shadow-sm">
-                    <i class="fa fa-globe text-3xl text-orange-500 mb-4"></i>
-                    <h3 class="text-lg font-bold">NRI Remittance</h3>
-                    <p class="text-3xl font-black text-orange-500">Tier-1</p>
-                    <p class="text-sm text-gray-600 mt-2">Primary driver of commercial land value</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Ranking Table -->
     <section class="py-12 px-6">
-        <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-            <div class="bg-gray-800 text-white py-4 px-6 flex justify-between items-center">
-                <h3 class="text-lg font-bold uppercase tracking-wider">Town/City Performance Metrics</h3>
-                <span class="text-xs bg-red-600 px-2 py-1 rounded animate-pulse">LIVE DATA 2024</span>
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800">City & Town Performance Indicators</h3>
+                    <p class="text-gray-600">Based on Infrastructure, NRI Land Potential, and Socio-Economic Metrics</p>
+                </div>
+                <div class="text-right hidden md:block">
+                    <span class="text-xs text-gray-400">Last updated: Oct 2024</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-blue-900 text-white text-xs uppercase tracking-wider">
+                                <th class="p-5">Rank</th>
+                                <th class="p-5">City / Town</th>
+                                <th class="p-5">Reasoning (Infrastructure + NRI Potential)</th>
+                                <th class="p-5">Literacy Rate</th>
+                                <th class="p-5">Poverty (BPL)</th>
+                                <th class="p-5">Economic Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <!-- Rank 1: Banga -->
+                            <tr class="border-b bg-orange-50/30 hover:bg-orange-50 transition-colors">
+                                <td class="p-5 font-black text-blue-900 text-xl text-center">1</td>
+                                <td class="p-5">
+                                    <span class="font-bold text-lg block">Banga</span>
+                                    <span class="nri-badge"><i class="fa fa-star mr-1"></i>MAX NRI CONCENTRATION</span>
+                                </td>
+                                <td class="p-5 leading-relaxed">
+                                    <strong>Highest NRI density in the district.</strong> Massive foreign remittance fuels the highest commercial land prices. Excellent connectivity via NH-344A. Prime real estate appreciation.
+                                </td>
+                                <td class="p-5 font-semibold text-green-700">84.2%</td>
+                                <td class="p-5 font-semibold text-blue-800">6.4% <br><span class="text-[10px] text-gray-400 font-normal">(Lowest in District)</span></td>
+                                <td class="p-5"><span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold uppercase">High Wealth</span></td>
+                            </tr>
+
+                            <!-- Rank 2: Nawanshahr -->
+                            <tr class="border-b hover:bg-gray-50 transition-colors">
+                                <td class="p-5 font-black text-blue-900 text-xl text-center">2</td>
+                                <td class="p-5 font-bold text-lg">Nawanshahr</td>
+                                <td class="p-5">
+                                    District HQ advantage. Central administrative hub with superior public infrastructure, schools, and hospitals. High steady growth in residential sectors.
+                                </td>
+                                <td class="p-5 font-semibold text-green-700">86.1%</td>
+                                <td class="p-5 font-semibold text-blue-800">9.2%</td>
+                                <td class="p-5"><span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-bold uppercase">Administrative</span></td>
+                            </tr>
+
+                            <!-- Rank 3: Balachaur -->
+                            <tr class="border-b hover:bg-gray-50 transition-colors">
+                                <td class="p-5 font-black text-blue-900 text-xl text-center text-gray-400">3</td>
+                                <td class="p-5 font-bold text-lg">Balachaur</td>
+                                <td class="p-5">
+                                    Established industrial zone with steady expansion. Strategic gateway to Himachal Pradesh. Developing public facilities in the Kandi region.
+                                </td>
+                                <td class="p-5 font-semibold text-yellow-700">72.4%</td>
+                                <td class="p-5 font-semibold text-blue-800">14.8%</td>
+                                <td class="p-5"><span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-bold uppercase">Industrial</span></td>
+                            </tr>
+
+                            <!-- Rank 4: Rahon -->
+                            <tr class="border-b hover:bg-gray-50 transition-colors">
+                                <td class="p-5 font-black text-blue-900 text-xl text-center text-gray-400">4</td>
+                                <td class="p-5 font-bold text-lg">Rahon</td>
+                                <td class="p-5">
+                                    Solid secondary trade town. Strong agricultural commerce background with prospects for upcoming logistics and warehousing projects.
+                                </td>
+                                <td class="p-5 font-semibold text-yellow-700">70.1%</td>
+                                <td class="p-5 font-semibold text-blue-800">13.5%</td>
+                                <td class="p-5"><span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-bold uppercase">Trading Hub</span></td>
+                            </tr>
+
+                            <!-- Rank 5: Khothran/Saloh/Aur -->
+                            <tr class="border-b hover:bg-gray-50 transition-colors">
+                                <td class="p-5 font-black text-blue-900 text-xl text-center text-gray-400">5</td>
+                                <td class="p-5 font-bold text-lg text-sm">Khothran / Saloh / Aur</td>
+                                <td class="p-5">
+                                    Emerging local hubs. Highly affordable for long-term land investment and localized commercial ventures serving rural clusters.
+                                </td>
+                                <td class="p-5 font-semibold text-orange-700">68.5%</td>
+                                <td class="p-5 font-semibold text-blue-800">15.1%</td>
+                                <td class="p-5"><span class="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-bold uppercase">Emerging</span></td>
+                            </tr>
+
+                            <!-- Rank 6: Naura/Khatkar Kalan -->
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="p-5 font-black text-blue-900 text-xl text-center text-gray-400">6</td>
+                                <td class="p-5 font-bold text-lg">Naura / Khatkar Kalan</td>
+                                <td class="p-5">
+                                    Culturally significant (Shaheed Bhagat Singh Memorial). Tourism infrastructure attracts high government visibility and maintenance.
+                                </td>
+                                <td class="p-5 font-semibold text-green-700">78.0%</td>
+                                <td class="p-5 font-semibold text-blue-800">11.0%</td>
+                                <td class="p-5"><span class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-bold uppercase">Heritage</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-gray-100 text-gray-700 text-sm uppercase">
-                            <th class="p-4 border-b">Rank</th>
-                            <th class="p-4 border-b">City / Town</th>
-                            <th class="p-4 border-b">Growth Drivers (Infrastructure + NRI Potential)</th>
-                            <th class="p-4 border-b">Education Index</th>
-                            <th class="p-4 border-b">Poverty Rate</th>
-                            <th class="p-4 border-b">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-gray-700">
-                        <tr class="hover:bg-blue-50 transition-colors">
-                            <td class="p-4 border-b font-bold text-blue-900">#1</td>
-                            <td class="p-4 border-b font-bold text-lg">Banga</td>
-                            <td class="p-4 border-b">Strong commercial land prices, high connectivity to NH-344A, massive NRI remittance flow.</td>
-                            <td class="p-4 border-b text-green-600 font-semibold">High (84%)</td>
-                            <td class="p-4 border-b text-blue-600 font-semibold">8.2%</td>
-                            <td class="p-4 border-b"><button class="text-blue-800 text-sm font-bold underline">View Report</button></td>
-                        </tr>
-                        <tr class="hover:bg-blue-50 transition-colors">
-                            <td class="p-4 border-b font-bold text-blue-900">#2</td>
-                            <td class="p-4 border-b font-bold text-lg">Nawanshahr</td>
-                            <td class="p-4 border-b">District HQ advantage, superior public services, planned civil infrastructure.</td>
-                            <td class="p-4 border-b text-green-600 font-semibold">V. High (86%)</td>
-                            <td class="p-4 border-b text-blue-600 font-semibold">9.1%</td>
-                            <td class="p-4 border-b"><button class="text-blue-800 text-sm font-bold underline">View Report</button></td>
-                        </tr>
-                        <tr class="hover:bg-blue-50 transition-colors">
-                            <td class="p-4 border-b font-bold text-blue-900">#3</td>
-                            <td class="p-4 border-b font-bold text-lg">Balachaur</td>
-                            <td class="p-4 border-b">Established town with steady industrial growth and Kandi area development focus.</td>
-                            <td class="p-4 border-b text-yellow-600 font-semibold">Moderate (72%)</td>
-                            <td class="p-4 border-b text-blue-600 font-semibold">14.5%</td>
-                            <td class="p-4 border-b"><button class="text-blue-800 text-sm font-bold underline">View Report</button></td>
-                        </tr>
-                        <tr class="hover:bg-blue-50 transition-colors">
-                            <td class="p-4 border-b font-bold text-blue-900">#4</td>
-                            <td class="p-4 border-b font-bold text-lg">Rahon</td>
-                            <td class="p-4 border-b">Historical town, solid secondary trade hub with expanding road networks.</td>
-                            <td class="p-4 border-b text-yellow-600 font-semibold">Moderate (70%)</td>
-                            <td class="p-4 border-b text-blue-600 font-semibold">13.8%</td>
-                            <td class="p-4 border-b"><button class="text-blue-800 text-sm font-bold underline">View Report</button></td>
-                        </tr>
-                        <tr class="hover:bg-blue-50 transition-colors">
-                            <td class="p-4 border-b font-bold text-blue-900">#5</td>
-                            <td class="p-4 border-b font-bold text-lg">Khothran / Saloh / Aur</td>
-                            <td class="p-4 border-b">Emerging local hubs; high potential for affordable housing & warehouse investment.</td>
-                            <td class="p-4 border-b text-orange-600 font-semibold">Developing (68%)</td>
-                            <td class="p-4 border-b text-blue-600 font-semibold">15.2%</td>
-                            <td class="p-4 border-b"><button class="text-blue-800 text-sm font-bold underline">View Report</button></td>
-                        </tr>
-                        <tr class="hover:bg-blue-50 transition-colors">
-                            <td class="p-4 border-b font-bold text-blue-900">#6</td>
-                            <td class="p-4 border-b font-bold text-lg">Naura / Khatkar Kalan</td>
-                            <td class="p-4 border-b">Culturally significant (Ancestral village of Bhagat Singh), tourism-led growth potential.</td>
-                            <td class="p-4 border-b text-green-600 font-semibold">High (78%)</td>
-                            <td class="p-4 border-b text-blue-600 font-semibold">11.0%</td>
-                            <td class="p-4 border-b"><button class="text-blue-800 text-sm font-bold underline">View Report</button></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="mt-6 bg-blue-50 border border-blue-200 p-4 rounded-lg text-sm text-blue-900">
+                <i class="fa fa-info-circle mr-2"></i><strong>Note on NRI Dominance:</strong> Areas with high NRI density (Banga, Khatkar Kalan cluster) show a significant surge in commercial property values, often outpacing the district average by 15-20%.
             </div>
         </div>
     </section>
 
-    <!-- Government Initiatives Footer -->
-    <section class="bg-gray-900 text-white py-12 px-6">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-gray-700 pb-8">
-            <div class="col-span-2">
-                <h4 class="text-xl font-bold mb-4">District SBS Nagar</h4>
-                <p class="text-gray-400 text-sm leading-relaxed">The district of Shaheed Bhagat Singh Nagar (formerly Nawanshahr) is a hub of development in the Doaba region. Known for its strong NRI connections and agricultural productivity, the administration is committed to making it a prime destination for sustainable investment and high quality of life.</p>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 pb-8">
+            <div>
+                <h4 class="text-white font-bold mb-4">District SBS Nagar</h4>
+                <p class="text-xs leading-relaxed">Administered by the Govt of Punjab. This portal serves as the official platform for investment benchmarking and urban ranking metrics for the district of Shaheed Bhagat Singh Nagar.</p>
             </div>
             <div>
-                <h4 class="font-bold mb-4">Quick Links</h4>
-                <ul class="text-gray-400 text-sm space-y-2">
-                    <li><a href="#" class="hover:text-white">Punjab Land Records</a></li>
-                    <li><a href="#" class="hover:text-white">Investor Portal</a></li>
-                    <li><a href="#" class="hover:text-white">District Gazette</a></li>
-                    <li><a href="#" class="hover:text-white">Census Data</a></li>
+                <h4 class="text-white font-bold mb-4">Resources</h4>
+                <ul class="text-xs space-y-2">
+                    <li><a href="#" class="hover:text-white">Collector Rates Punjab</a></li>
+                    <li><a href="#" class="hover:text-white">NRI Facilitation Center</a></li>
+                    <li><a href="#" class="hover:text-white">Education Statistics 2024</a></li>
                 </ul>
             </div>
             <div>
-                <h4 class="font-bold mb-4">Contact Us</h4>
-                <p class="text-gray-400 text-sm">Deputy Commissioner Office<br>Nawanshahr, Punjab - 144514<br>Email: dc.sbs@punjab.gov.in</p>
+                <h4 class="text-white font-bold mb-4">Official Logos</h4>
+                <div class="flex gap-4 filter invert opacity-50">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/c/c4/Swachh_Bharat_Mission_Logo.svg/1200px-Swachh_Bharat_Mission_Logo.svg.png" class="h-10">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/93/Digital_India_logo.svg/1200px-Digital_India_logo.svg.png" class="h-10">
+                </div>
             </div>
         </div>
-        <div class="max-w-7xl mx-auto pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex gap-4 grayscale opacity-50">
-                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/93/Digital_India_logo.svg/1200px-Digital_India_logo.svg.png" alt="Digital India" class="h-10">
-                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/c/c4/Swachh_Bharat_Mission_Logo.svg/1200px-Swachh_Bharat_Mission_Logo.svg.png" alt="Swachh Bharat" class="h-10">
-            </div>
-            <p class="text-xs text-gray-500 text-center">© 2024 District Administration SBS Nagar. Website designed & hosted by National Informatics Centre (NIC).</p>
+        <div class="text-center text-[10px] border-t border-gray-800 pt-6">
+            © 2025 District Administration SBS Nagar. Powered by National Informatics Centre.
         </div>
-    </section>
+    </footer>
 
 </body>
 </html>
