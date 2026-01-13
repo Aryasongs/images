@@ -3,659 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catch the Falling Objects Game</title>
+    <title>SharanRecords | Official Music Label</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --accent: #ffffff;
+            --bg-dark: #050505;
+            --card-bg: #121212;
         }
-
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            overflow: hidden;
-            height: 100vh;
-            user-select: none;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            overflow-x: hidden;
         }
-
-        .game-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
+        .syne { font-family: 'Syne', sans-serif; }
+        .glass-nav {
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-
-        .game-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            font-size: 18px;
-            font-weight: bold;
+        .hero-gradient {
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.05) 0%, transparent 70%);
         }
-
-        .score-display {
-            color: #4CAF50;
+        .artist-card:hover .artist-img {
+            transform: scale(1.05);
         }
-
-        .lives-display {
-            color: #f44336;
+        .release-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .best-score {
-            color: #FFD700;
-            font-size: 14px;
+        .release-card:hover {
+            background: #1a1a1a;
+            transform: translateY(-5px);
         }
-
-        .game-area {
-            position: absolute;
-            top: 60px;
-            left: 0;
-            right: 0;
-            bottom: 20px;
-            overflow: hidden;
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
         }
-
-        /* Adjust for desktop with controls */
-        @media (min-width: 768px) {
-            .game-area {
-                bottom: 120px;
-            }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #050505;
         }
-
-        .basket {
-            position: absolute;
-            bottom: 20px;
-            width: 80px;
-            height: 60px;
-            background: #8B4513;
-            border-radius: 10px 10px 40px 40px;
-            border: 3px solid #654321;
-            transition: left 0.05s ease-out;
-            z-index: 100;
-        }
-
-        .basket::before {
-            content: '';
-            position: absolute;
-            top: -5px;
-            left: 10px;
-            right: 10px;
-            height: 10px;
-            background: #A0522D;
-            border-radius: 5px;
-        }
-
-        .falling-object {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            font-size: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            animation: fall linear;
-        }
-
-        @keyframes fall {
-            from {
-                transform: translateY(-50px);
-            }
-            to {
-                transform: translateY(calc(100vh + 50px));
-            }
-        }
-
-        .controls {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 80px;
-            background: rgba(0, 0, 0, 0.6);
-            display: none;
-            align-items: center;
-            justify-content: space-around;
-            z-index: 1000;
-        }
-
-        .control-btn {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(145deg, #667eea, #764ba2);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            transition: all 0.2s ease;
-        }
-
-        .control-btn:active {
-            transform: scale(0.95);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Show controls only on desktop */
-        @media (min-width: 768px) {
-            .controls {
-                display: flex;
-                height: 120px;
-            }
-        }
-
-        .game-over {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            z-index: 2000;
-        }
-
-        .game-over h2 {
-            font-size: 48px;
-            color: #f44336;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .final-score {
-            font-size: 24px;
-            margin: 10px 0;
-        }
-
-        .restart-btn {
-            background: linear-gradient(145deg, #4CAF50, #45a049);
-            border: none;
-            color: white;
-            padding: 15px 30px;
-            font-size: 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            margin-top: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            transition: all 0.2s ease;
-        }
-
-        .restart-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        .sound-toggle {
-            position: fixed;
-            top: 70px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 20px;
-            z-index: 1001;
-        }
-
-        .start-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            z-index: 3000;
-        }
-
-        .start-screen h1 {
-            font-size: 36px;
-            margin-bottom: 20px;
-            text-align: center;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .start-screen p {
-            font-size: 18px;
-            text-align: center;
-            margin: 10px 20px;
-            line-height: 1.5;
-        }
-
-        .start-btn {
-            background: linear-gradient(145deg, #4CAF50, #45a049);
-            border: none;
-            color: white;
-            padding: 20px 40px;
-            font-size: 24px;
-            border-radius: 30px;
-            cursor: pointer;
-            margin-top: 30px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-            transition: all 0.2s ease;
-        }
-
-        .start-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-        }
-
-        @media (max-width: 480px) {
-            .game-header {
-                font-size: 16px;
-                padding: 8px 15px;
-            }
-            
-            .control-btn {
-                width: 70px;
-                height: 70px;
-                font-size: 25px;
-            }
-            
-            .basket {
-                width: 70px;
-                height: 50px;
-            }
-            
-            .falling-object {
-                width: 35px;
-                height: 35px;
-                font-size: 30px;
-            }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 10px;
         }
     </style>
 </head>
-<body>
-    <div class="start-screen" id="startScreen">
-        <h1>🍎 Catch the Falling Objects! 🍊</h1>
-        <p>Catch fruits to score points!</p>
-        <p>Avoid bombs (💣) - they cost 2 lives!</p>
-        <p>Missing fruits costs 1 life!</p>
-        <p>Swipe left/right to move basket!</p>
-        <p>You have 5 lives. Good luck! 🍀</p>
-        <button class="start-btn" onclick="startGame()">START GAME</button>
-    </div>
+<body class="custom-scrollbar">
 
-    <div class="game-container" id="gameContainer" style="display: none;">
-        <div class="game-header">
-            <div class="score-display">Score: <span id="score">0</span></div>
-            <div class="best-score">Best: <span id="bestScore">0</span></div>
-            <div class="lives-display">Lives: <span id="lives">5</span></div>
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-nav px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <!-- SRD Logo SVG -->
+            <svg width="40" height="40" viewBox="0 0 100 100" class="fill-current">
+                <rect width="100" height="100" rx="20" fill="white"/>
+                <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Syne, sans-serif" font-weight="800" font-size="32" fill="black">SRD</text>
+            </svg>
+            <span class="syne text-xl tracking-tighter uppercase ml-2 hidden sm:block">SharanRecords</span>
+        </div>
+        
+        <div class="hidden md:flex gap-8 text-sm font-semibold tracking-widest uppercase text-gray-400">
+            <a href="#home" class="hover:text-white transition-colors">Home</a>
+            <a href="#music" class="hover:text-white transition-colors">Music</a>
+            <a href="#artists" class="hover:text-white transition-colors">Artists</a>
+            <a href="#about" class="hover:text-white transition-colors">About</a>
         </div>
 
-        <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔊</button>
+        <a href="https://instagram.com/sharanrecords" target="_blank" class="bg-white text-black px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-gray-200 transition-all">
+            Follow @SRD
+        </a>
+    </nav>
 
-        <div class="game-area" id="gameArea">
-            <div class="basket" id="basket"></div>
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center pt-20 hero-gradient">
+        <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+                <div class="inline-block px-3 py-1 border border-white/20 rounded-full text-[10px] uppercase tracking-[0.3em] text-gray-400">
+                    Latest Release • Jan 2026
+                </div>
+                <h1 class="syne text-6xl md:text-8xl font-extrabold leading-none tracking-tighter">
+                    JUDDA <br> <span class="text-gray-500">OUT NOW</span>
+                </h1>
+                <p class="text-gray-400 max-w-md text-lg leading-relaxed">
+                    The highly anticipated single by Sharan Pooni featuring Zeenat Bhagat. Experience the new era of Alternative Punjabi Music.
+                </p>
+                <div class="flex flex-wrap gap-4 pt-4">
+                    <button class="bg-white text-black px-8 py-4 rounded-full font-bold uppercase tracking-widest text-sm flex items-center gap-2 hover:scale-105 transition-transform">
+                        Listen Now
+                    </button>
+                    <button class="border border-white/20 px-8 py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-all">
+                        View Lyrics
+                    </button>
+                </div>
+            </div>
+            <div class="relative group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-gray-500 to-white opacity-20 blur group-hover:opacity-40 transition duration-1000"></div>
+                <!-- Placeholder for Album Art -->
+                <div class="relative aspect-square bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center border border-white/5">
+                    <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=800" alt="Judda Album Art" class="object-cover w-full h-full opacity-80">
+                    <div class="absolute inset-0 bg-black/40"></div>
+                    <div class="absolute bottom-8 left-8">
+                        <p class="syne text-2xl uppercase tracking-widest">Judda</p>
+                        <p class="text-gray-300 text-sm">Sharan Pooni ft. Zeenat Bhagat</p>
+                    </div>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div class="controls">
-            <button class="control-btn" id="leftBtn">←</button>
-            <button class="control-btn" id="rightBtn">→</button>
-        </div>
+    <!-- Recent Releases -->
+    <section id="music" class="py-24 bg-black">
+        <div class="container mx-auto px-6">
+            <div class="flex justify-between items-end mb-16">
+                <div>
+                    <h2 class="syne text-4xl uppercase tracking-tighter">Discography</h2>
+                    <p class="text-gray-500 mt-2">Latest drops from the SRD collective</p>
+                </div>
+                <div class="hidden sm:flex gap-2">
+                    <button class="p-3 border border-white/10 rounded-full hover:bg-white/5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+                    <button class="p-3 border border-white/10 rounded-full hover:bg-white/5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+                </div>
+            </div>
 
-        <div class="game-over" id="gameOver">
-            <h2>GAME OVER!</h2>
-            <div class="final-score">Final Score: <span id="finalScore">0</span></div>
-            <div class="final-score">Best Score: <span id="finalBestScore">0</span></div>
-            <button class="restart-btn" onclick="restartGame()">PLAY AGAIN</button>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Track 1 -->
+                <div class="release-card p-4 rounded-2xl bg-neutral-900/40 border border-white/5 group">
+                    <div class="aspect-square bg-neutral-800 rounded-xl mb-4 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=500" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <h3 class="font-bold text-lg">Paper</h3>
+                    <p class="text-gray-500 text-sm mb-4">Sharan Pooni x Jass Bajwa</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] text-gray-600 uppercase tracking-widest">Dec 2025</span>
+                        <div class="flex gap-2">
+                            <button title="Spotify" class="hover:text-green-500"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.494 17.311c-.22.359-.691.474-1.05.254-2.88-1.758-6.504-2.157-10.774-1.18-.411.094-.817-.168-.91-.58-.094-.412.169-.818.58-.912 4.673-1.07 8.667-.614 11.898 1.358.358.22.472.691.256 1.06zm1.464-3.259c-.276.449-.861.594-1.311.318-3.298-2.028-8.324-2.616-12.222-1.433-.505.153-1.034-.132-1.187-.637-.154-.505.132-1.034.637-1.188 4.453-1.352 10.005-.694 13.766 1.623.449.277.593.86.317 1.317zm.126-3.41c-3.955-2.348-10.474-2.565-14.267-1.413-.606.184-1.246-.16-1.43-1.166-.184-.606.161-1.245 1.167-1.43 4.343-1.319 11.536-1.063 16.096 1.643.545.324.726 1.026.402 1.571-.324.545-1.026.726-1.571.402z"/></svg></button>
+                            <button title="Apple Music" class="hover:text-pink-500"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm.403 16.963c-1.373 0-2.485-1.111-2.485-2.484 0-1.374 1.112-2.485 2.485-2.485.452 0 .874.12 1.235.333V6.208s-.001-.482.463-.655c.465-.173 3.633-1.088 3.633-1.088s.324-.093.463.139c.14.231.116.533.116.533V12.7c0 1.332-1.274 1.838-2.316 1.838-1.043 0-1.921-.482-1.921-1.332 0-.849.626-1.423 1.657-1.423.441 0 .81.14 1.111.325V7.936l-2.776.848v5.695c0 1.373-1.112 2.484-2.485 2.484z"/></svg></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Track 2 -->
+                <div class="release-card p-4 rounded-2xl bg-neutral-900/40 border border-white/5 group">
+                    <div class="aspect-square bg-neutral-800 rounded-xl mb-4 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=500" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <h3 class="font-bold text-lg">Range</h3>
+                    <p class="text-gray-500 text-sm mb-4">Sharan Pooni</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] text-gray-600 uppercase tracking-widest">Dec 2025</span>
+                        <div class="flex gap-2">
+                            <button title="Play" class="w-8 h-8 flex items-center justify-center bg-white text-black rounded-full hover:scale-110 transition-transform"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="m7 4 12 8-12 8V4z"/></svg></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Track 3 -->
+                <div class="release-card p-4 rounded-2xl bg-neutral-900/40 border border-white/5 group">
+                    <div class="aspect-square bg-neutral-800 rounded-xl mb-4 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1514525253361-bee8718a300a?auto=format&fit=crop&q=80&w=500" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <h3 class="font-bold text-lg">Love Pain</h3>
+                    <p class="text-gray-500 text-sm mb-4">feat. Simran Kaur</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] text-gray-600 uppercase tracking-widest">Dec 2025</span>
+                        <div class="flex gap-2">
+                            <button class="w-8 h-8 flex items-center justify-center bg-white text-black rounded-full"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="m7 4 12 8-12 8V4z"/></svg></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Track 4 -->
+                <div class="release-card p-4 rounded-2xl bg-neutral-900/40 border border-white/5 group">
+                    <div class="aspect-square bg-neutral-800 rounded-xl mb-4 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?auto=format&fit=crop&q=80&w=500" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <h3 class="font-bold text-lg">Her</h3>
+                    <p class="text-gray-500 text-sm mb-4">feat. Tyler Hayes</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] text-gray-600 uppercase tracking-widest">Dec 2025</span>
+                        <div class="flex gap-2">
+                            <button class="w-8 h-8 flex items-center justify-center bg-white text-black rounded-full"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="m7 4 12 8-12 8V4z"/></svg></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Artists Roster -->
+    <section id="artists" class="py-24 bg-neutral-900/20">
+        <div class="container mx-auto px-6">
+            <h2 class="syne text-center text-5xl uppercase tracking-tighter mb-20">The Artists</h2>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <!-- Sharan Pooni -->
+                <div class="artist-card group text-center cursor-pointer">
+                    <div class="artist-img relative aspect-[4/5] overflow-hidden rounded-3xl mb-4 transition-transform duration-700 bg-neutral-800">
+                        <img src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&q=80&w=500" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+                    <h4 class="syne text-xl">Sharan Pooni</h4>
+                    <p class="text-xs uppercase tracking-widest text-gray-500">Composer / Artist</p>
+                </div>
+
+                <!-- Simran Kaur -->
+                <div class="artist-card group text-center cursor-pointer">
+                    <div class="artist-img relative aspect-[4/5] overflow-hidden rounded-3xl mb-4 transition-transform duration-700 bg-neutral-800">
+                        <img src="https://images.unsplash.com/photo-1520156584141-24bbdb88372d?auto=format&fit=crop&q=80&w=500" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+                    </div>
+                    <h4 class="syne text-xl">Simran Kaur</h4>
+                    <p class="text-xs uppercase tracking-widest text-gray-500">Vocalist</p>
+                </div>
+
+                <!-- Harkirat Maan -->
+                <div class="artist-card group text-center cursor-pointer">
+                    <div class="artist-img relative aspect-[4/5] overflow-hidden rounded-3xl mb-4 transition-transform duration-700 bg-neutral-800">
+                        <img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=500" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+                    </div>
+                    <h4 class="syne text-xl">Harkirat Maan</h4>
+                    <p class="text-xs uppercase tracking-widest text-gray-500">Main Artist</p>
+                </div>
+
+                <!-- Tyler Hayes -->
+                <div class="artist-card group text-center cursor-pointer">
+                    <div class="artist-img relative aspect-[4/5] overflow-hidden rounded-3xl mb-4 transition-transform duration-700 bg-neutral-800">
+                        <img src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?auto=format&fit=crop&q=80&w=500" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+                    </div>
+                    <h4 class="syne text-xl">Tyler Hayes</h4>
+                    <p class="text-xs uppercase tracking-widest text-gray-500">Artist</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-20 border-t border-white/5">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col items-center text-center">
+                <!-- Logo -->
+                <svg width="60" height="60" viewBox="0 0 100 100" class="mb-8">
+                    <rect width="100" height="100" rx="20" fill="white"/>
+                    <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Syne, sans-serif" font-weight="800" font-size="32" fill="black">SRD</text>
+                </svg>
+                
+                <h3 class="syne text-3xl uppercase tracking-widest mb-4">SharanRecords</h3>
+                <p class="text-gray-500 max-w-lg mb-12">
+                    An independent collective pushing the boundaries of Punjabi music, Indie, and Hip-Hop. Established 2025.
+                </p>
+
+                <div class="flex gap-8 mb-16">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Instagram</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Spotify</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Apple Music</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Youtube</a>
+                </div>
+
+                <div class="w-full h-[1px] bg-white/5 mb-8"></div>
+                
+                <p class="text-[10px] text-gray-600 uppercase tracking-[0.5em]">
+                    &copy; 2026 SharanRecords (SRD). All Rights Reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        // Game variables
-        let gameState = {
-            score: 0,
-            lives: 5,
-            speed: 3000,
-            isPlaying: false,
-            basketPosition: 50,
-            soundEnabled: true,
-            fruitsCaught: 0
-        };
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
 
-        // Fruit emojis (20 different types)
-        const fruits = ['🍎', '🍊', '🍌', '🍇', '🍓', '🥝', '🍑', '🍒', '🥭', '🍍', 
-                       '🥥', '🍈', '🍉', '🍋', '🍐', '🥑', '🍅', '🫐', '🥕', '🌽'];
-        
-        const bomb = '💣';
-
-        // DOM elements
-        const startScreen = document.getElementById('startScreen');
-        const gameContainer = document.getElementById('gameContainer');
-        const gameArea = document.getElementById('gameArea');
-        const basket = document.getElementById('basket');
-        const scoreElement = document.getElementById('score');
-        const livesElement = document.getElementById('lives');
-        const bestScoreElement = document.getElementById('bestScore');
-        const gameOverScreen = document.getElementById('gameOver');
-        const finalScoreElement = document.getElementById('finalScore');
-        const finalBestScoreElement = document.getElementById('finalBestScore');
-        const soundToggle = document.getElementById('soundToggle');
-        const leftBtn = document.getElementById('leftBtn');
-        const rightBtn = document.getElementById('rightBtn');
-
-        // Load best score from localStorage
-        let bestScore = localStorage.getItem('catchGameBestScore') || 0;
-        bestScoreElement.textContent = bestScore;
-
-        // Audio context for sound effects
-        let audioContext;
-        let backgroundMusic;
-
-        function initAudio() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
-
-        function playSound(frequency, duration, type = 'sine') {
-            if (!gameState.soundEnabled || !audioContext) return;
-            
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-            oscillator.type = type;
-            
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + duration);
-        }
-
-        function playBackgroundMusic() {
-            if (!gameState.soundEnabled || !audioContext) return;
-            
-            // Simple background music loop
-            const playNote = (freq, time, duration) => {
-                const osc = audioContext.createOscillator();
-                const gain = audioContext.createGain();
-                osc.connect(gain);
-                gain.connect(audioContext.destination);
-                osc.frequency.setValueAtTime(freq, time);
-                osc.type = 'triangle';
-                gain.gain.setValueAtTime(0.1, time);
-                gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
-                osc.start(time);
-                osc.stop(time + duration);
-            };
-
-            const notes = [262, 294, 330, 349, 392, 440, 494, 523];
-            let noteIndex = 0;
-            
-            const playMusicLoop = () => {
-                if (gameState.isPlaying) {
-                    playNote(notes[noteIndex], audioContext.currentTime, 0.5);
-                    noteIndex = (noteIndex + 1) % notes.length;
-                    setTimeout(playMusicLoop, 600);
+        // Intersection Observer for fade-in effects
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100');
+                    entry.target.classList.remove('translate-y-10');
                 }
-            };
-            
-            playMusicLoop();
-        }
+            });
+        }, { threshold: 0.1 });
 
-        function startGame() {
-            initAudio();
-            startScreen.style.display = 'none';
-            gameContainer.style.display = 'block';
-            
-            gameState = {
-                score: 0,
-                lives: 5,
-                speed: 3000,
-                isPlaying: true,
-                basketPosition: 50,
-                soundEnabled: true,
-                fruitsCaught: 0
-            };
-            
-            updateDisplay();
-            playBackgroundMusic();
-            spawnObjects();
-        }
-
-        function updateDisplay() {
-            scoreElement.textContent = gameState.score;
-            livesElement.textContent = gameState.lives;
-            basket.style.left = gameState.basketPosition + '%';
-        }
-
-        function moveBasket(direction) {
-            if (!gameState.isPlaying) return;
-            
-            const moveAmount = 4; // Smaller, smoother movements
-            if (direction === 'left' && gameState.basketPosition > 0) {
-                gameState.basketPosition = Math.max(0, gameState.basketPosition - moveAmount);
-            } else if (direction === 'right' && gameState.basketPosition < 90) {
-                gameState.basketPosition = Math.min(90, gameState.basketPosition + moveAmount);
-            }
-            updateDisplay();
-        }
-
-        function spawnObjects() {
-            if (!gameState.isPlaying) return;
-            
-            const object = document.createElement('div');
-            object.className = 'falling-object';
-            
-            // 15% chance for bomb, 85% for fruit
-            const isBomb = Math.random() < 0.15;
-            object.textContent = isBomb ? bomb : fruits[Math.floor(Math.random() * fruits.length)];
-            object.dataset.type = isBomb ? 'bomb' : 'fruit';
-            
-            // Random horizontal position
-            const leftPosition = Math.random() * 90;
-            object.style.left = leftPosition + '%';
-            object.style.animationDuration = gameState.speed + 'ms';
-            
-            gameArea.appendChild(object);
-            
-            // Check for collisions during fall
-            const checkCollision = () => {
-                if (!gameState.isPlaying || !object.parentNode) return;
-                
-                const objectRect = object.getBoundingClientRect();
-                const basketRect = basket.getBoundingClientRect();
-                
-                // Check if object reached bottom
-                if (objectRect.top > window.innerHeight) {
-                    if (object.dataset.type === 'fruit') {
-                        gameState.lives--;
-                        playSound(200, 0.3, 'sawtooth'); // Miss sound
-                    }
-                    object.remove();
-                    checkGameOver();
-                    return;
-                }
-                
-                // Check collision with basket
-                if (objectRect.bottom >= basketRect.top &&
-                    objectRect.right >= basketRect.left &&
-                    objectRect.left <= basketRect.right) {
-                    
-                    if (object.dataset.type === 'fruit') {
-                        gameState.score += 10;
-                        gameState.fruitsCaught++;
-                        playSound(800, 0.2); // Catch sound
-                        
-                        // Increase speed every 5 fruits
-                        if (gameState.fruitsCaught % 5 === 0) {
-                            gameState.speed = Math.max(1000, gameState.speed - 200);
-                        }
-                    } else {
-                        gameState.lives -= 2;
-                        playSound(150, 0.5, 'sawtooth'); // Bomb sound
-                    }
-                    
-                    object.remove();
-                    updateDisplay();
-                    checkGameOver();
-                    return;
-                }
-                
-                requestAnimationFrame(checkCollision);
-            };
-            
-            requestAnimationFrame(checkCollision);
-            
-            // Spawn next object
-            setTimeout(() => {
-                spawnObjects();
-            }, Math.random() * 1000 + 500);
-        }
-
-        function checkGameOver() {
-            if (gameState.lives <= 0) {
-                gameState.isPlaying = false;
-                
-                // Update best score
-                if (gameState.score > bestScore) {
-                    bestScore = gameState.score;
-                    localStorage.setItem('catchGameBestScore', bestScore);
-                }
-                
-                finalScoreElement.textContent = gameState.score;
-                finalBestScoreElement.textContent = bestScore;
-                gameOverScreen.style.display = 'flex';
-                
-                // Clear all falling objects
-                document.querySelectorAll('.falling-object').forEach(obj => obj.remove());
-            }
-        }
-
-        function restartGame() {
-            gameOverScreen.style.display = 'none';
-            bestScoreElement.textContent = bestScore;
-            startGame();
-        }
-
-        function toggleSound() {
-            gameState.soundEnabled = !gameState.soundEnabled;
-            soundToggle.textContent = gameState.soundEnabled ? '🔊' : '🔇';
-        }
-
-        // Control event listeners
-        leftBtn.addEventListener('mousedown', () => moveBasket('left'));
-        rightBtn.addEventListener('mousedown', () => moveBasket('right'));
-
-        // Touch events for mobile
-        leftBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            moveBasket('left');
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('transition-all', 'duration-1000', 'translate-y-10', 'opacity-0');
+            observer.observe(section);
         });
-
-        rightBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            moveBasket('right');
-        });
-
-        // Keyboard controls
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') moveBasket('left');
-            if (e.key === 'ArrowRight') moveBasket('right');
-        });
-
-        // Enhanced swipe controls with high sensitivity
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let isMoving = false;
-        let moveInterval;
-
-        gameArea.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-            isMoving = false;
-        });
-
-        gameArea.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (!gameState.isPlaying) return;
-            
-            const touchCurrentX = e.touches[0].clientX;
-            const touchCurrentY = e.touches[0].clientY;
-            const diffX = touchCurrentX - touchStartX;
-            const diffY = Math.abs(touchCurrentY - touchStartY);
-            
-            // Only respond to horizontal swipes (ignore vertical scrolling)
-            if (diffY < 100 && Math.abs(diffX) > 10) {
-                isMoving = true;
-                
-                // Clear any existing movement interval
-                if (moveInterval) clearInterval(moveInterval);
-                
-                // Continuous smooth movement based on swipe direction and speed
-                const moveSpeed = Math.min(Math.abs(diffX) / 10, 5); // Speed based on swipe distance
-                const direction = diffX > 0 ? 'right' : 'left';
-                
-                // Start continuous movement
-                moveInterval = setInterval(() => {
-                    moveBasket(direction);
-                }, 50); // Very smooth 20fps movement
-                
-                // Single immediate movement for instant response
-                moveBasket(direction);
-            }
-        });
-
-        gameArea.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            
-            // Clear continuous movement
-            if (moveInterval) {
-                clearInterval(moveInterval);
-                moveInterval = null;
-            }
-            
-            // If it was just a tap (not a swipe), still move slightly
-            if (!isMoving) {
-                const touchEndX = e.changedTouches[0].clientX;
-                const diff = touchStartX - touchEndX;
-                
-                // Very sensitive - even small movements trigger basket movement
-                if (Math.abs(diff) > 5) {
-                    if (diff > 0) {
-                        moveBasket('left');
-                    } else {
-                        moveBasket('right');
-                    }
-                }
-            }
-            
-            isMoving = false;
-        });
-
-        // Prevent zoom on double tap
-        document.addEventListener('touchend', (e) => {
-            e.preventDefault();
-        }, { passive: false });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96e51d6c97956ce7',t:'MTc1NTA1NTYyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
+
