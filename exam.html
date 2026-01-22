@@ -3,602 +3,542 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oriontec Education Board | Online Assessment</title>
+    <title>Oriontec Education Board | Advanced Assessment Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
         .signature-font { font-family: 'Dancing Script', cursive; }
-        .glass-morphism {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .exam-timer {
-            transition: all 0.3s ease;
-        }
-        .timer-warning {
-            color: #ef4444;
-            animation: pulse 1s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        [v-cloak] { display: none; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .hidden { display: none !important; }
+        #webcam-preview { transform: scaleX(-1); border-radius: 12px; }
+        .timer-red { color: #ef4444; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen">
+<body class="bg-slate-100 text-slate-900 min-h-screen">
 
-    <!-- Navigation -->
-    <nav class="bg-white border-b sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
+    <!-- Header -->
+    <nav class="bg-white border-b sticky top-0 z-50 px-4 py-3 shadow-sm">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-blue-900 rounded-lg flex items-center justify-center text-white font-bold text-xl">O</div>
                 <div>
                     <h1 class="font-bold text-blue-900 leading-tight">Oriontec</h1>
-                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Education Board</p>
+                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Education Board</p>
                 </div>
             </div>
-            <button onclick="app.showAdminLogin()" class="text-sm font-medium text-slate-600 hover:text-blue-900 transition">Admin Portal</button>
+            <div id="user-badge" class="hidden flex items-center space-x-3 bg-slate-100 px-3 py-1 rounded-full border">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span id="badge-name" class="text-xs font-semibold text-slate-600">Candidate</span>
+            </div>
+            <button onclick="app.showPage('admin-login')" class="text-xs font-bold text-slate-400 hover:text-blue-900 uppercase">Admin</button>
         </div>
     </nav>
 
-    <main class="max-w-4xl mx-auto p-4 py-8">
+    <main class="max-w-5xl mx-auto p-4 md:p-8">
         
         <!-- View: Registration -->
-        <section id="view-registration" class="glass-morphism rounded-2xl shadow-xl p-8 max-w-lg mx-auto border border-slate-200">
+        <section id="view-registration" class="max-w-md mx-auto bg-white rounded-3xl shadow-2xl p-8 border border-slate-200">
             <div class="text-center mb-8">
-                <h2 class="text-2xl font-bold text-slate-800">Candidate Registration</h2>
-                <p class="text-slate-500">Online Assessment & Certification Platform</p>
+                <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase">Portal v2.5</span>
+                <h2 class="text-2xl font-bold mt-4">Assessment Registration</h2>
+                <p class="text-slate-500 text-sm">Fill details to initialize your proctored session</p>
             </div>
+            
             <form id="regForm" class="space-y-4" onsubmit="app.handleRegistration(event)">
-                <div>
-                    <label class="block text-sm font-semibold mb-1">Full Name</label>
-                    <input type="text" name="name" required placeholder="John Doe" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-500 uppercase">Full Name</label>
+                    <input type="text" name="name" required class="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:border-blue-600 outline-none transition" placeholder="As per Govt ID">
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-1">Email Address</label>
-                    <input type="email" name="email" required placeholder="john@example.com" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-500 uppercase">Email</label>
+                    <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:border-blue-600 outline-none transition" placeholder="email@example.com">
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-1">Mobile Number</label>
-                    <input type="tel" name="phone" required placeholder="+1 234 567 890" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-1">Select Course / Test</label>
-                    <select name="course" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
-                        <option value="">Choose a test...</option>
-                        <option value="Information Technology Fundamentals">Information Technology Fundamentals</option>
-                        <option value="Digital Literacy & Office Suite">Digital Literacy & Office Suite</option>
-                        <option value="Web Development Certification">Web Development Certification</option>
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-500 uppercase">Course Selection</label>
+                    <select name="course" required class="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:border-blue-600 outline-none transition">
+                        <option value="">Choose Course...</option>
+                        <option value="IT Fundamentals">Information Technology Fundamentals</option>
+                        <option value="Digital Literacy">Digital Literacy & Office Suite</option>
+                        <option value="Web Development">Full Stack Web Development</option>
                     </select>
                 </div>
-                <button type="submit" class="w-full bg-blue-900 text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition transform active:scale-95 shadow-lg mt-4">
-                    Initialize Assessment
+                
+                <!-- Webcam Activation Box -->
+                <div class="bg-slate-50 p-4 rounded-2xl border-2 border-dashed border-slate-200">
+                    <p class="text-[10px] text-center text-slate-400 mb-3 font-bold uppercase">Webcam Verification Required</p>
+                    <div id="webcam-container" class="relative bg-black rounded-lg overflow-hidden aspect-video flex items-center justify-center mb-3">
+                        <video id="webcam-preview" autoplay playsinline class="w-full h-full object-cover hidden"></video>
+                        <div id="webcam-placeholder" class="text-white text-xs text-center p-4">
+                            <button type="button" onclick="app.enableWebcam()" class="bg-blue-600 px-4 py-2 rounded-lg font-bold">Enable Camera</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-start" disabled class="w-full bg-blue-900 text-white py-4 rounded-2xl font-bold opacity-50 cursor-not-allowed hover:bg-blue-800 transition shadow-lg">
+                    Begin Assessment
                 </button>
             </form>
-            <p class="text-center text-[11px] text-slate-400 mt-6">
-                By starting, you agree to the proctored environment terms. Oriontec tracks tab switches for academic integrity.
-            </p>
         </section>
 
-        <!-- View: Exam Interface -->
+        <!-- View: Examination -->
         <section id="view-exam" class="hidden">
-            <div class="flex flex-col md:flex-row gap-6">
-                <!-- Main Test Area -->
-                <div class="flex-1 space-y-6">
-                    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 id="exam-course-title" class="font-bold text-lg text-blue-900">Course Name</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Left: Info & Proctoring -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Proctoring Active</p>
+                        <div class="aspect-video bg-black rounded-lg overflow-hidden">
+                            <video id="exam-webcam" autoplay playsinline class="w-full h-full object-cover"></video>
+                        </div>
+                        <div class="mt-3 flex items-center justify-between text-xs">
+                            <span class="text-slate-500">Security Score:</span>
+                            <span id="security-score" class="font-bold text-green-600">100%</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-4">Question Palette</p>
+                        <div id="palette" class="grid grid-cols-5 gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- Center: Question Area -->
+                <div class="lg:col-span-3 space-y-6">
+                    <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200 min-h-[500px] flex flex-col">
+                        <div class="flex justify-between items-center mb-8 pb-4 border-b">
+                            <div>
+                                <h3 id="current-course-display" class="font-bold text-blue-900">Course Name</h3>
+                                <p class="text-xs text-slate-400">Section 1: Multiple Choice Questions</p>
+                            </div>
                             <div class="text-right">
-                                <span class="text-sm text-slate-500">Time Remaining</span>
-                                <div id="timer-display" class="text-2xl font-mono font-bold text-slate-800">10:00</div>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase">Time Remaining</p>
+                                <div id="timer" class="text-2xl font-mono font-bold">10:00</div>
                             </div>
                         </div>
-                        <div class="w-full bg-slate-100 h-2 rounded-full mb-8 overflow-hidden">
-                            <div id="progress-bar" class="h-full bg-blue-600 transition-all duration-500" style="width: 0%"></div>
+
+                        <div id="question-box" class="flex-1">
+                            <!-- Question content -->
                         </div>
 
-                        <div id="question-container" class="min-h-[300px]">
-                            <!-- Question rendered here -->
+                        <div class="flex justify-between items-center mt-8 pt-6 border-t">
+                            <button onclick="app.prevQ()" id="prev-btn" class="px-8 py-3 rounded-xl border-2 font-bold text-slate-400 hover:bg-slate-50 transition">Previous</button>
+                            <button onclick="app.nextQ()" id="next-btn" class="px-10 py-3 rounded-xl bg-blue-900 text-white font-bold hover:bg-blue-800 transition shadow-lg">Next</button>
                         </div>
-
-                        <div class="flex justify-between mt-8">
-                            <button onclick="app.prevQuestion()" id="btn-prev" class="px-6 py-2 border rounded-lg font-semibold hover:bg-slate-50 disabled:opacity-30">Previous</button>
-                            <button onclick="app.nextQuestion()" id="btn-next" class="px-6 py-2 bg-blue-900 text-white rounded-lg font-semibold hover:bg-blue-800 shadow-md">Next</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sidebar Info -->
-                <div class="w-full md:w-64 space-y-4">
-                    <div class="bg-white rounded-xl shadow p-4 border border-slate-200">
-                        <h4 class="font-bold text-sm mb-3 text-slate-500 uppercase tracking-widest">Question Palette</h4>
-                        <div id="palette" class="grid grid-cols-5 gap-2">
-                            <!-- Palette dots -->
-                        </div>
-                    </div>
-                    <div class="bg-red-50 rounded-xl p-4 border border-red-100 text-red-700 text-xs">
-                        <p class="font-bold mb-1">Security Alert</p>
-                        <p>Do not switch tabs or minimize window. Every switch is logged and may lead to automatic submission.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- View: Result -->
-        <section id="view-result" class="hidden glass-morphism rounded-2xl shadow-xl p-10 text-center max-w-xl mx-auto border border-slate-200">
-            <div id="result-icon" class="mb-4 text-6xl"></div>
-            <h2 id="result-status" class="text-3xl font-bold mb-2">Assessment Results</h2>
-            <p id="result-message" class="text-slate-600 mb-6"></p>
-            
-            <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="bg-slate-100 p-4 rounded-xl">
-                    <div class="text-slate-500 text-xs font-semibold uppercase">Your Score</div>
-                    <div id="result-score" class="text-2xl font-bold text-blue-900">0%</div>
-                </div>
-                <div class="bg-slate-100 p-4 rounded-xl">
-                    <div class="text-slate-500 text-xs font-semibold uppercase">Questions</div>
-                    <div id="result-correct" class="text-2xl font-bold text-slate-800">0 / 0</div>
-                </div>
-            </div>
+        <!-- View: Results -->
+        <section id="view-result" class="hidden max-w-2xl mx-auto space-y-6">
+            <div class="bg-white rounded-3xl shadow-2xl p-10 text-center border border-slate-200">
+                <div id="result-icon" class="w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-6"></div>
+                <h2 id="result-title" class="text-3xl font-bold mb-2">Assessment Results</h2>
+                <p id="result-msg" class="text-slate-500 mb-8"></p>
 
-            <div id="pass-actions" class="hidden space-y-4">
-                <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm font-medium">
-                    Congratulations! You have successfully passed the Oriontec Assessment.
+                <div class="grid grid-cols-3 gap-4 mb-8">
+                    <div class="bg-slate-50 p-4 rounded-2xl border">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Final Score</p>
+                        <p id="res-score" class="text-2xl font-bold text-blue-900">0%</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Accuracy</p>
+                        <p id="res-accuracy" class="text-2xl font-bold text-slate-800">0/0</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Security</p>
+                        <p id="res-security" class="text-2xl font-bold text-green-600">Safe</p>
+                    </div>
                 </div>
-                <button onclick="app.downloadCertificate()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold hover:bg-green-700 transition flex items-center justify-center space-x-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    <span>Download Official Certificate</span>
-                </button>
-            </div>
 
-            <div id="fail-actions" class="hidden">
-                <button onclick="window.location.reload()" class="w-full bg-slate-800 text-white py-4 rounded-xl font-bold hover:bg-slate-700 transition">
-                    Retry Assessment
-                </button>
+                <div id="pass-ui" class="hidden space-y-4">
+                    <button onclick="app.downloadCertificate()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold hover:bg-green-700 transition flex items-center justify-center space-x-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span>Download Official Certificate</span>
+                    </button>
+                    <button onclick="app.printSummary()" class="w-full border-2 border-slate-200 py-4 rounded-2xl font-bold hover:bg-slate-50 transition">
+                        Print Performance Report
+                    </button>
+                </div>
+                
+                <div id="fail-ui" class="hidden">
+                    <button onclick="location.reload()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold">Retry Assessment</button>
+                </div>
             </div>
         </section>
 
-        <!-- View: Admin Login -->
-        <section id="view-admin-login" class="hidden glass-morphism rounded-2xl shadow-xl p-8 max-w-sm mx-auto">
-            <h2 class="text-xl font-bold mb-6 text-center">Admin Access</h2>
+        <!-- Admin Views -->
+        <section id="view-admin-login" class="hidden max-w-sm mx-auto bg-white p-8 rounded-3xl shadow-xl border">
+            <h2 class="text-xl font-bold mb-6 text-center">Admin Portal</h2>
             <div class="space-y-4">
-                <input type="password" id="admin-pass" placeholder="Admin Password" class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
-                <button onclick="app.doAdminLogin()" class="w-full bg-blue-900 text-white py-2 rounded-lg font-bold">Login to Dashboard</button>
-                <button onclick="app.showPage('registration')" class="w-full text-slate-500 text-sm">Cancel</button>
+                <input type="password" id="admin-pass" class="w-full px-4 py-3 rounded-xl border-2 outline-none" placeholder="Security PIN">
+                <button onclick="app.doAdminAuth()" class="w-full bg-blue-900 text-white py-3 rounded-xl font-bold">Login</button>
+                <button onclick="app.showPage('registration')" class="w-full text-xs text-slate-400">Back to Home</button>
             </div>
         </section>
 
-        <!-- View: Admin Dashboard -->
-        <section id="view-admin-dashboard" class="hidden space-y-6">
-            <div class="flex justify-between items-end">
-                <div>
-                    <h2 class="text-2xl font-bold text-blue-900">Admin Dashboard</h2>
-                    <p class="text-slate-500">Live Assessment Records</p>
-                </div>
-                <button onclick="app.logoutAdmin()" class="px-4 py-2 bg-slate-200 rounded text-sm font-semibold">Logout</button>
+        <section id="view-admin-dash" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold">Admin Oversight</h2>
+                <button onclick="app.showPage('registration')" class="px-4 py-2 bg-slate-200 rounded-lg text-xs font-bold">Logout</button>
             </div>
-
-            <div class="overflow-x-auto bg-white rounded-xl shadow border">
+            <div class="bg-white rounded-2xl shadow overflow-hidden">
                 <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 text-slate-500 uppercase font-semibold">
+                    <thead class="bg-slate-50 text-slate-400 font-bold uppercase text-[10px]">
                         <tr>
-                            <th class="px-6 py-4">Candidate</th>
-                            <th class="px-6 py-4">Test Name</th>
-                            <th class="px-6 py-4">Score</th>
-                            <th class="px-6 py-4">Status</th>
-                            <th class="px-6 py-4">Security Logs</th>
-                            <th class="px-6 py-4">Action</th>
+                            <th class="p-4">Candidate</th>
+                            <th class="p-4">Course</th>
+                            <th class="p-4">Score</th>
+                            <th class="p-4">Security</th>
+                            <th class="p-4">Date</th>
                         </tr>
                     </thead>
-                    <tbody id="admin-table-body" class="divide-y">
-                        <!-- Rows injected here -->
-                    </tbody>
+                    <tbody id="admin-list" class="divide-y"></tbody>
                 </table>
             </div>
         </section>
 
     </main>
 
-    <!-- Modal for Warnings -->
-    <div id="alert-modal" class="fixed inset-0 bg-black/50 hidden z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl p-6 max-w-sm w-full text-center shadow-2xl">
-            <div class="text-red-500 text-4xl mb-4">⚠️</div>
-            <h3 id="modal-title" class="text-xl font-bold mb-2">Warning</h3>
-            <p id="modal-body" class="text-slate-600 mb-6"></p>
-            <button onclick="app.closeModal()" class="w-full bg-slate-900 text-white py-2 rounded-lg font-bold">Dismiss</button>
+    <!-- Custom Alert Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black/60 hidden z-[100] flex items-center justify-center p-6">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
+            <div id="overlay-icon" class="text-4xl mb-4">⚠️</div>
+            <h3 id="overlay-title" class="text-xl font-bold mb-2">Alert</h3>
+            <p id="overlay-msg" class="text-slate-500 mb-6 text-sm"></p>
+            <button onclick="app.hideOverlay()" class="w-full bg-blue-900 text-white py-3 rounded-xl font-bold">Continue</button>
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
+    <!-- Logic -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, query, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, collection, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
         const firebaseConfig = {
-            apiKey: "", // Provided at runtime
+            apiKey: "",
             authDomain: "oriontec-c5d72.firebaseapp.com",
-            databaseURL: "https://oriontec-c5d72-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "oriontec-c5d72",
             storageBucket: "oriontec-c5d72.firebasestorage.app",
             messagingSenderId: "191363451373",
             appId: "1:191363451373:web:92cbdc14d5009819d97fe4"
         };
 
-        const fbApp = initializeApp(firebaseConfig);
-        const auth = getAuth(fbApp);
-        const db = getFirestore(fbApp);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'oriontec-edu-v1';
+        const app_fb = initializeApp(firebaseConfig);
+        const auth = getAuth(app_fb);
+        const db = getFirestore(app_fb);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'oriontec-v2-main';
 
-        // --- Data Mockup ---
-        const QUESTIONS = [
-            { q: "What is the primary function of a CPU in a computer?", a: ["Processing data", "Storing files", "Providing power", "Connecting to internet"], correct: 0 },
-            { q: "Which protocol is used for secure communication over a network?", a: ["HTTP", "FTP", "HTTPS", "SMTP"], correct: 2 },
-            { q: "What does RAM stand for?", a: ["Read Access Memory", "Random Access Memory", "Real Access Module", "Rapid Access Memory"], correct: 1 },
-            { q: "Which of these is an example of an Operating System?", a: ["Google Chrome", "Microsoft Word", "Windows 11", "Adobe Photoshop"], correct: 2 },
-            { q: "What is the standard port for HTTP?", a: ["21", "25", "80", "443"], correct: 2 },
-            { q: "A 'Phishing' attack is mainly used to:", a: ["Speed up internet", "Steal sensitive data", "Clean viruses", "Install games"], correct: 1 },
-            { q: "Which file extension is commonly used for Word documents?", a: [".xlsx", ".pptx", ".docx", ".pdf"], correct: 2 },
-            { q: "Cloud computing refers to storing and accessing data over:", a: ["Local Hard Drive", "USB Flash Drive", "The Internet", "Floppy Disk"], correct: 2 },
-            { q: "Which of the following is a programming language?", a: ["HTML", "Python", "CSS", "Markdown"], correct: 1 },
-            { q: "What is the shortcut for 'Copy' in Windows?", a: ["Ctrl + V", "Ctrl + X", "Ctrl + C", "Ctrl + P"], correct: 2 }
-        ];
+        const COURSE_QUESTIONS = {
+            "IT Fundamentals": [
+                { q: "What is the primary role of an Operating System?", a: ["Running apps", "Internet access", "Graphic design", "Word processing"], c: 0 },
+                { q: "Which of these is a non-volatile storage?", a: ["RAM", "SSD", "CPU Cache", "Register"], c: 1 },
+                { q: "What does GUI stand for?", a: ["Global User Index", "General Unit Interface", "Graphical User Interface", "Global Utility Info"], c: 2 },
+                { q: "What type of software is Linux?", a: ["Proprietary", "Open Source", "Shareware", "Adware"], c: 1 },
+                { q: "Which binary digit represents 'ON'?", a: ["0", "1", "2", "8"], c: 1 }
+            ],
+            "Digital Literacy": [
+                { q: "Which shortcut is used to 'Paste'?", a: ["Ctrl+C", "Ctrl+X", "Ctrl+V", "Ctrl+P"], c: 2 },
+                { q: "What software is best for creating spreadsheets?", a: ["Word", "Excel", "PowerPoint", "Access"], c: 1 },
+                { q: "A '.pdf' file is primarily used for:", a: ["Editing photos", "Fixed-layout docs", "Crunching numbers", "Playing audio"], c: 1 },
+                { q: "What does CC stand for in email?", a: ["Copy Code", "Carbon Copy", "Client Check", "Cloud Connect"], c: 1 },
+                { q: "A strong password should contain:", a: ["Only letters", "Only numbers", "Mix of letters, numbers, symbols", "Your birthday"], c: 2 }
+            ],
+            "Web Development": [
+                { q: "What does HTML stand for?", a: ["High Tech Multi Link", "Hyper Text Markup Language", "Home Tool Markup Logic", "Hyper Tabular Multi Level"], c: 1 },
+                { q: "Which CSS property changes text color?", a: ["background", "font-style", "color", "text-shadow"], c: 2 },
+                { q: "What tag is used for the largest heading?", a: ["<head>", "<h6>", "<h1>", "<header>"], c: 2 },
+                { q: "JavaScript is primarily used for:", a: ["Visual styling", "Structuring content", "Adding interactivity", "Database hosting"], c: 2 },
+                { q: "Which company created React?", a: ["Google", "Microsoft", "Meta (Facebook)", "Apple"], c: 2 }
+            ]
+        };
 
-        // --- Core Application Logic ---
         const app = {
             state: {
                 user: null,
                 candidate: null,
-                currentQuestion: 0,
-                answers: new Array(QUESTIONS.length).fill(null),
-                timer: 600, // 10 minutes
-                timerInterval: null,
-                tabSwitches: 0,
-                startTime: null,
-                examFinished: false,
-                adminLoggedIn: false
+                stream: null,
+                questions: [],
+                answers: [],
+                currentIdx: 0,
+                timer: 600,
+                interval: null,
+                switches: 0,
+                finished: false
             },
 
             async init() {
-                // Auth init
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                onAuthStateChanged(auth, (user) => {
-                    this.state.user = user;
-                });
-
-                // Detect tab switches
-                document.addEventListener('visibilitychange', () => {
-                    if (document.hidden && this.state.candidate && !this.state.examFinished) {
-                        this.state.tabSwitches++;
-                        this.showModal("Security Warning", "A tab switch was detected. This incident has been logged. Multiple switches may result in disqualification.");
-                    }
-                });
-
+                await signInAnonymously(auth);
+                onAuthStateChanged(auth, u => this.state.user = u);
                 this.showPage('registration');
             },
 
-            showPage(pageId) {
-                const views = ['registration', 'exam', 'result', 'admin-login', 'admin-dashboard'];
-                views.forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
-                document.getElementById(`view-${pageId}`).classList.remove('hidden');
+            showPage(id) {
+                const pages = ['registration', 'exam', 'result', 'admin-login', 'admin-dash'];
+                pages.forEach(p => document.getElementById(`view-${p}`).classList.add('hidden'));
+                document.getElementById(`view-${id}`).classList.remove('hidden');
+                window.scrollTo(0,0);
             },
 
-            showModal(title, body) {
-                document.getElementById('modal-title').innerText = title;
-                document.getElementById('modal-body').innerText = body;
-                document.getElementById('alert-modal').classList.remove('hidden');
-            },
-
-            closeModal() {
-                document.getElementById('alert-modal').classList.add('hidden');
+            async enableWebcam() {
+                try {
+                    this.state.stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    const prev = document.getElementById('webcam-preview');
+                    prev.srcObject = this.state.stream;
+                    prev.classList.remove('hidden');
+                    document.getElementById('webcam-placeholder').classList.add('hidden');
+                    document.getElementById('btn-start').disabled = false;
+                    document.getElementById('btn-start').classList.remove('opacity-50', 'cursor-not-allowed');
+                } catch (e) {
+                    alert("Camera access denied. Webcam is required for proctoring.");
+                }
             },
 
             handleRegistration(e) {
                 e.preventDefault();
-                const formData = new FormData(e.target);
+                const fd = new FormData(e.target);
+                const course = fd.get('course');
+                
                 this.state.candidate = {
-                    name: formData.get('name'),
-                    email: formData.get('email'),
-                    phone: formData.get('phone'),
-                    course: formData.get('course'),
+                    name: fd.get('name'),
+                    email: fd.get('email'),
+                    course: course,
                     id: 'OT-' + Math.random().toString(36).substr(2, 6).toUpperCase()
                 };
+
+                this.state.questions = COURSE_QUESTIONS[course] || COURSE_QUESTIONS["IT Fundamentals"];
+                this.state.answers = new Array(this.state.questions.length).fill(null);
                 
-                document.getElementById('exam-course-title').innerText = this.state.candidate.course;
+                document.getElementById('user-badge').classList.remove('hidden');
+                document.getElementById('badge-name').innerText = this.state.candidate.name;
+                
                 this.startExam();
             },
 
             startExam() {
-                this.state.startTime = new Date().toISOString();
                 this.showPage('exam');
+                document.getElementById('current-course-display').innerText = this.state.candidate.course;
+                document.getElementById('exam-webcam').srcObject = this.state.stream;
+
                 this.renderQuestion();
                 this.renderPalette();
-                
-                this.state.timerInterval = setInterval(() => {
+
+                this.state.interval = setInterval(() => {
                     this.state.timer--;
-                    this.updateTimerDisplay();
-                    if (this.state.timer <= 0) {
-                        this.finishExam();
-                    }
+                    this.updateTimer();
+                    if(this.state.timer <= 0) this.finish();
                 }, 1000);
+
+                // Tab Switch Monitor
+                document.addEventListener('visibilitychange', () => {
+                    if(document.hidden && !this.state.finished) {
+                        this.state.switches++;
+                        this.showOverlay("Security Violation", "Tab switching is forbidden. This incident has been logged. Continuous violations will lead to auto-submission.");
+                        document.getElementById('security-score').innerText = Math.max(0, 100 - (this.state.switches * 20)) + "%";
+                        if(this.state.switches >= 5) this.finish();
+                    }
+                });
             },
 
-            updateTimerDisplay() {
-                const mins = Math.floor(this.state.timer / 60);
-                const secs = this.state.timer % 60;
-                const display = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                const el = document.getElementById('timer-display');
-                el.innerText = display;
-                if (this.state.timer < 60) el.classList.add('timer-warning');
+            updateTimer() {
+                const m = Math.floor(this.state.timer / 60);
+                const s = this.state.timer % 60;
+                const el = document.getElementById('timer');
+                el.innerText = `${m}:${s.toString().padStart(2, '0')}`;
+                if(this.state.timer < 60) el.classList.add('timer-red');
             },
 
             renderQuestion() {
-                const q = QUESTIONS[this.state.currentQuestion];
-                const container = document.getElementById('question-container');
-                const selected = this.state.answers[this.state.currentQuestion];
+                const q = this.state.questions[this.state.currentIdx];
+                const box = document.getElementById('question-box');
+                const sel = this.state.answers[this.state.currentIdx];
 
-                container.innerHTML = `
-                    <div class="mb-2 text-slate-400 font-semibold text-xs uppercase">Question ${this.state.currentQuestion + 1} of ${QUESTIONS.length}</div>
-                    <h4 class="text-xl font-bold text-slate-800 mb-6">${q.q}</h4>
-                    <div class="space-y-3">
-                        ${q.a.map((opt, idx) => `
-                            <button onclick="app.selectAnswer(${idx})" class="w-full text-left p-4 rounded-xl border-2 transition-all ${selected === idx ? 'border-blue-600 bg-blue-50' : 'border-slate-100 hover:border-slate-200'}">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-6 h-6 rounded-full border flex items-center justify-center text-xs font-bold ${selected === idx ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white text-slate-400'}">${String.fromCharCode(65 + idx)}</div>
-                                    <span class="${selected === idx ? 'text-blue-900 font-semibold' : 'text-slate-700'}">${opt}</span>
-                                </div>
+                box.innerHTML = `
+                    <div class="mb-2 text-slate-400 font-bold text-[10px] uppercase">Question ${this.state.currentIdx + 1} of ${this.state.questions.length}</div>
+                    <h4 class="text-xl font-bold text-slate-800 mb-8">${q.q}</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${q.a.map((opt, i) => `
+                            <button onclick="app.pick(${i})" class="group flex items-center p-5 rounded-2xl border-2 transition-all text-left ${sel === i ? 'border-blue-600 bg-blue-50' : 'border-slate-100 hover:border-slate-200'}">
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold mr-4 ${sel === i ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'}">${String.fromCharCode(65+i)}</div>
+                                <span class="font-semibold ${sel === i ? 'text-blue-900' : 'text-slate-600'}">${opt}</span>
                             </button>
                         `).join('')}
                     </div>
                 `;
 
-                document.getElementById('btn-prev').disabled = this.state.currentQuestion === 0;
-                document.getElementById('btn-next').innerText = this.state.currentQuestion === QUESTIONS.length - 1 ? 'Finish Test' : 'Next';
-                
-                const progress = ((this.state.currentQuestion + 1) / QUESTIONS.length) * 100;
-                document.getElementById('progress-bar').style.width = progress + '%';
+                document.getElementById('prev-btn').classList.toggle('opacity-30', this.state.currentIdx === 0);
+                document.getElementById('next-btn').innerText = this.state.currentIdx === this.state.questions.length - 1 ? 'Finish Exam' : 'Next';
             },
 
             renderPalette() {
-                const container = document.getElementById('palette');
-                container.innerHTML = QUESTIONS.map((_, idx) => `
-                    <button onclick="app.jumpToQuestion(${idx})" class="w-8 h-8 rounded-lg text-xs font-bold flex items-center justify-center transition ${this.state.currentQuestion === idx ? 'ring-2 ring-blue-500 bg-blue-900 text-white' : (this.state.answers[idx] !== null ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400')}">
-                        ${idx + 1}
+                const p = document.getElementById('palette');
+                p.innerHTML = this.state.questions.map((_, i) => `
+                    <button onclick="app.jump(${i})" class="w-full aspect-square rounded-lg text-xs font-bold flex items-center justify-center border-2 transition ${this.state.currentIdx === i ? 'border-blue-600 bg-blue-50 text-blue-900' : (this.state.answers[i] !== null ? 'bg-green-500 border-green-500 text-white' : 'border-slate-100 text-slate-400')}">
+                        ${i + 1}
                     </button>
                 `).join('');
             },
 
-            selectAnswer(idx) {
-                this.state.answers[this.state.currentQuestion] = idx;
-                this.renderQuestion();
-                this.renderPalette();
+            pick(i) { this.state.answers[this.state.currentIdx] = i; this.renderQuestion(); this.renderPalette(); },
+            jump(i) { this.state.currentIdx = i; this.renderQuestion(); this.renderPalette(); },
+            prevQ() { if(this.state.currentIdx > 0) this.jump(this.state.currentIdx - 1); },
+            nextQ() { 
+                if(this.state.currentIdx < this.state.questions.length - 1) this.jump(this.state.currentIdx + 1); 
+                else this.finish(); 
             },
 
-            jumpToQuestion(idx) {
-                this.state.currentQuestion = idx;
-                this.renderQuestion();
-                this.renderPalette();
-            },
+            async finish() {
+                if(this.state.finished) return;
+                this.state.finished = true;
+                clearInterval(this.state.interval);
+                
+                const score = this.state.answers.reduce((acc, val, i) => val === this.state.questions[i].c ? acc + 1 : acc, 0);
+                const perc = Math.round((score / this.state.questions.length) * 100);
+                const passed = perc >= 60;
 
-            nextQuestion() {
-                if (this.state.currentQuestion < QUESTIONS.length - 1) {
-                    this.state.currentQuestion++;
-                    this.renderQuestion();
-                    this.renderPalette();
-                } else {
-                    this.finishExam();
-                }
-            },
-
-            prevQuestion() {
-                if (this.state.currentQuestion > 0) {
-                    this.state.currentQuestion--;
-                    this.renderQuestion();
-                    this.renderPalette();
-                }
-            },
-
-            async finishExam() {
-                if (this.state.examFinished) return;
-                this.state.examFinished = true;
-                clearInterval(this.state.timerInterval);
-
-                const correctCount = this.state.answers.reduce((acc, ans, idx) => {
-                    return ans === QUESTIONS[idx].correct ? acc + 1 : acc;
-                }, 0);
-
-                const percentage = (correctCount / QUESTIONS.length) * 100;
-                const passed = percentage >= 60;
-
-                const resultData = {
+                const result = {
                     candidate: this.state.candidate,
-                    score: percentage,
-                    correct: correctCount,
-                    total: QUESTIONS.length,
-                    passed: passed,
-                    tabSwitches: this.state.tabSwitches,
-                    startTime: this.state.startTime,
-                    endTime: new Date().toISOString(),
-                    timestamp: Date.now()
+                    score: perc,
+                    correct: score,
+                    total: this.state.questions.length,
+                    switches: this.state.switches,
+                    passed,
+                    date: new Date().toISOString()
                 };
 
-                // Save to Firebase
-                try {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'exams', this.state.candidate.id), resultData);
-                } catch (err) {
-                    console.error("Storage error:", err);
+                if (this.state.user) {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'exams', result.candidate.id), result);
                 }
 
-                // Show Results UI
+                this.showResultUI(result);
+            },
+
+            showResultUI(res) {
                 this.showPage('result');
-                document.getElementById('result-score').innerText = percentage + '%';
-                document.getElementById('result-correct').innerText = `${correctCount} / ${QUESTIONS.length}`;
-                
-                if (passed) {
-                    document.getElementById('result-icon').innerText = "🏆";
-                    document.getElementById('result-status').innerText = "Congratulations!";
-                    document.getElementById('result-message').innerText = "You have officially passed the certification exam.";
-                    document.getElementById('pass-actions').classList.remove('hidden');
+                document.getElementById('res-score').innerText = res.score + "%";
+                document.getElementById('res-accuracy').innerText = `${res.correct}/${res.total}`;
+                document.getElementById('res-security').innerText = res.switches > 2 ? 'Flagged' : 'Safe';
+                document.getElementById('res-security').className = `text-2xl font-bold ${res.switches > 2 ? 'text-red-500' : 'text-green-600'}`;
+
+                if(res.passed) {
+                    document.getElementById('result-icon').innerHTML = "✅";
+                    document.getElementById('result-icon').className += " bg-green-100 text-green-600";
+                    document.getElementById('result-msg').innerText = "Congratulations! You have earned your Oriontec Certification.";
+                    document.getElementById('pass-ui').classList.remove('hidden');
                 } else {
-                    document.getElementById('result-icon').innerText = "📝";
-                    document.getElementById('result-status').innerText = "Not Qualified";
-                    document.getElementById('result-message').innerText = "You did not meet the 60% requirement. Please review the material and try again.";
-                    document.getElementById('fail-actions').classList.remove('hidden');
+                    document.getElementById('result-icon').innerHTML = "❌";
+                    document.getElementById('result-icon').className += " bg-red-100 text-red-600";
+                    document.getElementById('result-msg').innerText = "Minimum 60% required to pass. Please attempt after review.";
+                    document.getElementById('fail-ui').classList.remove('hidden');
                 }
             },
 
             downloadCertificate() {
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({
-                    orientation: 'landscape',
-                    unit: 'mm',
-                    format: 'a4'
-                });
+                const doc = new jsPDF('l', 'mm', 'a4');
+                const c = this.state.candidate;
+                const score = Math.round((this.state.answers.reduce((acc, val, i) => val === this.state.questions[i].c ? acc + 1 : acc, 0) / this.state.questions.length) * 100);
 
-                const cand = this.state.candidate;
-                const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-                // Frame
-                doc.setDrawColor(30, 58, 138); // Navy Blue
-                doc.setLineWidth(2);
+                // Design
+                doc.setDrawColor(30, 58, 138);
+                doc.setLineWidth(1.5);
                 doc.rect(10, 10, 277, 190);
-                doc.setLineWidth(0.5);
-                doc.rect(13, 13, 271, 184);
-
-                // Title
-                doc.setTextColor(30, 58, 138);
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(40);
-                doc.text("Certificate of Achievement", 148.5, 50, { align: "center" });
-
-                doc.setTextColor(100, 116, 139);
-                doc.setFontSize(14);
-                doc.setFont("helvetica", "normal");
-                doc.text("This is to certify that", 148.5, 70, { align: "center" });
-
-                // Candidate Name
-                doc.setTextColor(0, 0, 0);
-                doc.setFontSize(32);
-                doc.setFont("helvetica", "bold");
-                doc.text(cand.name, 148.5, 85, { align: "center" });
-
-                doc.setTextColor(100, 116, 139);
-                doc.setFontSize(14);
-                doc.setFont("helvetica", "normal");
-                doc.text("has successfully completed the online assessment for", 148.5, 100, { align: "center" });
-
-                // Course Name
-                doc.setTextColor(30, 58, 138);
-                doc.setFontSize(22);
-                doc.setFont("helvetica", "bold");
-                doc.text(cand.course, 148.5, 115, { align: "center" });
-
-                doc.setTextColor(100, 116, 139);
-                doc.setFontSize(12);
-                doc.setFont("helvetica", "normal");
-                doc.text("Awarded by Oriontec Education Board", 148.5, 125, { align: "center" });
-
-                // Footer Details
-                doc.setTextColor(50, 50, 50);
-                doc.setFontSize(10);
-                doc.text(`Certificate ID: ${cand.id}`, 40, 160);
-                doc.text(`Date of Issue: ${date}`, 40, 165);
-
-                // Signatures
-                doc.line(180, 165, 250, 165);
-                doc.setFont("times", "italic");
-                doc.setFontSize(14);
-                doc.text("Chairman - Oriontec Education Board", 215, 172, { align: "center" });
-
-                // Branding
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(24);
-                doc.setTextColor(30, 58, 138);
-                doc.text("ORIONTEC", 148.5, 185, { align: "center" });
-
-                doc.save(`Oriontec_Certificate_${cand.id}.pdf`);
-            },
-
-            // --- Admin Logic ---
-            showAdminLogin() {
-                this.showPage('admin-login');
-            },
-
-            doAdminLogin() {
-                const pass = document.getElementById('admin-pass').value;
-                if (pass === "oriontec2024") {
-                    this.state.adminLoggedIn = true;
-                    this.showPage('admin-dashboard');
-                    this.fetchAdminData();
-                } else {
-                    this.showModal("Access Denied", "Incorrect administrator password.");
-                }
-            },
-
-            async fetchAdminData() {
-                if (!this.state.adminLoggedIn) return;
                 
-                const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'exams'));
-                onSnapshot(q, (snapshot) => {
-                    const tbody = document.getElementById('admin-table-body');
-                    tbody.innerHTML = "";
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        const row = document.createElement('tr');
-                        row.className = "hover:bg-slate-50 transition";
-                        row.innerHTML = `
-                            <td class="px-6 py-4">
-                                <div class="font-bold text-slate-800">${data.candidate.name}</div>
-                                <div class="text-xs text-slate-500">${data.candidate.email}</div>
-                            </td>
-                            <td class="px-6 py-4 text-slate-600">${data.candidate.course}</td>
-                            <td class="px-6 py-4">
-                                <span class="font-mono font-bold">${data.score}%</span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase ${data.passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-                                    ${data.passed ? 'Passed' : 'Failed'}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="text-[10px] text-slate-500">
-                                    Switches: ${data.tabSwitches || 0}<br>
-                                    ID: ${data.candidate.id}
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <button onclick="app.viewLog('${data.candidate.id}')" class="text-blue-600 hover:underline text-xs font-semibold">Details</button>
-                            </td>
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(36);
+                doc.text("Certificate of Achievement", 148, 50, {align: 'center'});
+                
+                doc.setFontSize(14);
+                doc.setFont("helvetica", "normal");
+                doc.text("Issued by Oriontec Education Board", 148, 60, {align: 'center'});
+                
+                doc.text("This is to certify that", 148, 85, {align: 'center'});
+                doc.setFontSize(28);
+                doc.text(c.name.toUpperCase(), 148, 100, {align: 'center'});
+                
+                doc.setFontSize(14);
+                doc.text("has successfully passed the assessment for", 148, 115, {align: 'center'});
+                doc.setFontSize(20);
+                doc.setFont("helvetica", "bold");
+                doc.text(c.course, 148, 130, {align: 'center'});
+                
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "normal");
+                doc.text(`Certificate ID: ${c.id} | Score: ${score}% | Date: ${new Date().toLocaleDateString()}`, 148, 150, {align: 'center'});
+                
+                doc.setFont("times", "italic");
+                doc.setFontSize(18);
+                doc.text("Chairman - Oriontec Board", 220, 175, {align: 'center'});
+                doc.line(180, 170, 260, 170);
+
+                doc.save(`Oriontec_${c.id}.pdf`);
+            },
+
+            printSummary() {
+                const c = this.state.candidate;
+                const score = Math.round((this.state.answers.reduce((acc, val, i) => val === this.state.questions[i].c ? acc + 1 : acc, 0) / this.state.questions.length) * 100);
+                
+                let win = window.open('', '_blank');
+                win.document.write(`
+                    <html><head><title>Performance Report</title>
+                    <style>body{font-family:sans-serif; padding:40px;} .header{border-bottom:2px solid #333; padding-bottom:10px; margin-bottom:20px;}</style>
+                    </head><body>
+                    <div class="header"><h1>Oriontec Assessment Report</h1></div>
+                    <p><strong>Candidate:</strong> ${c.name}</p>
+                    <p><strong>Course:</strong> ${c.course}</p>
+                    <p><strong>Final Score:</strong> ${score}%</p>
+                    <p><strong>Tab Switches Detect:</strong> ${this.state.switches}</p>
+                    <hr>
+                    <h3>Question Wise Analysis</h3>
+                    ${this.state.questions.map((q, i) => `
+                        <p>${i+1}. ${q.q}<br>
+                        Status: ${this.state.answers[i] === q.c ? 'Correct ✅' : 'Incorrect ❌'}</p>
+                    `).join('')}
+                    <script>window.print();</script>
+                    </body></html>
+                `);
+            },
+
+            showOverlay(title, msg) {
+                document.getElementById('overlay-title').innerText = title;
+                document.getElementById('overlay-msg').innerText = msg;
+                document.getElementById('overlay').classList.remove('hidden');
+            },
+            hideOverlay() { document.getElementById('overlay').classList.add('hidden'); },
+
+            doAdminAuth() {
+                if(document.getElementById('admin-pass').value === "2024") {
+                    this.showPage('admin-dash');
+                    this.loadAdminList();
+                } else alert("Invalid PIN");
+            },
+
+            loadAdminList() {
+                const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'exams'), orderBy('date', 'desc'));
+                onSnapshot(q, (snap) => {
+                    const list = document.getElementById('admin-list');
+                    list.innerHTML = "";
+                    snap.forEach(d => {
+                        const data = d.data();
+                        list.innerHTML += `
+                            <tr>
+                                <td class="p-4"><b>${data.candidate.name}</b><br><small>${data.candidate.email}</small></td>
+                                <td class="p-4 text-xs">${data.candidate.course}</td>
+                                <td class="p-4 font-bold ${data.passed?'text-green-600':'text-red-600'}">${data.score}%</td>
+                                <td class="p-4 text-xs">${data.switches} Switches</td>
+                                <td class="p-4 text-[10px]">${new Date(data.date).toLocaleDateString()}</td>
+                            </tr>
                         `;
-                        tbody.appendChild(row);
                     });
-                }, (err) => {
-                    console.error("Admin snapshot error:", err);
                 });
-            },
-
-            viewLog(id) {
-                this.showModal("Record Detail", `System Record for ${id} is stored in secure database logs. Audit logs are cleared every 30 days.`);
-            },
-
-            logoutAdmin() {
-                this.state.adminLoggedIn = false;
-                this.showPage('registration');
             }
         };
 
-        // Exposed for global HTML calls
         window.app = app;
-        window.onload = () => app.init();
+        app.init();
     </script>
 </body>
 </html>
