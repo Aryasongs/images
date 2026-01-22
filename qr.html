@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Oriontec Certificate Verification</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ------------------ GLOBAL ------------------ */
+body {
+    margin: 0;
+    font-family: "Times New Roman", Georgia, serif;
+    background: #f4f6fb;
+    color: #1e1e1e;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 50px 30px;
+}
+
+/* ------------------ HEADER ------------------ */
+header {
+    background: linear-gradient(135deg, #1f3c88, #294bb3);
+    color: #fff;
+    padding: 60px 30px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 42px;
+    letter-spacing: 1px;
+}
+
+header p {
+    margin-top: 10px;
+    font-size: 18px;
+    opacity: 0.95;
+}
+
+/* ------------------ CARD ------------------ */
+.card {
+    background: #fff;
+    border-radius: 6px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    margin-top: -40px;
+}
+
+/* ------------------ SECTION TITLES ------------------ */
+.section-title {
+    font-size: 24px;
+    color: #1f3c88;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e3e6f0;
+    padding-bottom: 10px;
+}
+
+/* ------------------ CERT DETAILS ------------------ */
+.details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    font-size: 17px;
+}
+
+.details div {
+    background: #f8f9ff;
+    padding: 15px 20px;
+    border-left: 4px solid #1f3c88;
+}
+
+.label {
+    font-weight: bold;
+    color: #444;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* ------------------ STATUS ------------------ */
+.status {
+    margin-top: 30px;
+    padding: 20px;
+    background: #eafbea;
+    border-left: 6px solid #1f8b3c;
+    font-size: 18px;
+}
+
+.status strong {
+    color: #1f8b3c;
+}
+
+/* ------------------ AUTHORITY ------------------ */
+.authority {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sign {
+    font-size: 16px;
+}
+
+.sign img {
+    height: 55px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.seal {
+    width: 120px;
+    height: 120px;
+    border: 2px dashed #777;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #777;
+}
+
+/* ------------------ DISCLAIMER ------------------ */
+.disclaimer {
+    margin-top: 40px;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+}
+
+/* ------------------ FOOTER ------------------ */
+footer {
+    margin-top: 60px;
+    background: #111;
+    color: #aaa;
+    padding: 30px;
+    font-size: 14px;
+    text-align: center;
+}
+
+footer span {
+    color: #fff;
+}
+
+/* ------------------ RESPONSIVE ------------------ */
+@media (max-width: 768px) {
+    .details {
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 32px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <h1>Oriontec Certificate Verification</h1>
+        <p>Official verification portal for issued certificates</p>
+    </div>
+</header>
+
+<div class="container">
+    <div class="card">
+
+        <div class="section-title">Certificate Information</div>
+
+        <!-- 🔹 AUTO FILLED INFO (STATIC FOR NOW) -->
+        <div class="details">
+            <div>
+                <span class="label">Certificate ID</span>
+                ORT-2026-INMOL-001
+            </div>
+            <div>
+                <span class="label">Certificate Type</span>
+                Certificate of Trusted Association
+            </div>
+            <div>
+                <span class="label">Issued To</span>
+                Mr. Inmol Sunda
+            </div>
+            <div>
+                <span class="label">Organization</span>
+                Oriontec
+            </div>
+            <div>
+                <span class="label">Issue Date</span>
+                15 January 2026
+            </div>
+            <div>
+                <span class="label">Status</span>
+                Active & Verified
+            </div>
+        </div>
+
+        <div class="status">
+            ✅ This certificate is <strong>valid, authentic, and officially issued</strong> by Oriontec based on internal company records.
+        </div>
+
+        <div class="authority">
+            <div class="sign">
+                <img src="signature.png" alt="Authorized Signature">
+                <strong>Authorized Signatory</strong><br>
+                Compliance & Records Department<br>
+                Oriontec
+            </div>
+
+            <div class="seal">
+                OFFICIAL SEAL
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            <strong>Disclaimer:</strong><br>
+            This certificate verification page is provided for official and legal reference purposes only.
+            Oriontec shall not be responsible for any misuse, alteration, or misrepresentation of the
+            certificate or its contents. Verification is limited to the information displayed above.
+        </div>
+
+    </div>
+</div>
+
+<footer>
+    © 2026 <span>Oriontec</span> • Official Verification Portal • All Rights Reserved
+</footer>
+
+</body>
+</html>
