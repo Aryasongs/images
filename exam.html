@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oriontec Education Board | Online Assessment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .signature-font { font-family: 'Dancing Script', cursive; }
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .exam-timer {
+            transition: all 0.3s ease;
+        }
+        .timer-warning {
+            color: #ef4444;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        [v-cloak] { display: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-blue-900 rounded-lg flex items-center justify-center text-white font-bold text-xl">O</div>
+                <div>
+                    <h1 class="font-bold text-blue-900 leading-tight">Oriontec</h1>
+                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Education Board</p>
+                </div>
+            </div>
+            <button onclick="app.showAdminLogin()" class="text-sm font-medium text-slate-600 hover:text-blue-900 transition">Admin Portal</button>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-4 py-8">
+        
+        <!-- View: Registration -->
+        <section id="view-registration" class="glass-morphism rounded-2xl shadow-xl p-8 max-w-lg mx-auto border border-slate-200">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-slate-800">Candidate Registration</h2>
+                <p class="text-slate-500">Online Assessment & Certification Platform</p>
+            </div>
+            <form id="regForm" class="space-y-4" onsubmit="app.handleRegistration(event)">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Full Name</label>
+                    <input type="text" name="name" required placeholder="John Doe" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Email Address</label>
+                    <input type="email" name="email" required placeholder="john@example.com" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Mobile Number</label>
+                    <input type="tel" name="phone" required placeholder="+1 234 567 890" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Select Course / Test</label>
+                    <select name="course" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        <option value="">Choose a test...</option>
+                        <option value="Information Technology Fundamentals">Information Technology Fundamentals</option>
+                        <option value="Digital Literacy & Office Suite">Digital Literacy & Office Suite</option>
+                        <option value="Web Development Certification">Web Development Certification</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-blue-900 text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition transform active:scale-95 shadow-lg mt-4">
+                    Initialize Assessment
+                </button>
+            </form>
+            <p class="text-center text-[11px] text-slate-400 mt-6">
+                By starting, you agree to the proctored environment terms. Oriontec tracks tab switches for academic integrity.
+            </p>
+        </section>
+
+        <!-- View: Exam Interface -->
+        <section id="view-exam" class="hidden">
+            <div class="flex flex-col md:flex-row gap-6">
+                <!-- Main Test Area -->
+                <div class="flex-1 space-y-6">
+                    <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 id="exam-course-title" class="font-bold text-lg text-blue-900">Course Name</h3>
+                            <div class="text-right">
+                                <span class="text-sm text-slate-500">Time Remaining</span>
+                                <div id="timer-display" class="text-2xl font-mono font-bold text-slate-800">10:00</div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full mb-8 overflow-hidden">
+                            <div id="progress-bar" class="h-full bg-blue-600 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+
+                        <div id="question-container" class="min-h-[300px]">
+                            <!-- Question rendered here -->
+                        </div>
+
+                        <div class="flex justify-between mt-8">
+                            <button onclick="app.prevQuestion()" id="btn-prev" class="px-6 py-2 border rounded-lg font-semibold hover:bg-slate-50 disabled:opacity-30">Previous</button>
+                            <button onclick="app.nextQuestion()" id="btn-next" class="px-6 py-2 bg-blue-900 text-white rounded-lg font-semibold hover:bg-blue-800 shadow-md">Next</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Info -->
+                <div class="w-full md:w-64 space-y-4">
+                    <div class="bg-white rounded-xl shadow p-4 border border-slate-200">
+                        <h4 class="font-bold text-sm mb-3 text-slate-500 uppercase tracking-widest">Question Palette</h4>
+                        <div id="palette" class="grid grid-cols-5 gap-2">
+                            <!-- Palette dots -->
+                        </div>
+                    </div>
+                    <div class="bg-red-50 rounded-xl p-4 border border-red-100 text-red-700 text-xs">
+                        <p class="font-bold mb-1">Security Alert</p>
+                        <p>Do not switch tabs or minimize window. Every switch is logged and may lead to automatic submission.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Result -->
+        <section id="view-result" class="hidden glass-morphism rounded-2xl shadow-xl p-10 text-center max-w-xl mx-auto border border-slate-200">
+            <div id="result-icon" class="mb-4 text-6xl"></div>
+            <h2 id="result-status" class="text-3xl font-bold mb-2">Assessment Results</h2>
+            <p id="result-message" class="text-slate-600 mb-6"></p>
+            
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-slate-100 p-4 rounded-xl">
+                    <div class="text-slate-500 text-xs font-semibold uppercase">Your Score</div>
+                    <div id="result-score" class="text-2xl font-bold text-blue-900">0%</div>
+                </div>
+                <div class="bg-slate-100 p-4 rounded-xl">
+                    <div class="text-slate-500 text-xs font-semibold uppercase">Questions</div>
+                    <div id="result-correct" class="text-2xl font-bold text-slate-800">0 / 0</div>
+                </div>
+            </div>
+
+            <div id="pass-actions" class="hidden space-y-4">
+                <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm font-medium">
+                    Congratulations! You have successfully passed the Oriontec Assessment.
+                </div>
+                <button onclick="app.downloadCertificate()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold hover:bg-green-700 transition flex items-center justify-center space-x-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span>Download Official Certificate</span>
+                </button>
+            </div>
+
+            <div id="fail-actions" class="hidden">
+                <button onclick="window.location.reload()" class="w-full bg-slate-800 text-white py-4 rounded-xl font-bold hover:bg-slate-700 transition">
+                    Retry Assessment
+                </button>
+            </div>
+        </section>
+
+        <!-- View: Admin Login -->
+        <section id="view-admin-login" class="hidden glass-morphism rounded-2xl shadow-xl p-8 max-w-sm mx-auto">
+            <h2 class="text-xl font-bold mb-6 text-center">Admin Access</h2>
+            <div class="space-y-4">
+                <input type="password" id="admin-pass" placeholder="Admin Password" class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                <button onclick="app.doAdminLogin()" class="w-full bg-blue-900 text-white py-2 rounded-lg font-bold">Login to Dashboard</button>
+                <button onclick="app.showPage('registration')" class="w-full text-slate-500 text-sm">Cancel</button>
+            </div>
+        </section>
+
+        <!-- View: Admin Dashboard -->
+        <section id="view-admin-dashboard" class="hidden space-y-6">
+            <div class="flex justify-between items-end">
+                <div>
+                    <h2 class="text-2xl font-bold text-blue-900">Admin Dashboard</h2>
+                    <p class="text-slate-500">Live Assessment Records</p>
+                </div>
+                <button onclick="app.logoutAdmin()" class="px-4 py-2 bg-slate-200 rounded text-sm font-semibold">Logout</button>
+            </div>
+
+            <div class="overflow-x-auto bg-white rounded-xl shadow border">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 text-slate-500 uppercase font-semibold">
+                        <tr>
+                            <th class="px-6 py-4">Candidate</th>
+                            <th class="px-6 py-4">Test Name</th>
+                            <th class="px-6 py-4">Score</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4">Security Logs</th>
+                            <th class="px-6 py-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body" class="divide-y">
+                        <!-- Rows injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Warnings -->
+    <div id="alert-modal" class="fixed inset-0 bg-black/50 hidden z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl p-6 max-w-sm w-full text-center shadow-2xl">
+            <div class="text-red-500 text-4xl mb-4">⚠️</div>
+            <h3 id="modal-title" class="text-xl font-bold mb-2">Warning</h3>
+            <p id="modal-body" class="text-slate-600 mb-6"></p>
+            <button onclick="app.closeModal()" class="w-full bg-slate-900 text-white py-2 rounded-lg font-bold">Dismiss</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, query, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "", // Provided at runtime
+            authDomain: "oriontec-c5d72.firebaseapp.com",
+            databaseURL: "https://oriontec-c5d72-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "oriontec-c5d72",
+            storageBucket: "oriontec-c5d72.firebasestorage.app",
+            messagingSenderId: "191363451373",
+            appId: "1:191363451373:web:92cbdc14d5009819d97fe4"
+        };
+
+        const fbApp = initializeApp(firebaseConfig);
+        const auth = getAuth(fbApp);
+        const db = getFirestore(fbApp);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'oriontec-edu-v1';
+
+        // --- Data Mockup ---
+        const QUESTIONS = [
+            { q: "What is the primary function of a CPU in a computer?", a: ["Processing data", "Storing files", "Providing power", "Connecting to internet"], correct: 0 },
+            { q: "Which protocol is used for secure communication over a network?", a: ["HTTP", "FTP", "HTTPS", "SMTP"], correct: 2 },
+            { q: "What does RAM stand for?", a: ["Read Access Memory", "Random Access Memory", "Real Access Module", "Rapid Access Memory"], correct: 1 },
+            { q: "Which of these is an example of an Operating System?", a: ["Google Chrome", "Microsoft Word", "Windows 11", "Adobe Photoshop"], correct: 2 },
+            { q: "What is the standard port for HTTP?", a: ["21", "25", "80", "443"], correct: 2 },
+            { q: "A 'Phishing' attack is mainly used to:", a: ["Speed up internet", "Steal sensitive data", "Clean viruses", "Install games"], correct: 1 },
+            { q: "Which file extension is commonly used for Word documents?", a: [".xlsx", ".pptx", ".docx", ".pdf"], correct: 2 },
+            { q: "Cloud computing refers to storing and accessing data over:", a: ["Local Hard Drive", "USB Flash Drive", "The Internet", "Floppy Disk"], correct: 2 },
+            { q: "Which of the following is a programming language?", a: ["HTML", "Python", "CSS", "Markdown"], correct: 1 },
+            { q: "What is the shortcut for 'Copy' in Windows?", a: ["Ctrl + V", "Ctrl + X", "Ctrl + C", "Ctrl + P"], correct: 2 }
+        ];
+
+        // --- Core Application Logic ---
+        const app = {
+            state: {
+                user: null,
+                candidate: null,
+                currentQuestion: 0,
+                answers: new Array(QUESTIONS.length).fill(null),
+                timer: 600, // 10 minutes
+                timerInterval: null,
+                tabSwitches: 0,
+                startTime: null,
+                examFinished: false,
+                adminLoggedIn: false
+            },
+
+            async init() {
+                // Auth init
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    this.state.user = user;
+                });
+
+                // Detect tab switches
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden && this.state.candidate && !this.state.examFinished) {
+                        this.state.tabSwitches++;
+                        this.showModal("Security Warning", "A tab switch was detected. This incident has been logged. Multiple switches may result in disqualification.");
+                    }
+                });
+
+                this.showPage('registration');
+            },
+
+            showPage(pageId) {
+                const views = ['registration', 'exam', 'result', 'admin-login', 'admin-dashboard'];
+                views.forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
+                document.getElementById(`view-${pageId}`).classList.remove('hidden');
+            },
+
+            showModal(title, body) {
+                document.getElementById('modal-title').innerText = title;
+                document.getElementById('modal-body').innerText = body;
+                document.getElementById('alert-modal').classList.remove('hidden');
+            },
+
+            closeModal() {
+                document.getElementById('alert-modal').classList.add('hidden');
+            },
+
+            handleRegistration(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                this.state.candidate = {
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    phone: formData.get('phone'),
+                    course: formData.get('course'),
+                    id: 'OT-' + Math.random().toString(36).substr(2, 6).toUpperCase()
+                };
+                
+                document.getElementById('exam-course-title').innerText = this.state.candidate.course;
+                this.startExam();
+            },
+
+            startExam() {
+                this.state.startTime = new Date().toISOString();
+                this.showPage('exam');
+                this.renderQuestion();
+                this.renderPalette();
+                
+                this.state.timerInterval = setInterval(() => {
+                    this.state.timer--;
+                    this.updateTimerDisplay();
+                    if (this.state.timer <= 0) {
+                        this.finishExam();
+                    }
+                }, 1000);
+            },
+
+            updateTimerDisplay() {
+                const mins = Math.floor(this.state.timer / 60);
+                const secs = this.state.timer % 60;
+                const display = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                const el = document.getElementById('timer-display');
+                el.innerText = display;
+                if (this.state.timer < 60) el.classList.add('timer-warning');
+            },
+
+            renderQuestion() {
+                const q = QUESTIONS[this.state.currentQuestion];
+                const container = document.getElementById('question-container');
+                const selected = this.state.answers[this.state.currentQuestion];
+
+                container.innerHTML = `
+                    <div class="mb-2 text-slate-400 font-semibold text-xs uppercase">Question ${this.state.currentQuestion + 1} of ${QUESTIONS.length}</div>
+                    <h4 class="text-xl font-bold text-slate-800 mb-6">${q.q}</h4>
+                    <div class="space-y-3">
+                        ${q.a.map((opt, idx) => `
+                            <button onclick="app.selectAnswer(${idx})" class="w-full text-left p-4 rounded-xl border-2 transition-all ${selected === idx ? 'border-blue-600 bg-blue-50' : 'border-slate-100 hover:border-slate-200'}">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-6 h-6 rounded-full border flex items-center justify-center text-xs font-bold ${selected === idx ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white text-slate-400'}">${String.fromCharCode(65 + idx)}</div>
+                                    <span class="${selected === idx ? 'text-blue-900 font-semibold' : 'text-slate-700'}">${opt}</span>
+                                </div>
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+
+                document.getElementById('btn-prev').disabled = this.state.currentQuestion === 0;
+                document.getElementById('btn-next').innerText = this.state.currentQuestion === QUESTIONS.length - 1 ? 'Finish Test' : 'Next';
+                
+                const progress = ((this.state.currentQuestion + 1) / QUESTIONS.length) * 100;
+                document.getElementById('progress-bar').style.width = progress + '%';
+            },
+
+            renderPalette() {
+                const container = document.getElementById('palette');
+                container.innerHTML = QUESTIONS.map((_, idx) => `
+                    <button onclick="app.jumpToQuestion(${idx})" class="w-8 h-8 rounded-lg text-xs font-bold flex items-center justify-center transition ${this.state.currentQuestion === idx ? 'ring-2 ring-blue-500 bg-blue-900 text-white' : (this.state.answers[idx] !== null ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400')}">
+                        ${idx + 1}
+                    </button>
+                `).join('');
+            },
+
+            selectAnswer(idx) {
+                this.state.answers[this.state.currentQuestion] = idx;
+                this.renderQuestion();
+                this.renderPalette();
+            },
+
+            jumpToQuestion(idx) {
+                this.state.currentQuestion = idx;
+                this.renderQuestion();
+                this.renderPalette();
+            },
+
+            nextQuestion() {
+                if (this.state.currentQuestion < QUESTIONS.length - 1) {
+                    this.state.currentQuestion++;
+                    this.renderQuestion();
+                    this.renderPalette();
+                } else {
+                    this.finishExam();
+                }
+            },
+
+            prevQuestion() {
+                if (this.state.currentQuestion > 0) {
+                    this.state.currentQuestion--;
+                    this.renderQuestion();
+                    this.renderPalette();
+                }
+            },
+
+            async finishExam() {
+                if (this.state.examFinished) return;
+                this.state.examFinished = true;
+                clearInterval(this.state.timerInterval);
+
+                const correctCount = this.state.answers.reduce((acc, ans, idx) => {
+                    return ans === QUESTIONS[idx].correct ? acc + 1 : acc;
+                }, 0);
+
+                const percentage = (correctCount / QUESTIONS.length) * 100;
+                const passed = percentage >= 60;
+
+                const resultData = {
+                    candidate: this.state.candidate,
+                    score: percentage,
+                    correct: correctCount,
+                    total: QUESTIONS.length,
+                    passed: passed,
+                    tabSwitches: this.state.tabSwitches,
+                    startTime: this.state.startTime,
+                    endTime: new Date().toISOString(),
+                    timestamp: Date.now()
+                };
+
+                // Save to Firebase
+                try {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'exams', this.state.candidate.id), resultData);
+                } catch (err) {
+                    console.error("Storage error:", err);
+                }
+
+                // Show Results UI
+                this.showPage('result');
+                document.getElementById('result-score').innerText = percentage + '%';
+                document.getElementById('result-correct').innerText = `${correctCount} / ${QUESTIONS.length}`;
+                
+                if (passed) {
+                    document.getElementById('result-icon').innerText = "🏆";
+                    document.getElementById('result-status').innerText = "Congratulations!";
+                    document.getElementById('result-message').innerText = "You have officially passed the certification exam.";
+                    document.getElementById('pass-actions').classList.remove('hidden');
+                } else {
+                    document.getElementById('result-icon').innerText = "📝";
+                    document.getElementById('result-status').innerText = "Not Qualified";
+                    document.getElementById('result-message').innerText = "You did not meet the 60% requirement. Please review the material and try again.";
+                    document.getElementById('fail-actions').classList.remove('hidden');
+                }
+            },
+
+            downloadCertificate() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const cand = this.state.candidate;
+                const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+                // Frame
+                doc.setDrawColor(30, 58, 138); // Navy Blue
+                doc.setLineWidth(2);
+                doc.rect(10, 10, 277, 190);
+                doc.setLineWidth(0.5);
+                doc.rect(13, 13, 271, 184);
+
+                // Title
+                doc.setTextColor(30, 58, 138);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(40);
+                doc.text("Certificate of Achievement", 148.5, 50, { align: "center" });
+
+                doc.setTextColor(100, 116, 139);
+                doc.setFontSize(14);
+                doc.setFont("helvetica", "normal");
+                doc.text("This is to certify that", 148.5, 70, { align: "center" });
+
+                // Candidate Name
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(32);
+                doc.setFont("helvetica", "bold");
+                doc.text(cand.name, 148.5, 85, { align: "center" });
+
+                doc.setTextColor(100, 116, 139);
+                doc.setFontSize(14);
+                doc.setFont("helvetica", "normal");
+                doc.text("has successfully completed the online assessment for", 148.5, 100, { align: "center" });
+
+                // Course Name
+                doc.setTextColor(30, 58, 138);
+                doc.setFontSize(22);
+                doc.setFont("helvetica", "bold");
+                doc.text(cand.course, 148.5, 115, { align: "center" });
+
+                doc.setTextColor(100, 116, 139);
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "normal");
+                doc.text("Awarded by Oriontec Education Board", 148.5, 125, { align: "center" });
+
+                // Footer Details
+                doc.setTextColor(50, 50, 50);
+                doc.setFontSize(10);
+                doc.text(`Certificate ID: ${cand.id}`, 40, 160);
+                doc.text(`Date of Issue: ${date}`, 40, 165);
+
+                // Signatures
+                doc.line(180, 165, 250, 165);
+                doc.setFont("times", "italic");
+                doc.setFontSize(14);
+                doc.text("Chairman - Oriontec Education Board", 215, 172, { align: "center" });
+
+                // Branding
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(24);
+                doc.setTextColor(30, 58, 138);
+                doc.text("ORIONTEC", 148.5, 185, { align: "center" });
+
+                doc.save(`Oriontec_Certificate_${cand.id}.pdf`);
+            },
+
+            // --- Admin Logic ---
+            showAdminLogin() {
+                this.showPage('admin-login');
+            },
+
+            doAdminLogin() {
+                const pass = document.getElementById('admin-pass').value;
+                if (pass === "oriontec2024") {
+                    this.state.adminLoggedIn = true;
+                    this.showPage('admin-dashboard');
+                    this.fetchAdminData();
+                } else {
+                    this.showModal("Access Denied", "Incorrect administrator password.");
+                }
+            },
+
+            async fetchAdminData() {
+                if (!this.state.adminLoggedIn) return;
+                
+                const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'exams'));
+                onSnapshot(q, (snapshot) => {
+                    const tbody = document.getElementById('admin-table-body');
+                    tbody.innerHTML = "";
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const row = document.createElement('tr');
+                        row.className = "hover:bg-slate-50 transition";
+                        row.innerHTML = `
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-slate-800">${data.candidate.name}</div>
+                                <div class="text-xs text-slate-500">${data.candidate.email}</div>
+                            </td>
+                            <td class="px-6 py-4 text-slate-600">${data.candidate.course}</td>
+                            <td class="px-6 py-4">
+                                <span class="font-mono font-bold">${data.score}%</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase ${data.passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                                    ${data.passed ? 'Passed' : 'Failed'}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-[10px] text-slate-500">
+                                    Switches: ${data.tabSwitches || 0}<br>
+                                    ID: ${data.candidate.id}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <button onclick="app.viewLog('${data.candidate.id}')" class="text-blue-600 hover:underline text-xs font-semibold">Details</button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }, (err) => {
+                    console.error("Admin snapshot error:", err);
+                });
+            },
+
+            viewLog(id) {
+                this.showModal("Record Detail", `System Record for ${id} is stored in secure database logs. Audit logs are cleared every 30 days.`);
+            },
+
+            logoutAdmin() {
+                this.state.adminLoggedIn = false;
+                this.showPage('registration');
+            }
+        };
+
+        // Exposed for global HTML calls
+        window.app = app;
+        window.onload = () => app.init();
+    </script>
+</body>
+</html>
+
