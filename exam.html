@@ -3,24 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oriontec Education Board | Advanced Assessment Portal</title>
+    <title>Oriontec Education Board | Proctored Assessment Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .signature-font { font-family: 'Dancing Script', cursive; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         .hidden { display: none !important; }
         #webcam-preview { transform: scaleX(-1); border-radius: 12px; }
-        .timer-red { color: #ef4444; animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .timer-warning { color: #ef4444; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        .step-number { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #1e3a8a; color: white; font-size: 12px; font-weight: bold; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-900 min-h-screen">
+<body class="bg-slate-50 text-slate-900 min-h-screen">
 
-    <!-- Header -->
-    <nav class="bg-white border-b sticky top-0 z-50 px-4 py-3 shadow-sm">
+    <!-- Navbar -->
+    <nav class="bg-white border-b sticky top-0 z-50 px-6 py-3 shadow-sm">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-blue-900 rounded-lg flex items-center justify-center text-white font-bold text-xl">O</div>
@@ -29,193 +28,232 @@
                     <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Education Board</p>
                 </div>
             </div>
-            <div id="user-badge" class="hidden flex items-center space-x-3 bg-slate-100 px-3 py-1 rounded-full border">
-                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span id="badge-name" class="text-xs font-semibold text-slate-600">Candidate</span>
+            <div id="status-badge" class="hidden flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+                <div class="w-2 h-2 bg-blue-600 rounded-full animate-ping"></div>
+                <span id="active-user" class="text-xs font-bold text-blue-900">Candidate Active</span>
             </div>
-            <button onclick="app.showPage('admin-login')" class="text-xs font-bold text-slate-400 hover:text-blue-900 uppercase">Admin</button>
+            <button onclick="app.showPage('admin-login')" class="text-[10px] font-black text-slate-300 hover:text-blue-900 uppercase tracking-tighter">Admin Access</button>
         </div>
     </nav>
 
-    <main class="max-w-5xl mx-auto p-4 md:p-8">
+    <main class="max-w-6xl mx-auto p-4 md:p-10">
         
-        <!-- View: Registration -->
-        <section id="view-registration" class="max-w-md mx-auto bg-white rounded-3xl shadow-2xl p-8 border border-slate-200">
-            <div class="text-center mb-8">
-                <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase">Portal v2.5</span>
-                <h2 class="text-2xl font-bold mt-4">Assessment Registration</h2>
-                <p class="text-slate-500 text-sm">Fill details to initialize your proctored session</p>
-            </div>
-            
-            <form id="regForm" class="space-y-4" onsubmit="app.handleRegistration(event)">
-                <div class="space-y-1">
-                    <label class="text-xs font-bold text-slate-500 uppercase">Full Name</label>
-                    <input type="text" name="name" required class="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:border-blue-600 outline-none transition" placeholder="As per Govt ID">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-xs font-bold text-slate-500 uppercase">Email</label>
-                    <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:border-blue-600 outline-none transition" placeholder="email@example.com">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-xs font-bold text-slate-500 uppercase">Course Selection</label>
-                    <select name="course" required class="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:border-blue-600 outline-none transition">
-                        <option value="">Choose Course...</option>
-                        <option value="IT Fundamentals">Information Technology Fundamentals</option>
-                        <option value="Digital Literacy">Digital Literacy & Office Suite</option>
-                        <option value="Web Development">Full Stack Web Development</option>
-                    </select>
-                </div>
-                
-                <!-- Webcam Activation Box -->
-                <div class="bg-slate-50 p-4 rounded-2xl border-2 border-dashed border-slate-200">
-                    <p class="text-[10px] text-center text-slate-400 mb-3 font-bold uppercase">Webcam Verification Required</p>
-                    <div id="webcam-container" class="relative bg-black rounded-lg overflow-hidden aspect-video flex items-center justify-center mb-3">
-                        <video id="webcam-preview" autoplay playsinline class="w-full h-full object-cover hidden"></video>
-                        <div id="webcam-placeholder" class="text-white text-xs text-center p-4">
-                            <button type="button" onclick="app.enableWebcam()" class="bg-blue-600 px-4 py-2 rounded-lg font-bold">Enable Camera</button>
+        <!-- View: Registration & Instructions -->
+        <section id="view-registration" class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <!-- Left: Guidelines -->
+            <div class="lg:col-span-5 space-y-6">
+                <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-200">
+                    <h2 class="text-2xl font-bold text-blue-900 mb-6">Candidate Guidelines</h2>
+                    <p class="text-sm text-slate-500 mb-6">Please follow these steps to complete your Online Assessment & Certification:</p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex space-x-4">
+                            <div class="step-number">1</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">Identity Verification</h4>
+                                <p class="text-xs text-slate-500">Click "Enable Camera" and grant permissions. A live feed is required for proctoring.</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-4">
+                            <div class="step-number">2</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">Profile Details</h4>
+                                <p class="text-xs text-slate-500">Fill in your full name and select your specific course to load relevant questions.</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-4">
+                            <div class="step-number">3</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">Active Monitoring</h4>
+                                <p class="text-xs text-slate-500">If you leave the test tab or minimize the window, an alert will be logged.</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-4">
+                            <div class="step-number">4</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">Certification</h4>
+                                <p class="text-xs text-slate-500">Score 60% or more to unlock your official Oriontec Certificate instantly.</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <button type="submit" id="btn-start" disabled class="w-full bg-blue-900 text-white py-4 rounded-2xl font-bold opacity-50 cursor-not-allowed hover:bg-blue-800 transition shadow-lg">
-                    Begin Assessment
-                </button>
-            </form>
+                    <div class="mt-8 pt-6 border-t border-slate-100 flex items-center space-x-3 text-blue-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        <span class="text-xs font-bold uppercase tracking-widest">Secure Assessment Environment</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Registration Form -->
+            <div class="lg:col-span-7">
+                <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-200">
+                    <form id="regForm" class="space-y-5" onsubmit="app.handleRegistration(event)">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Candidate Name</label>
+                                <input type="text" name="name" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-100 focus:border-blue-600 outline-none transition text-sm" placeholder="Full Legal Name">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email Address</label>
+                                <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-100 focus:border-blue-600 outline-none transition text-sm" placeholder="email@example.com">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Select Assessment Course</label>
+                            <select name="course" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-100 focus:border-blue-600 outline-none transition text-sm">
+                                <option value="">Select a Course...</option>
+                                <option value="IT Fundamentals">IT Fundamentals</option>
+                                <option value="Digital Literacy">Digital Literacy & Office Suite</option>
+                                <option value="Web Development">Full Stack Web Development</option>
+                            </select>
+                        </div>
+
+                        <div class="bg-slate-900 rounded-2xl overflow-hidden relative group">
+                            <div id="webcam-placeholder" class="aspect-video flex flex-col items-center justify-center p-6 text-center">
+                                <svg class="w-12 h-12 text-slate-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                <p class="text-slate-400 text-xs mb-4 font-medium">Camera access is required to proceed with the assessment</p>
+                                <button type="button" onclick="app.enableWebcam()" class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold text-xs hover:bg-blue-500 transition shadow-lg">Enable Camera</button>
+                            </div>
+                            <video id="webcam-preview" autoplay playsinline class="w-full aspect-video object-cover hidden"></video>
+                        </div>
+
+                        <button type="submit" id="btn-start" disabled class="w-full bg-slate-200 text-slate-400 py-4 rounded-2xl font-black uppercase tracking-widest cursor-not-allowed transition-all duration-300">
+                            Begin Assessment
+                        </button>
+                    </form>
+                </div>
+            </div>
         </section>
 
         <!-- View: Examination -->
         <section id="view-exam" class="hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <!-- Left: Info & Proctoring -->
-                <div class="lg:col-span-1 space-y-6">
-                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Proctoring Active</p>
-                        <div class="aspect-video bg-black rounded-lg overflow-hidden">
-                            <video id="exam-webcam" autoplay playsinline class="w-full h-full object-cover"></video>
-                        </div>
-                        <div class="mt-3 flex items-center justify-between text-xs">
-                            <span class="text-slate-500">Security Score:</span>
-                            <span id="security-score" class="font-bold text-green-600">100%</span>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-4">Question Palette</p>
-                        <div id="palette" class="grid grid-cols-5 gap-2"></div>
-                    </div>
-                </div>
-
-                <!-- Center: Question Area -->
-                <div class="lg:col-span-3 space-y-6">
-                    <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200 min-h-[500px] flex flex-col">
-                        <div class="flex justify-between items-center mb-8 pb-4 border-b">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Main Test Area -->
+                <div class="flex-1">
+                    <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200 min-h-[500px] flex flex-col relative">
+                        <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4 border-b pb-6">
                             <div>
-                                <h3 id="current-course-display" class="font-bold text-blue-900">Course Name</h3>
-                                <p class="text-xs text-slate-400">Section 1: Multiple Choice Questions</p>
+                                <h3 id="display-course" class="text-xl font-bold text-blue-900">Course Assessment</h3>
+                                <p id="display-name" class="text-xs font-semibold text-slate-400 uppercase tracking-widest"></p>
                             </div>
-                            <div class="text-right">
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">Time Remaining</p>
-                                <div id="timer" class="text-2xl font-mono font-bold">10:00</div>
+                            <div class="bg-slate-900 text-white px-6 py-2 rounded-2xl flex items-center space-x-4">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Remaining</span>
+                                <span id="timer" class="text-xl font-mono font-bold">10:00</span>
                             </div>
                         </div>
 
                         <div id="question-box" class="flex-1">
-                            <!-- Question content -->
+                            <!-- Questions Rendered Here -->
                         </div>
 
-                        <div class="flex justify-between items-center mt-8 pt-6 border-t">
-                            <button onclick="app.prevQ()" id="prev-btn" class="px-8 py-3 rounded-xl border-2 font-bold text-slate-400 hover:bg-slate-50 transition">Previous</button>
-                            <button onclick="app.nextQ()" id="next-btn" class="px-10 py-3 rounded-xl bg-blue-900 text-white font-bold hover:bg-blue-800 transition shadow-lg">Next</button>
+                        <div class="flex justify-between items-center mt-10 pt-6 border-t border-slate-100">
+                            <button onclick="app.prevQ()" id="btn-prev" class="px-8 py-3 rounded-xl border-2 border-slate-100 font-bold text-slate-400 hover:bg-slate-50 disabled:opacity-30">Previous</button>
+                            <button onclick="app.nextQ()" id="btn-next" class="px-10 py-3 rounded-xl bg-blue-900 text-white font-bold hover:bg-blue-800 shadow-xl transition">Next</button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Side: Monitoring & Palette -->
+                <div class="w-full lg:w-72 space-y-6">
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                        <p class="text-[10px] font-black text-slate-400 uppercase mb-3">Live Proctoring</p>
+                        <div class="bg-black rounded-xl overflow-hidden aspect-video shadow-inner">
+                            <video id="exam-webcam" autoplay playsinline class="w-full h-full object-cover"></video>
+                        </div>
+                        <div class="mt-4 flex items-center justify-between text-xs px-1">
+                            <span class="text-slate-500 font-medium">Security:</span>
+                            <span id="security-level" class="font-bold text-green-600">Stable</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                        <p class="text-[10px] font-black text-slate-400 uppercase mb-4">Question Palette</p>
+                        <div id="palette" class="grid grid-cols-5 gap-2"></div>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- View: Results -->
-        <section id="view-result" class="hidden max-w-2xl mx-auto space-y-6">
-            <div class="bg-white rounded-3xl shadow-2xl p-10 text-center border border-slate-200">
-                <div id="result-icon" class="w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-6"></div>
-                <h2 id="result-title" class="text-3xl font-bold mb-2">Assessment Results</h2>
-                <p id="result-msg" class="text-slate-500 mb-8"></p>
+        <section id="view-result" class="hidden max-w-2xl mx-auto">
+            <div class="bg-white rounded-[2.5rem] shadow-2xl p-12 text-center border border-slate-200">
+                <div id="res-icon" class="w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl mb-8"></div>
+                <h2 id="res-title" class="text-3xl font-black text-slate-800 mb-2">Result Analysis</h2>
+                <p id="res-msg" class="text-slate-500 mb-10 max-w-sm mx-auto text-sm"></p>
 
-                <div class="grid grid-cols-3 gap-4 mb-8">
-                    <div class="bg-slate-50 p-4 rounded-2xl border">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Final Score</p>
-                        <p id="res-score" class="text-2xl font-bold text-blue-900">0%</p>
+                <div class="grid grid-cols-2 gap-4 mb-10">
+                    <div class="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Total Score</p>
+                        <p id="res-perc" class="text-3xl font-black text-blue-900">0%</p>
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-2xl border">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Accuracy</p>
-                        <p id="res-accuracy" class="text-2xl font-bold text-slate-800">0/0</p>
-                    </div>
-                    <div class="bg-slate-50 p-4 rounded-2xl border">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Security</p>
-                        <p id="res-security" class="text-2xl font-bold text-green-600">Safe</p>
+                    <div class="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Status</p>
+                        <p id="res-status" class="text-3xl font-black">--</p>
                     </div>
                 </div>
 
-                <div id="pass-ui" class="hidden space-y-4">
-                    <button onclick="app.downloadCertificate()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold hover:bg-green-700 transition flex items-center justify-center space-x-2">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        <span>Download Official Certificate</span>
+                <div id="pass-options" class="hidden space-y-4">
+                    <button onclick="app.downloadCertificate()" class="w-full bg-green-600 text-white py-5 rounded-3xl font-bold hover:bg-green-700 transition-all flex items-center justify-center space-x-3 shadow-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span>Claim Official Certificate</span>
                     </button>
-                    <button onclick="app.printSummary()" class="w-full border-2 border-slate-200 py-4 rounded-2xl font-bold hover:bg-slate-50 transition">
-                        Print Performance Report
-                    </button>
+                    <button onclick="app.printReport()" class="w-full text-slate-500 font-bold text-xs uppercase tracking-widest hover:text-slate-800 transition">Print Performance Breakdown</button>
                 </div>
-                
-                <div id="fail-ui" class="hidden">
-                    <button onclick="location.reload()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold">Retry Assessment</button>
+
+                <div id="fail-options" class="hidden">
+                    <button onclick="location.reload()" class="w-full bg-slate-900 text-white py-5 rounded-3xl font-bold shadow-xl">Re-attempt Assessment</button>
                 </div>
             </div>
         </section>
 
-        <!-- Admin Views -->
+        <!-- Admin Portal -->
         <section id="view-admin-login" class="hidden max-w-sm mx-auto bg-white p-8 rounded-3xl shadow-xl border">
-            <h2 class="text-xl font-bold mb-6 text-center">Admin Portal</h2>
+            <h2 class="text-xl font-bold text-center mb-6">Oriontec Admin</h2>
             <div class="space-y-4">
-                <input type="password" id="admin-pass" class="w-full px-4 py-3 rounded-xl border-2 outline-none" placeholder="Security PIN">
-                <button onclick="app.doAdminAuth()" class="w-full bg-blue-900 text-white py-3 rounded-xl font-bold">Login</button>
-                <button onclick="app.showPage('registration')" class="w-full text-xs text-slate-400">Back to Home</button>
+                <input type="password" id="admin-pin" class="w-full px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:border-blue-600" placeholder="Security PIN">
+                <button onclick="app.adminLogin()" class="w-full bg-blue-900 text-white py-3 rounded-xl font-bold">Access Database</button>
+                <button onclick="app.showPage('registration')" class="w-full text-xs font-bold text-slate-400 uppercase">Exit</button>
             </div>
         </section>
 
         <section id="view-admin-dash" class="hidden space-y-6">
             <div class="flex justify-between items-center">
-                <h2 class="text-2xl font-bold">Admin Oversight</h2>
-                <button onclick="app.showPage('registration')" class="px-4 py-2 bg-slate-200 rounded-lg text-xs font-bold">Logout</button>
+                <h2 class="text-2xl font-black text-blue-900">Live Oversight</h2>
+                <button onclick="location.reload()" class="text-xs bg-slate-200 px-4 py-2 rounded-lg font-bold">Logout</button>
             </div>
-            <div class="bg-white rounded-2xl shadow overflow-hidden">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 text-slate-400 font-bold uppercase text-[10px]">
+            <div class="bg-white rounded-3xl shadow-sm border overflow-hidden">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-50 text-slate-400 font-black uppercase">
                         <tr>
-                            <th class="p-4">Candidate</th>
-                            <th class="p-4">Course</th>
-                            <th class="p-4">Score</th>
-                            <th class="p-4">Security</th>
-                            <th class="p-4">Date</th>
+                            <th class="p-5">Candidate</th>
+                            <th class="p-5">Course</th>
+                            <th class="p-5">Score</th>
+                            <th class="p-5">Incidents</th>
+                            <th class="p-5">Verified Date</th>
                         </tr>
                     </thead>
-                    <tbody id="admin-list" class="divide-y"></tbody>
+                    <tbody id="admin-data" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
         </section>
 
     </main>
 
-    <!-- Custom Alert Overlay -->
-    <div id="overlay" class="fixed inset-0 bg-black/60 hidden z-[100] flex items-center justify-center p-6">
-        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
-            <div id="overlay-icon" class="text-4xl mb-4">⚠️</div>
-            <h3 id="overlay-title" class="text-xl font-bold mb-2">Alert</h3>
-            <p id="overlay-msg" class="text-slate-500 mb-6 text-sm"></p>
-            <button onclick="app.hideOverlay()" class="w-full bg-blue-900 text-white py-3 rounded-xl font-bold">Continue</button>
+    <!-- Global Overlays -->
+    <div id="modal" class="fixed inset-0 bg-black/70 hidden z-[100] flex items-center justify-center p-6 backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-[2rem] max-w-sm w-full text-center shadow-2xl">
+            <div id="modal-icon" class="text-4xl mb-4">📢</div>
+            <h3 id="modal-title" class="text-xl font-black mb-2 text-slate-800">Alert</h3>
+            <p id="modal-msg" class="text-sm text-slate-500 mb-8"></p>
+            <button onclick="app.hideModal()" class="w-full bg-blue-900 text-white py-3 rounded-2xl font-bold">Acknowledge</button>
         </div>
     </div>
 
-    <!-- Logic -->
+    <!-- Script Section -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, collection, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
         const firebaseConfig = {
@@ -227,60 +265,58 @@
             appId: "1:191363451373:web:92cbdc14d5009819d97fe4"
         };
 
-        const app_fb = initializeApp(firebaseConfig);
-        const auth = getAuth(app_fb);
-        const db = getFirestore(app_fb);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'oriontec-v2-main';
+        const fbApp = initializeApp(firebaseConfig);
+        const auth = getAuth(fbApp);
+        const db = getFirestore(fbApp);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'oriontec-prod-v1';
 
-        const COURSE_QUESTIONS = {
+        const QUESTIONS_DB = {
             "IT Fundamentals": [
-                { q: "What is the primary role of an Operating System?", a: ["Running apps", "Internet access", "Graphic design", "Word processing"], c: 0 },
-                { q: "Which of these is a non-volatile storage?", a: ["RAM", "SSD", "CPU Cache", "Register"], c: 1 },
-                { q: "What does GUI stand for?", a: ["Global User Index", "General Unit Interface", "Graphical User Interface", "Global Utility Info"], c: 2 },
-                { q: "What type of software is Linux?", a: ["Proprietary", "Open Source", "Shareware", "Adware"], c: 1 },
-                { q: "Which binary digit represents 'ON'?", a: ["0", "1", "2", "8"], c: 1 }
+                { q: "What is the primary brain of the computer?", a: ["RAM", "Monitor", "CPU", "GPU"], c: 2 },
+                { q: "Which of these is used to browse the web?", a: ["MS Word", "Google Chrome", "Adobe Reader", "Notepad"], c: 1 },
+                { q: "Which part stores data permanently?", a: ["CPU", "Hard Drive", "RAM", "Mouse"], c: 1 },
+                { q: "What does 'WWW' stand for?", a: ["World Wide Web", "World Word Web", "Web Wide World", "World Wide Work"], c: 0 },
+                { q: "A 'Bit' is the smallest unit of:", a: ["Data", "Hardware", "Screen", "Sound"], c: 0 }
             ],
             "Digital Literacy": [
-                { q: "Which shortcut is used to 'Paste'?", a: ["Ctrl+C", "Ctrl+X", "Ctrl+V", "Ctrl+P"], c: 2 },
-                { q: "What software is best for creating spreadsheets?", a: ["Word", "Excel", "PowerPoint", "Access"], c: 1 },
-                { q: "A '.pdf' file is primarily used for:", a: ["Editing photos", "Fixed-layout docs", "Crunching numbers", "Playing audio"], c: 1 },
-                { q: "What does CC stand for in email?", a: ["Copy Code", "Carbon Copy", "Client Check", "Cloud Connect"], c: 1 },
-                { q: "A strong password should contain:", a: ["Only letters", "Only numbers", "Mix of letters, numbers, symbols", "Your birthday"], c: 2 }
+                { q: "Which key is used to capitalize letters?", a: ["Enter", "Shift", "Delete", "Esc"], c: 1 },
+                { q: "What is the safest way to browse online?", a: ["Clicking all ads", "Using weak passwords", "Using 2FA & HTTPS", "Sharing passwords"], c: 2 },
+                { q: "Which tool creates professional presentations?", a: ["Excel", "Word", "PowerPoint", "Calculator"], c: 2 },
+                { q: "CC in emails stands for:", a: ["Cloud Copy", "Client Copy", "Carbon Copy", "Critical Code"], c: 2 },
+                { q: "Deleting a file moves it to:", a: ["Documents", "Recycle Bin", "Desktop", "Internet"], c: 1 }
             ],
             "Web Development": [
-                { q: "What does HTML stand for?", a: ["High Tech Multi Link", "Hyper Text Markup Language", "Home Tool Markup Logic", "Hyper Tabular Multi Level"], c: 1 },
-                { q: "Which CSS property changes text color?", a: ["background", "font-style", "color", "text-shadow"], c: 2 },
-                { q: "What tag is used for the largest heading?", a: ["<head>", "<h6>", "<h1>", "<header>"], c: 2 },
-                { q: "JavaScript is primarily used for:", a: ["Visual styling", "Structuring content", "Adding interactivity", "Database hosting"], c: 2 },
-                { q: "Which company created React?", a: ["Google", "Microsoft", "Meta (Facebook)", "Apple"], c: 2 }
+                { q: "What does HTML stand for?", a: ["Home Tool Markup Language", "Hyperlink Text Markup Logic", "Hyper Text Markup Language", "Hyper Tool Multi Level"], c: 2 },
+                { q: "Which language styles web pages?", a: ["Python", "SQL", "CSS", "PHP"], c: 2 },
+                { q: "The standard port for HTTPS is:", a: ["80", "21", "443", "25"], c: 2 },
+                { q: "React is a framework created by:", a: ["Google", "Meta", "Microsoft", "Twitter"], c: 1 },
+                { q: "Which tag is used for images?", a: ["<pic>", "<image>", "<img>", "<src>"], c: 2 }
             ]
         };
 
         const app = {
             state: {
                 user: null,
-                candidate: null,
                 stream: null,
+                candidate: null,
                 questions: [],
                 answers: [],
                 currentIdx: 0,
                 timer: 600,
                 interval: null,
-                switches: 0,
+                violations: 0,
                 finished: false
             },
 
             async init() {
                 await signInAnonymously(auth);
-                onAuthStateChanged(auth, u => this.state.user = u);
                 this.showPage('registration');
             },
 
             showPage(id) {
-                const pages = ['registration', 'exam', 'result', 'admin-login', 'admin-dash'];
-                pages.forEach(p => document.getElementById(`view-${p}`).classList.add('hidden'));
+                const views = ['registration', 'exam', 'result', 'admin-login', 'admin-dash'];
+                views.forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
                 document.getElementById(`view-${id}`).classList.remove('hidden');
-                window.scrollTo(0,0);
             },
 
             async enableWebcam() {
@@ -290,37 +326,36 @@
                     prev.srcObject = this.state.stream;
                     prev.classList.remove('hidden');
                     document.getElementById('webcam-placeholder').classList.add('hidden');
-                    document.getElementById('btn-start').disabled = false;
-                    document.getElementById('btn-start').classList.remove('opacity-50', 'cursor-not-allowed');
+                    
+                    const btn = document.getElementById('btn-start');
+                    btn.disabled = false;
+                    btn.className = "w-full bg-blue-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-blue-800 shadow-xl transition-all";
                 } catch (e) {
-                    alert("Camera access denied. Webcam is required for proctoring.");
+                    this.showModal("Hardware Error", "Webcam access is mandatory for proctoring. Please refresh and allow access.");
                 }
             },
 
             handleRegistration(e) {
                 e.preventDefault();
                 const fd = new FormData(e.target);
-                const course = fd.get('course');
-                
                 this.state.candidate = {
                     name: fd.get('name'),
                     email: fd.get('email'),
-                    course: course,
-                    id: 'OT-' + Math.random().toString(36).substr(2, 6).toUpperCase()
+                    course: fd.get('course'),
+                    id: 'CERT-' + Math.random().toString(36).substr(2, 6).toUpperCase()
                 };
 
-                this.state.questions = COURSE_QUESTIONS[course] || COURSE_QUESTIONS["IT Fundamentals"];
+                this.state.questions = QUESTIONS_DB[this.state.candidate.course] || [];
                 this.state.answers = new Array(this.state.questions.length).fill(null);
-                
-                document.getElementById('user-badge').classList.remove('hidden');
-                document.getElementById('badge-name').innerText = this.state.candidate.name;
                 
                 this.startExam();
             },
 
             startExam() {
                 this.showPage('exam');
-                document.getElementById('current-course-display').innerText = this.state.candidate.course;
+                document.getElementById('status-badge').classList.remove('hidden');
+                document.getElementById('display-course').innerText = this.state.candidate.course;
+                document.getElementById('display-name').innerText = this.state.candidate.name;
                 document.getElementById('exam-webcam').srcObject = this.state.stream;
 
                 this.renderQuestion();
@@ -332,13 +367,13 @@
                     if(this.state.timer <= 0) this.finish();
                 }, 1000);
 
-                // Tab Switch Monitor
                 document.addEventListener('visibilitychange', () => {
                     if(document.hidden && !this.state.finished) {
-                        this.state.switches++;
-                        this.showOverlay("Security Violation", "Tab switching is forbidden. This incident has been logged. Continuous violations will lead to auto-submission.");
-                        document.getElementById('security-score').innerText = Math.max(0, 100 - (this.state.switches * 20)) + "%";
-                        if(this.state.switches >= 5) this.finish();
+                        this.state.violations++;
+                        this.showModal("Security Violation", "Tab switching detected. Incident recorded for review.");
+                        const sl = document.getElementById('security-level');
+                        sl.innerText = "Compromised";
+                        sl.className = "font-bold text-red-600 animate-pulse";
                     }
                 });
             },
@@ -348,7 +383,7 @@
                 const s = this.state.timer % 60;
                 const el = document.getElementById('timer');
                 el.innerText = `${m}:${s.toString().padStart(2, '0')}`;
-                if(this.state.timer < 60) el.classList.add('timer-red');
+                if(this.state.timer < 60) el.classList.add('timer-warning');
             },
 
             renderQuestion() {
@@ -357,11 +392,11 @@
                 const sel = this.state.answers[this.state.currentIdx];
 
                 box.innerHTML = `
-                    <div class="mb-2 text-slate-400 font-bold text-[10px] uppercase">Question ${this.state.currentIdx + 1} of ${this.state.questions.length}</div>
-                    <h4 class="text-xl font-bold text-slate-800 mb-8">${q.q}</h4>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Question ${this.state.currentIdx+1} / ${this.state.questions.length}</p>
+                    <h4 class="text-xl font-bold text-slate-800 mb-8 leading-snug">${q.q}</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         ${q.a.map((opt, i) => `
-                            <button onclick="app.pick(${i})" class="group flex items-center p-5 rounded-2xl border-2 transition-all text-left ${sel === i ? 'border-blue-600 bg-blue-50' : 'border-slate-100 hover:border-slate-200'}">
+                            <button onclick="app.pick(${i})" class="flex items-center p-5 rounded-2xl border-2 transition-all text-left group ${sel === i ? 'border-blue-600 bg-blue-50' : 'border-slate-100 hover:border-slate-200'}">
                                 <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold mr-4 ${sel === i ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'}">${String.fromCharCode(65+i)}</div>
                                 <span class="font-semibold ${sel === i ? 'text-blue-900' : 'text-slate-600'}">${opt}</span>
                             </button>
@@ -369,15 +404,15 @@
                     </div>
                 `;
 
-                document.getElementById('prev-btn').classList.toggle('opacity-30', this.state.currentIdx === 0);
-                document.getElementById('next-btn').innerText = this.state.currentIdx === this.state.questions.length - 1 ? 'Finish Exam' : 'Next';
+                document.getElementById('btn-prev').disabled = this.state.currentIdx === 0;
+                document.getElementById('btn-next').innerText = this.state.currentIdx === this.state.questions.length - 1 ? 'Submit Test' : 'Next';
             },
 
             renderPalette() {
                 const p = document.getElementById('palette');
                 p.innerHTML = this.state.questions.map((_, i) => `
-                    <button onclick="app.jump(${i})" class="w-full aspect-square rounded-lg text-xs font-bold flex items-center justify-center border-2 transition ${this.state.currentIdx === i ? 'border-blue-600 bg-blue-50 text-blue-900' : (this.state.answers[i] !== null ? 'bg-green-500 border-green-500 text-white' : 'border-slate-100 text-slate-400')}">
-                        ${i + 1}
+                    <button onclick="app.jump(${i})" class="w-full aspect-square rounded-xl text-xs font-bold border-2 transition ${this.state.currentIdx === i ? 'border-blue-600 bg-blue-50 text-blue-900' : (this.state.answers[i] !== null ? 'bg-blue-900 border-blue-900 text-white' : 'border-slate-100 text-slate-300')}">
+                        ${i+1}
                     </button>
                 `).join('');
             },
@@ -402,37 +437,31 @@
                 const result = {
                     candidate: this.state.candidate,
                     score: perc,
-                    correct: score,
-                    total: this.state.questions.length,
-                    switches: this.state.switches,
+                    violations: this.state.violations,
                     passed,
                     date: new Date().toISOString()
                 };
 
-                if (this.state.user) {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'exams', result.candidate.id), result);
-                }
-
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'exams', result.candidate.id), result);
                 this.showResultUI(result);
             },
 
             showResultUI(res) {
                 this.showPage('result');
-                document.getElementById('res-score').innerText = res.score + "%";
-                document.getElementById('res-accuracy').innerText = `${res.correct}/${res.total}`;
-                document.getElementById('res-security').innerText = res.switches > 2 ? 'Flagged' : 'Safe';
-                document.getElementById('res-security').className = `text-2xl font-bold ${res.switches > 2 ? 'text-red-500' : 'text-green-600'}`;
+                document.getElementById('res-perc').innerText = res.score + "%";
+                document.getElementById('res-status').innerText = res.passed ? 'PASSED' : 'FAILED';
+                document.getElementById('res-status').className = `text-3xl font-black ${res.passed ? 'text-green-600' : 'text-red-600'}`;
 
                 if(res.passed) {
-                    document.getElementById('result-icon').innerHTML = "✅";
-                    document.getElementById('result-icon').className += " bg-green-100 text-green-600";
-                    document.getElementById('result-msg').innerText = "Congratulations! You have earned your Oriontec Certification.";
-                    document.getElementById('pass-ui').classList.remove('hidden');
+                    document.getElementById('res-icon').innerHTML = "🏆";
+                    document.getElementById('res-icon').className += " bg-green-100 text-green-600";
+                    document.getElementById('res-msg').innerText = "Excellent work! Your certification is verified and ready for download.";
+                    document.getElementById('pass-options').classList.remove('hidden');
                 } else {
-                    document.getElementById('result-icon').innerHTML = "❌";
-                    document.getElementById('result-icon').className += " bg-red-100 text-red-600";
-                    document.getElementById('result-msg').innerText = "Minimum 60% required to pass. Please attempt after review.";
-                    document.getElementById('fail-ui').classList.remove('hidden');
+                    document.getElementById('res-icon').innerHTML = "📝";
+                    document.getElementById('res-icon').className += " bg-red-100 text-red-600";
+                    document.getElementById('res-msg').innerText = "You missed the 60% threshold. Review the material and try again.";
+                    document.getElementById('fail-options').classList.remove('hidden');
                 }
             },
 
@@ -440,96 +469,87 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF('l', 'mm', 'a4');
                 const c = this.state.candidate;
-                const score = Math.round((this.state.answers.reduce((acc, val, i) => val === this.state.questions[i].c ? acc + 1 : acc, 0) / this.state.questions.length) * 100);
+                const date = new Date().toLocaleDateString();
 
-                // Design
                 doc.setDrawColor(30, 58, 138);
-                doc.setLineWidth(1.5);
+                doc.setLineWidth(2);
                 doc.rect(10, 10, 277, 190);
-                
+                doc.setLineWidth(0.5);
+                doc.rect(13, 13, 271, 184);
+
                 doc.setFont("helvetica", "bold");
-                doc.setFontSize(36);
-                doc.text("Certificate of Achievement", 148, 50, {align: 'center'});
+                doc.setFontSize(42);
+                doc.setTextColor(30, 58, 138);
+                doc.text("Certificate of Achievement", 148, 55, {align: 'center'});
                 
-                doc.setFontSize(14);
+                doc.setFontSize(16);
+                doc.setTextColor(100);
                 doc.setFont("helvetica", "normal");
-                doc.text("Issued by Oriontec Education Board", 148, 60, {align: 'center'});
+                doc.text("Issued by the Oriontec Education Board", 148, 65, {align: 'center'});
+
+                doc.setFontSize(18);
+                doc.text("This is to certify that", 148, 90, {align: 'center'});
                 
-                doc.text("This is to certify that", 148, 85, {align: 'center'});
-                doc.setFontSize(28);
-                doc.text(c.name.toUpperCase(), 148, 100, {align: 'center'});
-                
-                doc.setFontSize(14);
-                doc.text("has successfully passed the assessment for", 148, 115, {align: 'center'});
-                doc.setFontSize(20);
+                doc.setFontSize(32);
+                doc.setTextColor(0);
                 doc.setFont("helvetica", "bold");
-                doc.text(c.course, 148, 130, {align: 'center'});
-                
+                doc.text(c.name.toUpperCase(), 148, 105, {align: 'center'});
+
+                doc.setFontSize(16);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(100);
+                doc.text("has successfully completed the assessment for", 148, 120, {align: 'center'});
+
+                doc.setFontSize(22);
+                doc.setTextColor(30, 58, 138);
+                doc.setFont("helvetica", "bold");
+                doc.text(c.course, 148, 135, {align: 'center'});
+
                 doc.setFontSize(10);
-                doc.setFont("helvetica", "normal");
-                doc.text(`Certificate ID: ${c.id} | Score: ${score}% | Date: ${new Date().toLocaleDateString()}`, 148, 150, {align: 'center'});
-                
+                doc.setTextColor(150);
+                doc.text(`ID: ${c.id} | Date: ${date} | Verifiable Online`, 148, 155, {align: 'center'});
+
                 doc.setFont("times", "italic");
                 doc.setFontSize(18);
-                doc.text("Chairman - Oriontec Board", 220, 175, {align: 'center'});
-                doc.line(180, 170, 260, 170);
+                doc.setTextColor(30);
+                doc.text("Chairman - Oriontec Education Board", 220, 175, {align: 'center'});
+                doc.line(180, 168, 260, 168);
 
                 doc.save(`Oriontec_${c.id}.pdf`);
             },
 
-            printSummary() {
-                const c = this.state.candidate;
-                const score = Math.round((this.state.answers.reduce((acc, val, i) => val === this.state.questions[i].c ? acc + 1 : acc, 0) / this.state.questions.length) * 100);
-                
-                let win = window.open('', '_blank');
-                win.document.write(`
-                    <html><head><title>Performance Report</title>
-                    <style>body{font-family:sans-serif; padding:40px;} .header{border-bottom:2px solid #333; padding-bottom:10px; margin-bottom:20px;}</style>
-                    </head><body>
-                    <div class="header"><h1>Oriontec Assessment Report</h1></div>
-                    <p><strong>Candidate:</strong> ${c.name}</p>
-                    <p><strong>Course:</strong> ${c.course}</p>
-                    <p><strong>Final Score:</strong> ${score}%</p>
-                    <p><strong>Tab Switches Detect:</strong> ${this.state.switches}</p>
-                    <hr>
-                    <h3>Question Wise Analysis</h3>
-                    ${this.state.questions.map((q, i) => `
-                        <p>${i+1}. ${q.q}<br>
-                        Status: ${this.state.answers[i] === q.c ? 'Correct ✅' : 'Incorrect ❌'}</p>
-                    `).join('')}
-                    <script>window.print();</script>
-                    </body></html>
-                `);
+            printReport() {
+                window.print();
             },
 
-            showOverlay(title, msg) {
-                document.getElementById('overlay-title').innerText = title;
-                document.getElementById('overlay-msg').innerText = msg;
-                document.getElementById('overlay').classList.remove('hidden');
+            showModal(title, msg) {
+                document.getElementById('modal-title').innerText = title;
+                document.getElementById('modal-msg').innerText = msg;
+                document.getElementById('modal').classList.remove('hidden');
             },
-            hideOverlay() { document.getElementById('overlay').classList.add('hidden'); },
+            hideModal() { document.getElementById('modal').classList.add('hidden'); },
 
-            doAdminAuth() {
-                if(document.getElementById('admin-pass').value === "2024") {
+            adminLogin() {
+                if(document.getElementById('admin-pin').value === "2024") {
                     this.showPage('admin-dash');
-                    this.loadAdminList();
+                    this.loadAdminData();
                 } else alert("Invalid PIN");
             },
 
-            loadAdminList() {
+            loadAdminData() {
                 const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'exams'), orderBy('date', 'desc'));
                 onSnapshot(q, (snap) => {
-                    const list = document.getElementById('admin-list');
-                    list.innerHTML = "";
+                    const t = document.getElementById('admin-data');
+                    t.innerHTML = "";
                     snap.forEach(d => {
-                        const data = d.data();
-                        list.innerHTML += `
-                            <tr>
-                                <td class="p-4"><b>${data.candidate.name}</b><br><small>${data.candidate.email}</small></td>
-                                <td class="p-4 text-xs">${data.candidate.course}</td>
-                                <td class="p-4 font-bold ${data.passed?'text-green-600':'text-red-600'}">${data.score}%</td>
-                                <td class="p-4 text-xs">${data.switches} Switches</td>
-                                <td class="p-4 text-[10px]">${new Date(data.date).toLocaleDateString()}</td>
+                        const dat = d.data();
+                        t.innerHTML += `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-5 font-bold">${dat.candidate.name}<br><span class="text-[9px] text-slate-400 uppercase">${dat.candidate.id}</span></td>
+                                <td class="p-5 text-slate-500">${dat.candidate.course}</td>
+                                <td class="p-5 font-black ${dat.passed?'text-green-600':'text-red-600'}">${dat.score}%</td>
+                                <td class="p-5 text-red-400 font-bold">${dat.violations} Violations</td>
+                                <td class="p-5 text-slate-400">${new Date(dat.date).toLocaleDateString()}</td>
                             </tr>
                         `;
                     });
