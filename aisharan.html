@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Assignment Generator</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- html2pdf Library for PDF Download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-light: #f8fafc;
+            --text-main: #1e293b;
+            --gray: #64748b;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--gray);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"] {
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-generate {
+            background-color: var(--primary);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .btn-generate:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-generate:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        /* Loading Animation */
+        .loader {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(59, 130, 246, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Result Area */
+        #output-container {
+            display: none;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #f1f5f9;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background-color: #f1f5f9;
+            color: var(--text-main);
+            font-size: 0.85rem;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
+        }
+
+        #assignment-content {
+            background: #fff;
+            padding: 40px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            min-height: 300px;
+            white-space: pre-wrap; /* Preserves line breaks */
+        }
+
+        .assignment-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            text-transform: capitalize;
+        }
+
+        .section-heading {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            color: #334155;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            header h1 { font-size: 1.5rem; }
+            #assignment-content { padding: 20px; }
+        }
+
+        .error-msg {
+            color: #ef4444;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Assignment Maker</h1>
+            <p>Type a topic and we'll draft your assignment in seconds!</p>
+        </header>
+
+        <div class="input-group">
+            <label for="topic">Assignment Topic</label>
+            <input type="text" id="topic" placeholder="e.g. The Impact of Artificial Intelligence on Society" />
+            <button class="btn-generate" id="generate-btn">
+                <span>Generate Assignment</span>
+            </button>
+            <p class="error-msg" id="error-msg">Error generating assignment. Please try again.</p>
+        </div>
+
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            <p>Generating your assignment, please wait...</p>
+        </div>
+
+        <div id="output-container">
+            <div class="action-buttons">
+                <button class="btn-secondary" id="copy-btn">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    Copy to Clipboard
+                </button>
+                <button class="btn-secondary" id="download-btn">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    Download as PDF
+                </button>
+            </div>
+
+            <!-- The generated text will be wrapped inside this element -->
+            <div id="assignment-content">
+                <!-- Text injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <script>
+        /**
+         * CONFIGURATION
+         * Note: GPT-2 is a completion model. We provide a structured prompt 
+         * to guide it into creating a student-friendly layout.
+         */
+        const API_URL = "https://api-inference.huggingface.co/models/gpt2";
+        const API_KEY = "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";
+
+        const topicInput = document.getElementById('topic');
+        const generateBtn = document.getElementById('generate-btn');
+        const outputContainer = document.getElementById('output-container');
+        const assignmentContent = document.getElementById('assignment-content');
+        const loader = document.getElementById('loader');
+        const errorMsg = document.getElementById('error-msg');
+        const downloadBtn = document.getElementById('download-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const toast = document.getElementById('toast');
+
+        async function queryAPI(topic) {
+            // We construct a specific prompt to encourage a structured assignment
+            const prompt = `Student Assignment\nTopic: ${topic}\nTitle: ${topic}\n\nIntroduction:\n${topic} is a fascinating and important subject. In this assignment, we will explore its key concepts and how it affects our daily lives.\n\nKey Facts and Details:\n`;
+
+            const response = await fetch(API_URL, {
+                headers: { 
+                    Authorization: `Bearer ${API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                method: "POST",
+                body: JSON.stringify({
+                    inputs: prompt,
+                    parameters: {
+                        max_new_tokens: 450,
+                        temperature: 0.7,
+                        top_p: 0.9,
+                        return_full_text: false
+                    }
+                }),
+            });
+
+            if (!response.ok) throw new Error("API Request Failed");
+            
+            const result = await response.json();
+            return result[0].generated_text;
+        }
+
+        generateBtn.addEventListener('click', async () => {
+            const topic = topicInput.value.trim();
+            if (!topic) {
+                alert("Please enter a topic first!");
+                return;
+            }
+
+            // UI State Management
+            generateBtn.disabled = true;
+            loader.style.display = 'block';
+            outputContainer.style.display = 'none';
+            errorMsg.style.display = 'none';
+
+            try {
+                const generatedText = await queryAPI(topic);
+                
+                // Format the output for the student
+                assignmentContent.innerHTML = `
+                    <div class="assignment-title">${topic}</div>
+                    <div class="section-heading">Introduction</div>
+                    <p>${topic} is a significant topic that warrants deep understanding. Scholars and students alike look at this area to understand the world better.</p>
+                    <div class="section-heading">Discussion</div>
+                    <p>${generatedText}</p>
+                    <div class="section-heading">Conclusion</div>
+                    <p>In summary, understanding ${topic} helps us navigate complex ideas and improves our critical thinking skills as students.</p>
+                `;
+
+                // Show result
+                outputContainer.style.display = 'block';
+                
+                // Scroll to result
+                outputContainer.scrollIntoView({ behavior: 'smooth' });
+
+            } catch (err) {
+                console.error(err);
+                errorMsg.style.display = 'block';
+            } finally {
+                loader.style.display = 'none';
+                generateBtn.disabled = false;
+            }
+        });
+
+        // Copy to clipboard functionality
+        copyBtn.addEventListener('click', () => {
+            const text = assignmentContent.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast();
+            });
+        });
+
+        function showToast() {
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+            }, 2000);
+        }
+
+        // PDF Download functionality using html2pdf
+        downloadBtn.addEventListener('click', () => {
+            const element = document.getElementById('assignment-content');
+            const opt = {
+                margin:       1,
+                filename:     `${topicInput.value.replace(/\s+/g, '_')}_Assignment.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        });
+    </script>
+</body>
+</html>
+
