@@ -7,8 +7,6 @@
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="/_sdk/data_sdk.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
@@ -188,7 +186,9 @@
          <i data-lucide="wallet" style="width:16px;height:16px;color:#a855f7;"></i>
         </div>
        </div>
-       <p id="stat-salary" class="text-amber-400 text-xs font-medium mt-1">—</p>
+       <div class="flex items-center gap-1.5">
+        <p id="stat-salary" class="text-amber-400 text-xs font-medium mt-1 blur-sm select-none">₹●●●●●</p><button id="reveal-salary-btn" class="text-slate-500 hover:text-slate-300 transition-all mt-1" onclick="toggleSalaryReveal()"><i data-lucide="eye" style="width:12px;height:12px;"></i></button>
+       </div>
        <p class="text-slate-500 text-xs mt-0.5">Salary Status</p>
       </div>
      </div><!-- Tabs -->
@@ -340,78 +340,29 @@
    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
   </div>
   <script>
-// ========== FIREBASE SETUP ==========
-let firebaseDB = null;
-let firebaseEnabled = false;
+// ========== APP STATE ==========
+let currentEmployee = null;
+let currentEmployeeId = null;
+let allRecords = [];
+let inactivityTimer = null;
+let lastActivityTime = Date.now();
+let charts = {};
 
-function initFirebase() {
-  const firebaseConfig = {
-    apiKey: "AIzaSyB2XeuTfHZ7FYKLoYb4epKp3upmVqG0fzE",
-    authDomain: "pulse-17f40.firebaseapp.com",
-    databaseURL: "https://pulse-17f40-default-rtdb.firebaseio.com",
-    projectId: "pulse-17f40",
-    storageBucket: "pulse-17f40.firebasestorage.app",
-    messagingSenderId: "259780854138",
-    appId: "1:259780854138:web:89c265fd22a34a7f1fd6c3"
-  };
+// ========== DEFAULT CONFIG ==========
+const defaultConfig = {
+  company_name: 'Dozera',
+  welcome_message: 'Welcome back to Dozera HR',
+  salary_message: 'Your salary is under processing',
+  inactivity_minutes: '30',
+  background_color: '#0f172a',
+  surface_color: '#1e293b',
+  text_color: '#f8fafc',
+  primary_action_color: '#22c55e',
+  secondary_action_color: '#64748b',
+  font_family: 'DM Sans',
+  font_size: 14
+};
 
-  try {
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-      firebaseDB = firebase.database();
-      firebaseEnabled = true;
-      console.log('✅ Firebase connected successfully');
-      showToast('Firebase synced!', 'success');
-    }
-  } catch (error) {
-    console.error('❌ Firebase init error:', error);
-    firebaseEnabled = false;
-  }
-}
-
-// Save data to Firebase
-async function saveToFirebase(path, data) {
-  if (!firebaseEnabled || !firebaseDB) return false;
-  try {
-    await firebaseDB.ref(path).set(data);
-    console.log(`Data saved at path: ${path}`);
-    return true;
-  } catch (error) {
-    console.error('Firebase save error:', error);
-    return false;
-  }
-}
-
-// Read data from Firebase
-async function readFromFirebase(path) {
-  if (!firebaseEnabled || !firebaseDB) return null;
-  try {
-    const snapshot = await firebaseDB.ref(path).get();
-    if (snapshot.exists()) {
-      console.log(`Data retrieved from path: ${path}`);
-      return snapshot.val();
-    } else {
-      console.warn(`No data found at path: ${path}`);
-      return null;
-    }
-  } catch (error) {
-    console.error('Firebase read error:', error);
-    return null;
-  }
-}
-
-// Delete data from Firebase
-async function deleteFromFirebase(path) {
-  if (!firebaseEnabled || !firebaseDB) return false;
-  try {
-    await firebaseDB.ref(path).remove();
-    console.log(`Data deleted at path: ${path}`);
-    return true;
-  } catch (error) {
-    console.error('Firebase delete error:', error);
-    return false;
-  }
-}
 // ========== REFERENCE DATA (Paradigm A) ==========
 const EMPLOYEES = {
   '5689-868': {
@@ -446,39 +397,11 @@ const BADGES = [
   { id: 'b6', name: 'Code Master', icon: '💻', condition: 'Complete 10+ development tasks' }
 ];
 
-// ========== APP STATE ==========
-let currentEmployee = null;
-let currentEmployeeId = null;
-let allRecords = [];
-let inactivityTimer = null;
-let lastActivityTime = Date.now();
-let charts = {};
-
-// ========== DEFAULT CONFIG ==========
-const defaultConfig = {
-  company_name: 'Dozera',
-  welcome_message: 'Welcome back to Dozera HR',
-  salary_message: 'Your salary is under processing',
-  inactivity_minutes: '30',
-  background_color: '#0f172a',
-  surface_color: '#1e293b',
-  text_color: '#f8fafc',
-  primary_action_color: '#22c55e',
-  secondary_action_color: '#64748b',
-  font_family: 'DM Sans',
-  font_size: 14
-};
-
 // ========== ELEMENT SDK ==========
 window.elementSdk.init({
   defaultConfig,
   onConfigChange: async (config) => {
     const c = (k) => config[k] || defaultConfig[k];
-    const firebaseKey = c('firebase_api_key');
-    
-    if (firebaseKey && firebaseKey.length > 10 && !firebaseEnabled) {
-      initFirebase(firebaseKey);
-    }
 
     const font = c('font_family');
     const baseSize = c('font_size');
@@ -542,7 +465,6 @@ window.elementSdk.init({
     ['company_name', config.company_name || defaultConfig.company_name],
     ['welcome_message', config.welcome_message || defaultConfig.welcome_message],
     ['salary_message', config.salary_message || defaultConfig.salary_message],
-    ['firebase_api_key', config.firebase_api_key || ''],
     ['inactivity_minutes', config.inactivity_minutes || defaultConfig.inactivity_minutes]
   ])
 });
@@ -712,18 +634,6 @@ document.getElementById('edit-profile-form').addEventListener('submit', async (e
   document.getElementById('profile-contact').textContent = contact;
   document.getElementById('profile-email').textContent = email;
 
-  // Save employee updates to Firebase if enabled
-  if (firebaseEnabled && firebaseDB) {
-    const fbPath = `employees/${currentEmployeeId}/profile`;
-    saveToFirebase(fbPath, {
-      name: currentEmployee.name,
-      dob: currentEmployee.dob,
-      gender: currentEmployee.gender,
-      contact: contact,
-      email: email
-    }).catch(err => console.error('Firebase save failed:', err));
-  }
-
   showToast('Profile updated successfully!');
   document.getElementById('profile-edit').classList.add('hidden');
   document.getElementById('profile-view').classList.remove('hidden');
@@ -797,11 +707,6 @@ async function completeTarget(targetId) {
   const result = await window.dataSdk.create(recordData);
 
   if (result.isOk) {
-    // Also save to Firebase if enabled
-    if (firebaseEnabled && firebaseDB) {
-      const fbPath = `employees/${currentEmployeeId}/targets/${Date.now()}`;
-      saveToFirebase(fbPath, recordData).catch(err => console.error('Firebase save failed:', err));
-    }
     showToast('Target marked as complete! 🎉');
     checkAndAwardBadges();
   } else {
@@ -847,11 +752,6 @@ document.getElementById('worklog-form').addEventListener('submit', async (e) => 
   btnText.textContent = 'Save Work Log';
 
   if (result.isOk) {
-    // Also save to Firebase if enabled
-    if (firebaseEnabled && firebaseDB) {
-      const fbPath = `employees/${currentEmployeeId}/worklogs/${Date.now()}`;
-      saveToFirebase(fbPath, recordData).catch(err => console.error('Firebase save failed:', err));
-    }
     showToast('Work log saved! 📝');
     document.getElementById('wl-task').value = '';
     document.getElementById('wl-notes').value = '';
@@ -1137,8 +1037,31 @@ function downloadReport(type) {
   showToast(`${type === 'weekly' ? 'Weekly' : 'Monthly'} report downloaded!`);
 }
 
+// ========== SALARY REVEAL ==========
+let salaryRevealed = false;
+
+function toggleSalaryReveal() {
+  salaryRevealed = !salaryRevealed;
+  const salaryEl = document.getElementById('stat-salary');
+  const btn = document.getElementById('reveal-salary-btn');
+  const cfg = window.elementSdk.config || defaultConfig;
+  const allDone = getMyRecords().filter(r => r.type === 'target' && r.date === todayStr()).length >= DAILY_TARGETS.length;
+  
+  if (salaryRevealed) {
+    const baseSalary = cfg.base_salary || defaultConfig.base_salary || '50000';
+    salaryEl.textContent = allDone ? `₹${baseSalary}` : 'In Progress';
+    salaryEl.classList.remove('blur-sm');
+    btn.innerHTML = '<i data-lucide="eye-off" style="width:12px;height:12px;"></i>';
+  } else {
+    salaryEl.textContent = '₹●●●●●';
+    salaryEl.classList.add('blur-sm');
+    btn.innerHTML = '<i data-lucide="eye" style="width:12px;height:12px;"></i>';
+  }
+  lucide.createIcons();
+}
+
 // Init icons
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dcb9d08456d4bda',t:'MTc3MzU3ODcwOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dcbb68b67764bda',t:'MTc3MzU3OTc1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
