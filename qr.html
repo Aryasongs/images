@@ -100,14 +100,11 @@
   <style>body { box-sizing: border-box; }</style>
  </head>
  <body class="h-full">
-  <div id="app-root" class="w-full h-full overflow-auto" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0f172a 100%);">
-   <!-- LOGIN SCREEN -->
+  <div id="app-root" class="w-full h-full overflow-auto" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0f172a 100%);"><!-- LOGIN SCREEN -->
    <div id="login-screen" class="w-full h-full flex items-center justify-center p-4">
-    <div class="w-full max-w-md anim-fade">
-     <!-- Logo area -->
+    <div class="w-full max-w-md anim-fade"><!-- Logo area -->
      <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
-       <i data-lucide="building-2" style="width:32px;height:32px;color:#fff;"></i>
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4" style="background: linear-gradient(135deg, #22c55e, #16a34a);"><i data-lucide="building-2" style="width:32px;height:32px;color:#fff;"></i>
       </div>
       <h1 id="login-company-name" class="font-display text-3xl font-bold text-white mb-1">Dozera</h1>
       <p class="text-slate-400 text-sm tracking-wide uppercase">Human Resources Portal</p>
@@ -115,29 +112,23 @@
      <div class="dark-glass rounded-2xl p-8">
       <h2 id="login-welcome" class="text-white text-lg font-semibold mb-1">Welcome back</h2>
       <p class="text-slate-400 text-sm mb-6">Enter your Employee ID to continue</p>
-      <form id="login-form" onsubmit="return false;">
-       <label for="emp-id-input" class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-2">Employee ID</label>
-       <div class="relative mb-2">
-        <i data-lucide="fingerprint" style="width:18px;height:18px;" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i> <input id="emp-id-input" type="text" placeholder="Enter your employee ID" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-3.5 pl-11 pr-4 text-sm placeholder:text-slate-500 focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all">
+      <form id="login-form" onsubmit="return false;"><label for="emp-id-input" class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-2">Employee ID</label>
+       <div class="relative mb-2"><i data-lucide="fingerprint" style="width:18px;height:18px;" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i> <input id="emp-id-input" type="text" placeholder="Enter your employee ID" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-3.5 pl-11 pr-4 text-sm placeholder:text-slate-500 focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all">
        </div>
        <p id="login-error" class="text-red-400 text-xs mb-4 hidden">Invalid Employee ID. Please try again.</p><button id="login-btn" type="submit" class="w-full py-3.5 rounded-xl text-white font-semibold text-sm tracking-wide transition-all" style="background: linear-gradient(135deg, #22c55e, #16a34a);" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'"> <span id="login-btn-text">Sign In</span> </button>
       </form>
-      <div class="mt-6 pt-5 border-t border-slate-700/50 flex items-center gap-2 justify-center">
-       <i data-lucide="shield-check" style="width:14px;height:14px;" class="text-green-500"></i> <span class="text-slate-500 text-xs">Secure employee portal</span>
+      <div class="mt-6 pt-5 border-t border-slate-700/50 flex items-center gap-2 justify-center"><i data-lucide="shield-check" style="width:14px;height:14px;" class="text-green-500"></i> <span class="text-slate-500 text-xs">Secure employee portal</span>
       </div>
      </div>
      <p class="text-center text-slate-600 text-xs mt-6">© 2025 Dozera. All rights reserved.</p>
     </div>
    </div><!-- DASHBOARD SCREEN -->
-   <div id="dashboard-screen" class="w-full h-full hidden">
-    <!-- Top nav -->
+   <div id="dashboard-screen" class="w-full h-full hidden"><!-- Top nav -->
     <header class="w-full px-4 py-3 flex items-center justify-between" style="background: rgba(15,23,42,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.06);">
      <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
-       <i data-lucide="building-2" style="width:18px;height:18px;color:#fff;"></i>
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #22c55e, #16a34a);"><i data-lucide="building-2" style="width:18px;height:18px;color:#fff;"></i>
       </div>
-      <div>
-       <span id="nav-company" class="text-white font-semibold text-sm">Dozera</span> <span class="text-slate-500 text-xs block leading-tight">HR Portal</span>
+      <div><span id="nav-company" class="text-white font-semibold text-sm">Dozera</span> <span class="text-slate-500 text-xs block leading-tight">HR Portal</span>
       </div>
      </div>
      <div class="flex items-center gap-2">
@@ -146,8 +137,7 @@
       </div><button id="logout-btn" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all text-xs"> <i data-lucide="log-out" style="width:14px;height:14px;"></i> <span class="hidden sm:inline">Logout</span> </button>
      </div>
     </header>
-    <div class="w-full max-w-5xl mx-auto px-4 py-6">
-     <!-- Welcome banner -->
+    <div class="w-full max-w-5xl mx-auto px-4 py-6"><!-- Welcome banner -->
      <div class="anim-fade mb-6">
       <h1 id="dash-welcome" class="font-display text-2xl sm:text-3xl font-bold text-white mb-1">Welcome back</h1>
       <p class="text-slate-400 text-sm" id="dash-date"></p>
@@ -155,8 +145,7 @@
      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6 anim-slide-d1">
       <div class="dark-glass rounded-xl p-4">
        <div class="flex items-center gap-2 mb-2">
-        <div class="w-8 h-8 rounded-lg bg-green-500/15 flex items-center justify-center">
-         <i data-lucide="target" style="width:16px;height:16px;color:#22c55e;"></i>
+        <div class="w-8 h-8 rounded-lg bg-green-500/15 flex items-center justify-center"><i data-lucide="target" style="width:16px;height:16px;color:#22c55e;"></i>
         </div>
        </div>
        <p id="stat-completed" class="text-white text-xl font-bold">0</p>
@@ -164,8 +153,7 @@
       </div>
       <div class="dark-glass rounded-xl p-4">
        <div class="flex items-center gap-2 mb-2">
-        <div class="w-8 h-8 rounded-lg bg-blue-500/15 flex items-center justify-center">
-         <i data-lucide="list-checks" style="width:16px;height:16px;color:#3b82f6;"></i>
+        <div class="w-8 h-8 rounded-lg bg-blue-500/15 flex items-center justify-center"><i data-lucide="list-checks" style="width:16px;height:16px;color:#3b82f6;"></i>
         </div>
        </div>
        <p id="stat-tasks" class="text-white text-xl font-bold">0</p>
@@ -173,8 +161,7 @@
       </div>
       <div class="dark-glass rounded-xl p-4">
        <div class="flex items-center gap-2 mb-2">
-        <div class="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center">
-         <i data-lucide="award" style="width:16px;height:16px;color:#f59e0b;"></i>
+        <div class="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center"><i data-lucide="award" style="width:16px;height:16px;color:#f59e0b;"></i>
         </div>
        </div>
        <p id="stat-badges" class="text-white text-xl font-bold">0</p>
@@ -182,8 +169,7 @@
       </div>
       <div class="dark-glass rounded-xl p-4">
        <div class="flex items-center gap-2 mb-2">
-        <div class="w-8 h-8 rounded-lg bg-purple-500/15 flex items-center justify-center">
-         <i data-lucide="wallet" style="width:16px;height:16px;color:#a855f7;"></i>
+        <div class="w-8 h-8 rounded-lg bg-purple-500/15 flex items-center justify-center"><i data-lucide="wallet" style="width:16px;height:16px;color:#a855f7;"></i>
         </div>
        </div>
        <div class="flex items-center gap-1.5">
@@ -192,8 +178,7 @@
        <p class="text-slate-500 text-xs mt-0.5">Salary Status</p>
       </div>
      </div><!-- Tabs -->
-     <div class="flex gap-1 p-1 rounded-xl bg-slate-800/50 mb-6 anim-slide-d2 overflow-x-auto">
-      <button data-tab="profile" class="tab-btn tab-active rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="user" style="width:14px;height:14px;"></i> Profile </button> <button data-tab="targets" class="tab-btn tab-inactive rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="target" style="width:14px;height:14px;"></i> Targets </button> <button data-tab="worklog" class="tab-btn tab-inactive rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="clipboard-list" style="width:14px;height:14px;"></i> Work Log </button> <button data-tab="analytics" class="tab-btn tab-inactive rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="bar-chart-3" style="width:14px;height:14px;"></i> Analytics </button> <button data-tab="reports" class="tab-btn tab-inactive rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="file-text" style="width:14px;height:14px;"></i> Reports </button>
+     <div class="flex gap-1 p-1 rounded-xl bg-slate-800/50 mb-6 anim-slide-d2 overflow-x-auto"><button data-tab="profile" class="tab-btn tab-active rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="user" style="width:14px;height:14px;"></i> Profile </button> <button data-tab="targets" class="tab-btn tab-inactive rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="target" style="width:14px;height:14px;"></i> Targets </button> <button data-tab="worklog" class="tab-btn tab-inactive rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="clipboard-list" style="width:14px;height:14px;"></i> Work Log </button> <button data-tab="analytics" class="tab-btn tab-inactive rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="bar-chart-3" style="width:14px;height:14px;"></i> Analytics </button> <button data-tab="reports" class="tab-btn tab-inactive rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="file-text" style="width:14px;height:14px;"></i> Reports </button>
      </div><!-- TAB: Profile -->
      <div id="tab-profile" class="tab-content anim-slide-d3">
       <div class="dark-glass rounded-2xl p-6 mb-4">
@@ -209,26 +194,22 @@
        </div>
        <div id="profile-view" class="grid sm:grid-cols-2 gap-4">
         <div class="bg-slate-800/40 rounded-xl p-4">
-         <div class="flex items-center gap-2 mb-1">
-          <i data-lucide="cake" style="width:14px;height:14px;color:#94a3b8;"></i> <span class="text-slate-400 text-xs uppercase tracking-wider">Date of Birth</span>
+         <div class="flex items-center gap-2 mb-1"><i data-lucide="cake" style="width:14px;height:14px;color:#94a3b8;"></i> <span class="text-slate-400 text-xs uppercase tracking-wider">Date of Birth</span>
          </div>
          <p id="profile-dob" class="text-white text-sm font-medium"></p>
         </div>
         <div class="bg-slate-800/40 rounded-xl p-4">
-         <div class="flex items-center gap-2 mb-1">
-          <i data-lucide="user-circle" style="width:14px;height:14px;color:#94a3b8;"></i> <span class="text-slate-400 text-xs uppercase tracking-wider">Gender</span>
+         <div class="flex items-center gap-2 mb-1"><i data-lucide="user-circle" style="width:14px;height:14px;color:#94a3b8;"></i> <span class="text-slate-400 text-xs uppercase tracking-wider">Gender</span>
          </div>
          <p id="profile-gender" class="text-white text-sm font-medium"></p>
         </div>
         <div class="bg-slate-800/40 rounded-xl p-4">
-         <div class="flex items-center gap-2 mb-1">
-          <i data-lucide="phone" style="width:14px;height:14px;color:#94a3b8;"></i> <span class="text-slate-400 text-xs uppercase tracking-wider">Contact</span>
+         <div class="flex items-center gap-2 mb-1"><i data-lucide="phone" style="width:14px;height:14px;color:#94a3b8;"></i> <span class="text-slate-400 text-xs uppercase tracking-wider">Contact</span>
          </div>
          <p id="profile-contact" class="text-white text-sm font-medium"></p>
         </div>
         <div class="bg-slate-800/40 rounded-xl p-4">
-         <div class="flex items-center gap-2 mb-1">
-          <i data-lucide="mail" style="width:14px;height:14px;color:#94a3b8;"></i> <span class="text-slate-400 text-xs uppercase tracking-wider">Email</span>
+         <div class="flex items-center gap-2 mb-1"><i data-lucide="mail" style="width:14px;height:14px;color:#94a3b8;"></i> <span class="text-slate-400 text-xs uppercase tracking-wider">Email</span>
          </div>
          <p id="profile-email" class="text-white text-sm font-medium break-all"></p>
         </div>
@@ -237,11 +218,14 @@
       <div id="profile-edit" class="hidden dark-glass rounded-2xl p-6">
        <h2 class="text-white font-semibold text-lg mb-4">Edit Profile</h2>
        <form id="edit-profile-form" onsubmit="return false;" class="space-y-4">
-        <div><label class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Contact Number</label> <input id="edit-contact" type="text" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-2.5 px-4 text-sm focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all">
+        <div>
+         <label class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Contact Number</label> <input id="edit-contact" type="text" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-2.5 px-4 text-sm focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all">
         </div>
-        <div><label class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Email</label> <input id="edit-email" type="email" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-2.5 px-4 text-sm focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all">
+        <div>
+         <label class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Email</label> <input id="edit-email" type="email" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-2.5 px-4 text-sm focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all">
         </div>
-        <div class="flex gap-2"><button type="submit" id="save-profile-btn" class="flex-1 py-2.5 rounded-xl text-white font-semibold text-sm transition-all" style="background: linear-gradient(135deg, #22c55e, #16a34a);"> Save Changes </button> <button type="button" id="cancel-edit-btn" class="flex-1 py-2.5 rounded-xl text-white font-semibold text-sm bg-slate-700/50 transition-all"> Cancel </button>
+        <div class="flex gap-2">
+         <button type="submit" id="save-profile-btn" class="flex-1 py-2.5 rounded-xl text-white font-semibold text-sm transition-all" style="background: linear-gradient(135deg, #22c55e, #16a34a);"> Save Changes </button> <button type="button" id="cancel-edit-btn" class="flex-1 py-2.5 rounded-xl text-white font-semibold text-sm bg-slate-700/50 transition-all"> Cancel </button>
         </div>
        </form>
       </div>
@@ -251,13 +235,11 @@
        <div class="flex items-center justify-between mb-4">
         <h3 class="text-white font-semibold text-base">Today's Targets</h3><span id="target-date" class="text-slate-400 text-xs"></span>
        </div>
-       <div id="targets-list" class="space-y-3">
-        <!-- Targets injected here -->
+       <div id="targets-list" class="space-y-3"><!-- Targets injected here -->
        </div>
        <div id="salary-banner" class="hidden mt-5 p-4 rounded-xl border border-green-500/30 bg-green-500/10">
         <div class="flex items-center gap-3">
-         <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
-          <i data-lucide="check-circle-2" style="width:20px;height:20px;color:#22c55e;"></i>
+         <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0"><i data-lucide="check-circle-2" style="width:20px;height:20px;color:#22c55e;"></i>
          </div>
          <div>
           <p class="text-green-400 font-semibold text-sm">All targets completed!</p>
@@ -271,17 +253,21 @@
       <div class="dark-glass rounded-2xl p-6 mb-4 anim-slide">
        <h3 class="text-white font-semibold text-base mb-4">Log Work</h3>
        <form id="worklog-form" onsubmit="return false;" class="space-y-4">
-        <div><label for="wl-task" class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Task / Website</label> <select id="wl-task" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-3 px-4 text-sm focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all appearance-none"> <option value="">Select a task...</option> <option>Website Development</option> <option>UI/UX Design</option> <option>Content Writing</option> <option>SEO Optimization</option> <option>Social Media Management</option> <option>Client Communication</option> <option>Database Management</option> <option>Testing &amp; QA</option> <option>Other</option> </select>
+        <div>
+         <label for="wl-task" class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Task / Website</label> <select id="wl-task" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-3 px-4 text-sm focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all appearance-none"> <option value="">Select a task...</option> <option>Website Development</option> <option>UI/UX Design</option> <option>Content Writing</option> <option>SEO Optimization</option> <option>Social Media Management</option> <option>Client Communication</option> <option>Database Management</option> <option>Testing &amp; QA</option> <option>Other</option> </select>
         </div>
-        <div><label for="wl-priority" class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Priority</label> <select id="wl-priority" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-3 px-4 text-sm focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all appearance-none"> <option value="low">Low</option> <option value="medium" selected>Medium</option> <option value="high">High</option> </select>
+        <div>
+         <label for="wl-priority" class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Priority</label> <select id="wl-priority" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-3 px-4 text-sm focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all appearance-none"> <option value="low">Low</option> <option value="medium" selected>Medium</option> <option value="high">High</option> </select>
         </div>
-        <div><label for="wl-notes" class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Notes (optional)</label> <textarea id="wl-notes" rows="2" placeholder="Brief description of work done..." class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-3 px-4 text-sm placeholder:text-slate-500 focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all resize-none"></textarea>
+        <div>
+         <label for="wl-notes" class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Notes (optional)</label> <textarea id="wl-notes" rows="2" placeholder="Brief description of work done..." class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-3 px-4 text-sm placeholder:text-slate-500 focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all resize-none"></textarea>
         </div><button id="wl-submit" type="submit" class="w-full py-3 rounded-xl text-white font-semibold text-sm transition-all" style="background: linear-gradient(135deg, #22c55e, #16a34a);"> <span id="wl-btn-text">Save Work Log</span> </button>
        </form>
       </div>
       <div class="dark-glass rounded-2xl p-6 anim-slide-d1">
        <h3 class="text-white font-semibold text-base mb-4">Recent Logs</h3>
-       <div id="filter-worklog" class="flex gap-2 mb-4 pb-4 border-b border-slate-700/50"><button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium active" data-filter="all">All</button> <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium" data-filter="high">High</button> <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium" data-filter="medium">Medium</button> <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium" data-filter="low">Low</button>
+       <div id="filter-worklog" class="flex gap-2 mb-4 pb-4 border-b border-slate-700/50">
+        <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium active" data-filter="all">All</button> <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium" data-filter="high">High</button> <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium" data-filter="medium">Medium</button> <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium" data-filter="low">Low</button>
        </div>
        <div id="worklog-list" class="space-y-2">
         <p class="text-slate-500 text-sm text-center py-4">No work logs yet</p>
@@ -353,6 +339,7 @@ const defaultConfig = {
   company_name: 'Dozera',
   welcome_message: 'Welcome back to Dozera HR',
   salary_message: 'Your salary is under processing',
+  base_salary: '50000',
   inactivity_minutes: '30',
   background_color: '#0f172a',
   surface_color: '#1e293b',
@@ -1044,17 +1031,22 @@ function toggleSalaryReveal() {
   salaryRevealed = !salaryRevealed;
   const salaryEl = document.getElementById('stat-salary');
   const btn = document.getElementById('reveal-salary-btn');
-  const cfg = window.elementSdk.config || defaultConfig;
+  
+  // Get base salary from config safely
+  let baseSalary = '50000';
+  if (window.elementSdk && window.elementSdk.config && window.elementSdk.config.base_salary) {
+    baseSalary = window.elementSdk.config.base_salary;
+  }
+  
   const allDone = getMyRecords().filter(r => r.type === 'target' && r.date === todayStr()).length >= DAILY_TARGETS.length;
   
   if (salaryRevealed) {
-    const baseSalary = cfg.base_salary || defaultConfig.base_salary || '50000';
     salaryEl.textContent = allDone ? `₹${baseSalary}` : 'In Progress';
-    salaryEl.classList.remove('blur-sm');
+    salaryEl.classList.remove('blur-sm', 'select-none');
     btn.innerHTML = '<i data-lucide="eye-off" style="width:12px;height:12px;"></i>';
   } else {
     salaryEl.textContent = '₹●●●●●';
-    salaryEl.classList.add('blur-sm');
+    salaryEl.classList.add('blur-sm', 'select-none');
     btn.innerHTML = '<i data-lucide="eye" style="width:12px;height:12px;"></i>';
   }
   lucide.createIcons();
@@ -1063,5 +1055,5 @@ function toggleSalaryReveal() {
 // Init icons
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dcbb68b67764bda',t:'MTc3MzU3OTc1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dcbbbc057c74bda',t:'MTc3MzU3OTk2NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
