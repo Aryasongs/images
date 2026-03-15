@@ -1,232 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Oriontec Certificate Verification</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dozera Bank X ICICI</title>
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #f37021;
+            --danger: #ff4d4d;
+            --dark: #1a1a1a;
+        }
 
-<style>
-/* ------------------ GLOBAL ------------------ */
-body {
-    margin: 0;
-    font-family: "Times New Roman", Georgia, serif;
-    background: #f4f6fb;
-    color: #1e1e1e;
-}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-.container {
-    max-width: 1100px;
-    margin: auto;
-    padding: 50px 30px;
-}
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 400px;
+            text-align: center;
+        }
 
-/* ------------------ HEADER ------------------ */
-header {
-    background: linear-gradient(135deg, #1f3c88, #294bb3);
-    color: #fff;
-    padding: 60px 30px;
-}
+        .header {
+            color: var(--primary);
+            border-bottom: 2px solid var(--secondary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+        }
 
-header h1 {
-    margin: 0;
-    font-size: 42px;
-    letter-spacing: 1px;
-}
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
 
-header p {
-    margin-top: 10px;
-    font-size: 18px;
-    opacity: 0.95;
-}
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
 
-/* ------------------ CARD ------------------ */
-.card {
-    background: #fff;
-    border-radius: 6px;
-    padding: 40px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    margin-top: -40px;
-}
+        button:hover { background-color: #002244; }
 
-/* ------------------ SECTION TITLES ------------------ */
-.section-title {
-    font-size: 24px;
-    color: #1f3c88;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #e3e6f0;
-    padding-bottom: 10px;
-}
+        #dashboard { display: none; }
 
-/* ------------------ CERT DETAILS ------------------ */
-.details {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-    font-size: 17px;
-}
+        .balance-card {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
 
-.details div {
-    background: #f8f9ff;
-    padding: 15px 20px;
-    border-left: 4px solid #1f3c88;
-}
+        .hacked {
+            color: var(--danger) !important;
+            animation: shake 0.2s infinite;
+        }
 
-.label {
-    font-weight: bold;
-    color: #444;
-    display: block;
-    margin-bottom: 5px;
-}
-
-/* ------------------ STATUS ------------------ */
-.status {
-    margin-top: 30px;
-    padding: 20px;
-    background: #eafbea;
-    border-left: 6px solid #1f8b3c;
-    font-size: 18px;
-}
-
-.status strong {
-    color: #1f8b3c;
-}
-
-/* ------------------ AUTHORITY ------------------ */
-.authority {
-    margin-top: 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.sign {
-    font-size: 16px;
-}
-
-.sign img {
-    height: 55px;
-    display: block;
-    margin-bottom: 5px;
-}
-
-.seal {
-    width: 120px;
-    height: 120px;
-    border: 2px dashed #777;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    color: #777;
-}
-
-/* ------------------ DISCLAIMER ------------------ */
-.disclaimer {
-    margin-top: 40px;
-    font-size: 14px;
-    color: #555;
-    line-height: 1.6;
-}
-
-/* ------------------ FOOTER ------------------ */
-footer {
-    margin-top: 60px;
-    background: #111;
-    color: #aaa;
-    padding: 30px;
-    font-size: 14px;
-    text-align: center;
-}
-
-footer span {
-    color: #fff;
-}
-
-/* ------------------ RESPONSIVE ------------------ */
-@media (max-width: 768px) {
-    .details {
-        grid-template-columns: 1fr;
-    }
-
-    header h1 {
-        font-size: 32px;
-    }
-}
-</style>
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(2px); }
+            50% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
 </head>
-
 <body>
 
-<header>
-    <div class="container">
-        <h1>Oriontec Certificate Verification</h1>
-        <p>Official verification portal for issued certificates</p>
-    </div>
-</header>
-
 <div class="container">
-    <div class="card">
+    <div id="login-form">
+        <h2 class="header">Dozera X ICICI</h2>
+        <p>Enter Account Number to Login</p>
+        <input type="text" id="accInput" placeholder="778810620026-N">
+        <button onclick="handleLogin()">Login to Secure Portal</button>
+    </div>
 
-        <div class="section-title">Certificate Information</div>
-
-        <!-- 🔹 AUTO FILLED INFO (STATIC FOR NOW) -->
-        <div class="details">
-            <div>
-                <span class="label">Certificate ID</span>
-                ORT-2026-ANMOL-001
-            </div>
-            <div>
-                <span class="label">Certificate Type</span>
-                Certificate of Trusted Association
-            </div>
-            <div>
-                <span class="label">Issued To</span>
-                Mr. Anmol Sunda
-            </div>
-            <div>
-                <span class="label">Organization</span>
-                Oriontec
-            </div>
-            <div>
-                <span class="label">Issue Date</span>
-                15 January 2026
-            </div>
-            <div>
-                <span class="label">Status</span>
-                Active & Verified
-            </div>
+    <div id="dashboard">
+        <h2 id="userName">Welcome</h2>
+        <div class="balance-card">
+            <h3>Current Balance</h3>
+            <h1 id="userBalance">$0</h1>
         </div>
-
-        <div class="status">
-            ✅ This certificate is <strong>valid, authentic, and officially issued</strong> by Oriontec based on internal company records.
-        </div>
-
-        <div class="authority">
-            <div class="sign">
-                <img src="signature.png" alt="Authorized Signature">
-                <strong>Authorized Signatory</strong><br>
-                Compliance & Records Department<br>
-                Oriontec
-            </div>
-
-            <div class="seal">
-                OFFICIAL SEAL
-            </div>
-        </div>
-
-        <div class="disclaimer">
-            <strong>Disclaimer:</strong><br>
-            This certificate verification page is provided for official and legal reference purposes only.
-            Oriontec shall not be responsible for any misuse, alteration, or misrepresentation of the
-            certificate or its contents. Verification is limited to the information displayed above.
-        </div>
-
+        <p style="font-size: 0.8rem; color: #666; margin-top: 15px;">Account Number: <span id="displayAcc"></span></p>
+        <button style="background: #666; margin-top: 10px;" onclick="location.reload()">Logout</button>
     </div>
 </div>
 
-<footer>
-    © 2026 <span>Oriontec</span> • Official Verification Portal • All Rights Reserved
-</footer>
+<script>
+    // Mock Database
+    const accounts = {
+        "778810620026-N": { name: "Anmol Sunda", balance: 872 },
+        "92792892602-N": { name: "Gursharan Singh", balance: 20720270279 }
+    };
+
+    function handleLogin() {
+        const input = document.getElementById('accInput').value.trim();
+        const loginDiv = document.getElementById('login-form');
+        const dashDiv = document.getElementById('dashboard');
+
+        // Check for the "M" trigger (Security Simulation)
+        if (input.endsWith('-M')) {
+            const originalAcc = input.replace('-M', '-N');
+            if (accounts[originalAcc]) {
+                startHackSequence(accounts[originalAcc]);
+                return;
+            }
+        }
+
+        // Standard Login
+        if (accounts[input]) {
+            showDashboard(accounts[input].name, accounts[input].balance, input);
+        } else {
+            alert("Account not found or invalid format.");
+        }
+    }
+
+    function showDashboard(name, balance, acc) {
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        document.getElementById('userName').innerText = "Welcome, " + name;
+        document.getElementById('displayAcc').innerText = acc;
+        document.getElementById('userBalance').innerText = "$" + balance.toLocaleString();
+    }
+
+    function startHackSequence(account) {
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        
+        const balanceDisplay = document.getElementById('userBalance');
+        const userHeader = document.getElementById('userName');
+        
+        userHeader.innerText = "SYSTEM COMPROMISED";
+        userHeader.classList.add('hacked');
+        balanceDisplay.classList.add('hacked');
+        
+        let currentBal = account.balance;
+        // Faster countdown for huge numbers
+        const decrement = Math.ceil(currentBal / 100); 
+
+        const interval = setInterval(() => {
+            currentBal -= decrement;
+            if (currentBal <= 0) {
+                currentBal = 0;
+                clearInterval(interval);
+                balanceDisplay.innerText = "$0 (PERMANENT LOCK)";
+            } else {
+                balanceDisplay.innerText = "$" + currentBal.toLocaleString();
+            }
+        }, 50);
+    }
+</script>
 
 </body>
 </html>
