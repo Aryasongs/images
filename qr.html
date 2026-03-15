@@ -1,196 +1,1144 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dozera Group | Global Infrastructure & Industrial Leaders</title>
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dozera HR Portal</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; margin: 0; }
+    .font-display { font-family: 'Playfair Display', serif; }
     
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    @keyframes fillBar {
+      from { width: 0%; }
+      to { var(--target-width); }
+    }
+    .anim-fade { animation: fadeIn 0.5s ease both; }
+    .anim-slide { animation: slideUp 0.4s ease both; }
+    .anim-slide-d1 { animation: slideUp 0.4s ease 0.1s both; }
+    .anim-slide-d2 { animation: slideUp 0.4s ease 0.2s both; }
+    .anim-slide-d3 { animation: slideUp 0.4s ease 0.3s both; }
+    .anim-slide-d4 { animation: slideUp 0.4s ease 0.4s both; }
+    
+    .pulse-dot { animation: pulse-dot 1.5s ease-in-out infinite; }
+    
+    .glass-card {
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+    
+    .dark-glass {
+      background: rgba(15,23,42,0.65);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
 
-    <style>
-        :root {
-            --primary: #FFD700; /* Gold */
-            --dark: #0f0f0f;
-            --light: #ffffff;
-            --grey: #222;
-        }
+    input:focus { outline: none; }
+    
+    .tab-active {
+      background: #0f172a;
+      color: #f0fdf4;
+    }
+    .tab-inactive {
+      background: transparent;
+      color: #64748b;
+    }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; scroll-behavior: smooth; }
+    .target-card:hover { transform: translateY(-2px); }
+    .target-card { transition: all 0.2s ease; }
 
-        body { background: var(--dark); color: var(--light); overflow-x: hidden; }
+    .progress-bar {
+      background: rgba(255,255,255,0.1);
+      border-radius: 999px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, #22c55e, #16a34a);
+      height: 100%;
+      transition: width 0.4s ease;
+    }
 
-        /* Navigation */
-        nav {
-            position: fixed; top: 0; width: 100%; padding: 20px 8%;
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(15, 15, 15, 0.95); z-index: 1000; border-bottom: 1px solid #333;
-        }
-        .logo { font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: 2px; }
-        nav ul { display: flex; list-style: none; }
-        nav ul li { margin-left: 35px; }
-        nav ul li a { text-decoration: none; color: #fff; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
-        nav ul li a:hover { color: var(--primary); }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-high { background: #ef4444/20; color: #fca5a5; }
+    .badge-medium { background: #f59e0b/20; color: #fcd34d; }
+    .badge-low { background: #3b82f6/20; color: #93c5fd; }
 
-        /* Hero Section */
-        .hero {
-            height: 100vh;
-            background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1500&q=80');
-            background-size: cover; background-position: center;
-            display: flex; flex-direction: column; justify-content: center; padding: 0 10%;
-        }
-        .hero h1 { font-size: 80px; font-weight: 800; line-height: 1; margin-bottom: 20px; }
-        .hero span { color: var(--primary); }
-        .hero p { font-size: 18px; max-width: 600px; margin-bottom: 30px; color: #ccc; }
-        .btn {
-            padding: 15px 40px; background: var(--primary); color: #000;
-            text-decoration: none; font-weight: bold; border-radius: 50px;
-            display: inline-block; transition: 0.4s; width: fit-content;
-        }
-        .btn:hover { background: #fff; transform: scale(1.05); }
-
-        /* Stats Section */
-        .stats { display: flex; justify-content: space-around; padding: 80px 10%; background: var(--grey); text-align: center; }
-        .stat-box h2 { font-size: 45px; color: var(--primary); }
-        .stat-box p { color: #888; text-transform: uppercase; font-size: 12px; }
-
-        /* Services Styling */
-        .section { padding: 100px 10%; }
-        .title-main { font-size: 40px; text-align: center; margin-bottom: 60px; }
-        .title-main span { border-bottom: 4px solid var(--primary); padding-bottom: 10px; }
-
-        .service-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-        .card {
-            background: #1a1a1a; padding: 40px; border: 1px solid #333;
-            transition: 0.5s; cursor: pointer; position: relative; overflow: hidden;
-        }
-        .card:hover { border-color: var(--primary); transform: translateY(-10px); }
-        .card i { font-size: 40px; color: var(--primary); margin-bottom: 20px; }
-        .card h3 { margin-bottom: 15px; font-size: 22px; }
-
-        /* Projects Section */
-        .projects-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        .project-img {
-            width: 100%; height: 400px; background-size: cover; background-position: center;
-            position: relative; overflow: hidden;
-        }
-        .overlay {
-            position: absolute; bottom: -100%; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 215, 0, 0.9); display: flex; flex-direction: column;
-            justify-content: center; align-items: center; color: #000; transition: 0.5s;
-        }
-        .project-img:hover .overlay { bottom: 0; }
-
-        /* Contact Section */
-        .contact-flex { display: flex; gap: 50px; }
-        .contact-info { flex: 1; }
-        .contact-form { flex: 1; display: flex; flex-direction: column; }
-        .contact-form input, .contact-form textarea {
-            padding: 15px; margin-bottom: 20px; background: #1a1a1a; border: 1px solid #333; color: #fff;
-        }
-        
-        footer { padding: 50px 10%; background: #000; border-top: 1px solid #222; text-align: center; }
-    </style>
-</head>
-<body>
-
-    <nav>
-        <div class="logo">DOZERA</div>
-        <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">Legacy</a></li>
-            <li><a href="#services">Verticals</a></li>
-            <li><a href="#projects">Portfolio</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-    </nav>
-
-    <section class="hero" id="home">
-        <h1 data-aos="fade-right">THE <span>POWER</span><br>OF PRECISION.</h1>
-        <p data-aos="fade-up" data-aos-delay="300">Dozera Group: Redefining the skyline through innovative construction, cutting-edge machinery, and strategic management across 15+ countries.</p>
-        <a href="#contact" class="btn" data-aos="zoom-in">GET A QUOTE</a>
-    </section>
-
-    <div class="stats">
-        <div class="stat-box" data-aos="fade-up"><h2>25+</h2><p>Years Experience</p></div>
-        <div class="stat-box" data-aos="fade-up" data-aos-delay="100"><h2>500+</h2><p>Projects Delivered</p></div>
-        <div class="stat-box" data-aos="fade-up" data-aos-delay="200"><h2>12</h2><p>Global Offices</p></div>
-        <div class="stat-box" data-aos="fade-up" data-aos-delay="300"><h2>2k+</h2><p>Engineers</p></div>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full">
+  <div id="app-root" class="w-full h-full overflow-auto" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0f172a 100%);">
+   <!-- LOGIN SCREEN -->
+   <div id="login-screen" class="w-full h-full flex items-center justify-center p-4">
+    <div class="w-full max-w-md anim-fade">
+     <!-- Logo area -->
+     <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
+       <i data-lucide="building-2" style="width:32px;height:32px;color:#fff;"></i>
+      </div>
+      <h1 id="login-company-name" class="font-display text-3xl font-bold text-white mb-1">Dozera</h1>
+      <p class="text-slate-400 text-sm tracking-wide uppercase">Human Resources Portal</p>
+     </div><!-- Login card -->
+     <div class="dark-glass rounded-2xl p-8">
+      <h2 id="login-welcome" class="text-white text-lg font-semibold mb-1">Welcome back</h2>
+      <p class="text-slate-400 text-sm mb-6">Enter your Employee ID to continue</p>
+      <form id="login-form" onsubmit="return false;">
+       <label for="emp-id-input" class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-2">Employee ID</label>
+       <div class="relative mb-2">
+        <i data-lucide="fingerprint" style="width:18px;height:18px;" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i> <input id="emp-id-input" type="text" placeholder="Enter your employee ID" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-3.5 pl-11 pr-4 text-sm placeholder:text-slate-500 focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all">
+       </div>
+       <p id="login-error" class="text-red-400 text-xs mb-4 hidden">Invalid Employee ID. Please try again.</p><button id="login-btn" type="submit" class="w-full py-3.5 rounded-xl text-white font-semibold text-sm tracking-wide transition-all" style="background: linear-gradient(135deg, #22c55e, #16a34a);" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'"> <span id="login-btn-text">Sign In</span> </button>
+      </form>
+      <div class="mt-6 pt-5 border-t border-slate-700/50 flex items-center gap-2 justify-center">
+       <i data-lucide="shield-check" style="width:14px;height:14px;" class="text-green-500"></i> <span class="text-slate-500 text-xs">Secure employee portal</span>
+      </div>
+     </div>
+     <p class="text-center text-slate-600 text-xs mt-6">© 2025 Dozera. All rights reserved.</p>
     </div>
-
-    <section class="section" id="services">
-        <h2 class="title-main" data-aos="fade-down">Core <span>Verticals</span></h2>
-        <div class="service-container">
-            <div class="card" data-aos="flip-left">
-                <i class="fas fa-city"></i>
-                <h3>Infrastructure</h3>
-                <p>Developing mega-cities, highways, and industrial corridors with unmatched architectural integrity.</p>
-            </div>
-            <div class="card" data-aos="flip-left" data-aos-delay="100">
-                <i class="fas fa-tools"></i>
-                <h3>Heavy Machinery</h3>
-                <p>Manufacturing and supplying advanced earthmoving equipment for global mining & construction.</p>
-            </div>
-            <div class="card" data-aos="flip-left" data-aos-delay="200">
-                <i class="fas fa-chart-line"></i>
-                <h3>Strategic Invest</h3>
-                <p>Consulting and management services for international trade and real-estate investments.</p>
-            </div>
+   </div><!-- DASHBOARD SCREEN -->
+   <div id="dashboard-screen" class="w-full h-full hidden">
+    <!-- Top nav -->
+    <header class="w-full px-4 py-3 flex items-center justify-between" style="background: rgba(15,23,42,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.06);">
+     <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
+       <i data-lucide="building-2" style="width:18px;height:18px;color:#fff;"></i>
+      </div>
+      <div>
+       <span id="nav-company" class="text-white font-semibold text-sm">Dozera</span> <span class="text-slate-500 text-xs block leading-tight">HR Portal</span>
+      </div>
+     </div>
+     <div class="flex items-center gap-2">
+      <div class="hidden sm:flex items-center gap-2 mr-2">
+       <div class="w-2 h-2 rounded-full bg-green-500 pulse-dot"></div><span class="text-slate-400 text-xs">Online</span>
+      </div><button id="logout-btn" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all text-xs"> <i data-lucide="log-out" style="width:14px;height:14px;"></i> <span class="hidden sm:inline">Logout</span> </button>
+     </div>
+    </header>
+    <div class="w-full max-w-5xl mx-auto px-4 py-6">
+     <!-- Welcome banner -->
+     <div class="anim-fade mb-6">
+      <h1 id="dash-welcome" class="font-display text-2xl sm:text-3xl font-bold text-white mb-1">Welcome back</h1>
+      <p class="text-slate-400 text-sm" id="dash-date"></p>
+     </div><!-- Stats row -->
+     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6 anim-slide-d1">
+      <div class="dark-glass rounded-xl p-4">
+       <div class="flex items-center gap-2 mb-2">
+        <div class="w-8 h-8 rounded-lg bg-green-500/15 flex items-center justify-center">
+         <i data-lucide="target" style="width:16px;height:16px;color:#22c55e;"></i>
         </div>
-    </section>
-
-    <section class="section" id="projects">
-        <h2 class="title-main" data-aos="fade-down">Iconic <span>Projects</span></h2>
-        <div class="projects-grid">
-            <div class="project-img" style="background-image: url('https://images.unsplash.com/photo-1503387762-592dea58ef23?auto=format&fit=crop&w=800&q=80');" data-aos="zoom-in">
-                <div class="overlay"><h3>Dozera Tower 1</h3><p>Dubai, UAE</p></div>
-            </div>
-            <div class="project-img" style="background-image: url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=800&q=80');" data-aos="zoom-in" data-aos-delay="200">
-                <div class="overlay"><h3>Mining Corridor</h3><p>Queensland, Australia</p></div>
-            </div>
+       </div>
+       <p id="stat-completed" class="text-white text-xl font-bold">0</p>
+       <p class="text-slate-500 text-xs">Targets Done</p>
+      </div>
+      <div class="dark-glass rounded-xl p-4">
+       <div class="flex items-center gap-2 mb-2">
+        <div class="w-8 h-8 rounded-lg bg-blue-500/15 flex items-center justify-center">
+         <i data-lucide="list-checks" style="width:16px;height:16px;color:#3b82f6;"></i>
         </div>
-    </section>
-
-    <section class="section" id="contact">
-        <div class="contact-flex">
-            <div class="contact-info" data-aos="fade-right">
-                <h2>Ready to Build?</h2>
-                <p style="margin: 20px 0; color: #888;">Connect with our global HQ for partnerships and project inquiries.</p>
-                <p><i class="fas fa-envelope" style="color:var(--primary)"></i> official@dozeragroup.com</p>
-                <p><i class="fas fa-phone" style="color:var(--primary)"></i> +91 011-DOZERA-78</p>
-            </div>
-            <form class="contact-form" data-aos="fade-left">
-                <input type="text" placeholder="Full Name">
-                <input type="email" placeholder="Corporate Email">
-                <textarea rows="5" placeholder="Project Details"></textarea>
-                <button type="submit" class="btn">INITIALIZE PROJECT</button>
-            </form>
+       </div>
+       <p id="stat-tasks" class="text-white text-xl font-bold">0</p>
+       <p class="text-slate-500 text-xs">Work Logs</p>
+      </div>
+      <div class="dark-glass rounded-xl p-4">
+       <div class="flex items-center gap-2 mb-2">
+        <div class="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center">
+         <i data-lucide="award" style="width:16px;height:16px;color:#f59e0b;"></i>
         </div>
-    </section>
-
-    <footer>
-        <p>&copy; 2026 DOZERA GROUP INTERNATIONAL | EST. 1999</p>
-        <div style="margin-top: 15px; color: var(--primary);">
-            <i class="fab fa-linkedin"></i> &nbsp; <i class="fab fa-twitter"></i> &nbsp; <i class="fab fa-instagram"></i>
+       </div>
+       <p id="stat-badges" class="text-white text-xl font-bold">0</p>
+       <p class="text-slate-500 text-xs">Badges Earned</p>
+      </div>
+      <div class="dark-glass rounded-xl p-4">
+       <div class="flex items-center gap-2 mb-2">
+        <div class="w-8 h-8 rounded-lg bg-purple-500/15 flex items-center justify-center">
+         <i data-lucide="wallet" style="width:16px;height:16px;color:#a855f7;"></i>
         </div>
-    </footer>
+       </div>
+       <p id="stat-salary" class="text-amber-400 text-xs font-medium mt-1">—</p>
+       <p class="text-slate-500 text-xs mt-0.5">Salary Status</p>
+      </div>
+     </div><!-- Tabs -->
+     <div class="flex gap-1 p-1 rounded-xl bg-slate-800/50 mb-6 anim-slide-d2 overflow-x-auto">
+      <button data-tab="profile" class="tab-btn tab-active rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="user" style="width:14px;height:14px;"></i> Profile </button> <button data-tab="targets" class="tab-btn tab-inactive rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="target" style="width:14px;height:14px;"></i> Targets </button> <button data-tab="worklog" class="tab-btn tab-inactive rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="clipboard-list" style="width:14px;height:14px;"></i> Work Log </button> <button data-tab="analytics" class="tab-btn tab-inactive rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="bar-chart-3" style="width:14px;height:14px;"></i> Analytics </button> <button data-tab="reports" class="tab-btn tab-inactive rounded-lg px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5"> <i data-lucide="file-text" style="width:14px;height:14px;"></i> Reports </button>
+     </div><!-- TAB: Profile -->
+     <div id="tab-profile" class="tab-content anim-slide-d3">
+      <div class="dark-glass rounded-2xl p-6 mb-4">
+       <div class="flex items-center justify-between mb-6">
+        <h2 class="text-white font-semibold text-lg">Profile Information</h2><button id="edit-profile-btn" class="px-3 py-2 rounded-lg text-xs font-medium text-white transition-all flex items-center gap-1" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"> <i data-lucide="edit-2" style="width:14px;height:14px;"></i> Edit </button>
+       </div>
+       <div class="flex items-center gap-4 mb-6">
+        <div id="profile-avatar" class="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-bold text-xl" style="background: linear-gradient(135deg, #22c55e, #16a34a);"></div>
+        <div>
+         <h3 id="profile-name" class="text-white font-semibold text-lg"></h3>
+         <p id="profile-id" class="text-slate-400 text-sm"></p>
+        </div>
+       </div>
+       <div id="profile-view" class="grid sm:grid-cols-2 gap-4">
+        <div class="bg-slate-800/40 rounded-xl p-4">
+         <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="cake" style="width:14px;height:14px;color:#94a3b8;"></i> <span class="text-slate-400 text-xs uppercase tracking-wider">Date of Birth</span>
+         </div>
+         <p id="profile-dob" class="text-white text-sm font-medium"></p>
+        </div>
+        <div class="bg-slate-800/40 rounded-xl p-4">
+         <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="user-circle" style="width:14px;height:14px;color:#94a3b8;"></i> <span class="text-slate-400 text-xs uppercase tracking-wider">Gender</span>
+         </div>
+         <p id="profile-gender" class="text-white text-sm font-medium"></p>
+        </div>
+        <div class="bg-slate-800/40 rounded-xl p-4">
+         <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="phone" style="width:14px;height:14px;color:#94a3b8;"></i> <span class="text-slate-400 text-xs uppercase tracking-wider">Contact</span>
+         </div>
+         <p id="profile-contact" class="text-white text-sm font-medium"></p>
+        </div>
+        <div class="bg-slate-800/40 rounded-xl p-4">
+         <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="mail" style="width:14px;height:14px;color:#94a3b8;"></i> <span class="text-slate-400 text-xs uppercase tracking-wider">Email</span>
+         </div>
+         <p id="profile-email" class="text-white text-sm font-medium break-all"></p>
+        </div>
+       </div>
+      </div>
+      <div id="profile-edit" class="hidden dark-glass rounded-2xl p-6">
+       <h2 class="text-white font-semibold text-lg mb-4">Edit Profile</h2>
+       <form id="edit-profile-form" onsubmit="return false;" class="space-y-4">
+        <div><label class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Contact Number</label> <input id="edit-contact" type="text" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-2.5 px-4 text-sm focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all">
+        </div>
+        <div><label class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Email</label> <input id="edit-email" type="email" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-2.5 px-4 text-sm focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all">
+        </div>
+        <div class="flex gap-2"><button type="submit" id="save-profile-btn" class="flex-1 py-2.5 rounded-xl text-white font-semibold text-sm transition-all" style="background: linear-gradient(135deg, #22c55e, #16a34a);"> Save Changes </button> <button type="button" id="cancel-edit-btn" class="flex-1 py-2.5 rounded-xl text-white font-semibold text-sm bg-slate-700/50 transition-all"> Cancel </button>
+        </div>
+       </form>
+      </div>
+     </div><!-- TAB: Targets -->
+     <div id="tab-targets" class="tab-content hidden">
+      <div class="dark-glass rounded-2xl p-6 mb-4 anim-slide">
+       <div class="flex items-center justify-between mb-4">
+        <h3 class="text-white font-semibold text-base">Today's Targets</h3><span id="target-date" class="text-slate-400 text-xs"></span>
+       </div>
+       <div id="targets-list" class="space-y-3">
+        <!-- Targets injected here -->
+       </div>
+       <div id="salary-banner" class="hidden mt-5 p-4 rounded-xl border border-green-500/30 bg-green-500/10">
+        <div class="flex items-center gap-3">
+         <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+          <i data-lucide="check-circle-2" style="width:20px;height:20px;color:#22c55e;"></i>
+         </div>
+         <div>
+          <p class="text-green-400 font-semibold text-sm">All targets completed!</p>
+          <p id="salary-msg" class="text-green-300/70 text-xs mt-0.5">Your salary is under processing</p>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- TAB: Work Log -->
+     <div id="tab-worklog" class="tab-content hidden">
+      <div class="dark-glass rounded-2xl p-6 mb-4 anim-slide">
+       <h3 class="text-white font-semibold text-base mb-4">Log Work</h3>
+       <form id="worklog-form" onsubmit="return false;" class="space-y-4">
+        <div><label for="wl-task" class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Task / Website</label> <select id="wl-task" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-3 px-4 text-sm focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all appearance-none"> <option value="">Select a task...</option> <option>Website Development</option> <option>UI/UX Design</option> <option>Content Writing</option> <option>SEO Optimization</option> <option>Social Media Management</option> <option>Client Communication</option> <option>Database Management</option> <option>Testing &amp; QA</option> <option>Other</option> </select>
+        </div>
+        <div><label for="wl-priority" class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Priority</label> <select id="wl-priority" class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-3 px-4 text-sm focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all appearance-none"> <option value="low">Low</option> <option value="medium" selected>Medium</option> <option value="high">High</option> </select>
+        </div>
+        <div><label for="wl-notes" class="block text-slate-300 text-xs font-medium uppercase tracking-wider mb-1.5">Notes (optional)</label> <textarea id="wl-notes" rows="2" placeholder="Brief description of work done..." class="w-full bg-slate-800/60 border border-slate-600/50 text-white rounded-xl py-3 px-4 text-sm placeholder:text-slate-500 focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20 transition-all resize-none"></textarea>
+        </div><button id="wl-submit" type="submit" class="w-full py-3 rounded-xl text-white font-semibold text-sm transition-all" style="background: linear-gradient(135deg, #22c55e, #16a34a);"> <span id="wl-btn-text">Save Work Log</span> </button>
+       </form>
+      </div>
+      <div class="dark-glass rounded-2xl p-6 anim-slide-d1">
+       <h3 class="text-white font-semibold text-base mb-4">Recent Logs</h3>
+       <div id="filter-worklog" class="flex gap-2 mb-4 pb-4 border-b border-slate-700/50"><button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium active" data-filter="all">All</button> <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium" data-filter="high">High</button> <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium" data-filter="medium">Medium</button> <button class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium" data-filter="low">Low</button>
+       </div>
+       <div id="worklog-list" class="space-y-2">
+        <p class="text-slate-500 text-sm text-center py-4">No work logs yet</p>
+       </div>
+      </div>
+     </div><!-- TAB: Analytics -->
+     <div id="tab-analytics" class="tab-content hidden">
+      <div class="grid md:grid-cols-2 gap-4 anim-slide">
+       <div class="dark-glass rounded-2xl p-6">
+        <h3 class="text-white font-semibold text-base mb-4">Weekly Target Completion</h3>
+        <canvas id="chart-weekly"></canvas>
+       </div>
+       <div class="dark-glass rounded-2xl p-6">
+        <h3 class="text-white font-semibold text-base mb-4">Work Distribution</h3>
+        <canvas id="chart-distribution"></canvas>
+       </div>
+      </div>
+      <div class="dark-glass rounded-2xl p-6 mt-4 anim-slide-d1">
+       <h3 class="text-white font-semibold text-base mb-4">Recent Activity</h3>
+       <div id="activity-log" class="space-y-3">
+        <p class="text-slate-500 text-sm text-center py-4">No recent activity</p>
+       </div>
+      </div>
+     </div><!-- TAB: Reports -->
+     <div id="tab-reports" class="tab-content hidden">
+      <div class="dark-glass rounded-2xl p-6 anim-slide">
+       <h3 class="text-white font-semibold text-base mb-4">Performance Reports</h3>
+       <div class="space-y-4">
+        <div class="p-4 rounded-xl bg-slate-800/40 border border-slate-700/30">
+         <div class="flex items-center justify-between">
+          <div>
+           <p class="text-white font-medium text-sm">Weekly Performance</p>
+           <p class="text-slate-500 text-xs mt-0.5">Targets completed this week</p>
+          </div><button onclick="downloadReport('weekly')" class="px-4 py-2 rounded-lg text-xs font-medium text-white bg-blue-500/30 hover:bg-blue-500/50 transition-all flex items-center gap-1.5"> <i data-lucide="download" style="width:14px;height:14px;"></i> Download </button>
+         </div>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-800/40 border border-slate-700/30">
+         <div class="flex items-center justify-between">
+          <div>
+           <p class="text-white font-medium text-sm">Monthly Performance</p>
+           <p class="text-slate-500 text-xs mt-0.5">Salary and productivity metrics</p>
+          </div><button onclick="downloadReport('monthly')" class="px-4 py-2 rounded-lg text-xs font-medium text-white bg-blue-500/30 hover:bg-blue-500/50 transition-all flex items-center gap-1.5"> <i data-lucide="download" style="width:14px;height:14px;"></i> Download </button>
+         </div>
+        </div>
+       </div>
+      </div>
+      <div class="dark-glass rounded-2xl p-6 mt-4 anim-slide-d1">
+       <h3 class="text-white font-semibold text-base mb-4">Badges &amp; Achievements</h3>
+       <div id="badges-list" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <p class="text-slate-500 text-xs col-span-full text-center py-4">Complete tasks to earn badges!</p>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Toast container -->
+   <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
+  </div>
+  <script>
+// ========== FIREBASE SETUP ==========
+let firebaseDB = null;
+let firebaseEnabled = false;
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init({ duration: 1000, once: true });
+function initFirebase() {
+  const firebaseConfig = {
+    apiKey: "AIzaSyB2XeuTfHZ7FYKLoYb4epKp3upmVqG0fzE",
+    authDomain: "pulse-17f40.firebaseapp.com",
+    databaseURL: "https://pulse-17f40-default-rtdb.firebaseio.com",
+    projectId: "pulse-17f40",
+    storageBucket: "pulse-17f40.firebasestorage.app",
+    messagingSenderId: "259780854138",
+    appId: "1:259780854138:web:89c265fd22a34a7f1fd6c3"
+  };
 
-        // Sticky Nav Change
-        window.addEventListener('scroll', function() {
-            const nav = document.querySelector('nav');
-            if(window.scrollY > 50) {
-                nav.style.background = '#000';
-                nav.style.padding = '15px 8%';
-            } else {
-                nav.style.background = 'rgba(15, 15, 15, 0.95)';
-                nav.style.padding = '20px 8%';
-            }
-        });
-    </script>
-</body>
+  try {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+      firebaseDB = firebase.database();
+      firebaseEnabled = true;
+      console.log('✅ Firebase connected successfully');
+      showToast('Firebase synced!', 'success');
+    }
+  } catch (error) {
+    console.error('❌ Firebase init error:', error);
+    firebaseEnabled = false;
+  }
+}
+
+// Save data to Firebase
+async function saveToFirebase(path, data) {
+  if (!firebaseEnabled || !firebaseDB) return false;
+  try {
+    await firebaseDB.ref(path).set(data);
+    console.log(`Data saved at path: ${path}`);
+    return true;
+  } catch (error) {
+    console.error('Firebase save error:', error);
+    return false;
+  }
+}
+
+// Read data from Firebase
+async function readFromFirebase(path) {
+  if (!firebaseEnabled || !firebaseDB) return null;
+  try {
+    const snapshot = await firebaseDB.ref(path).get();
+    if (snapshot.exists()) {
+      console.log(`Data retrieved from path: ${path}`);
+      return snapshot.val();
+    } else {
+      console.warn(`No data found at path: ${path}`);
+      return null;
+    }
+  } catch (error) {
+    console.error('Firebase read error:', error);
+    return null;
+  }
+}
+
+// Delete data from Firebase
+async function deleteFromFirebase(path) {
+  if (!firebaseEnabled || !firebaseDB) return false;
+  try {
+    await firebaseDB.ref(path).remove();
+    console.log(`Data deleted at path: ${path}`);
+    return true;
+  } catch (error) {
+    console.error('Firebase delete error:', error);
+    return false;
+  }
+}
+// ========== REFERENCE DATA (Paradigm A) ==========
+const EMPLOYEES = {
+  '5689-868': {
+    name: 'Anmol Sunda',
+    dob: '26/11/2006',
+    gender: 'Male',
+    contact: '76962 93608',
+    email: 'anmolbanga88@gmail.com'
+  },
+  '5729-927': {
+    name: 'Gursharn Arya',
+    dob: '15/03/1995',
+    gender: 'Male',
+    contact: '98765 43210',
+    email: 'gursharn.arya@dozera.com'
+  }
+};
+
+const DAILY_TARGETS = [
+  { id: 't1', title: 'Complete client website homepage', category: 'Development', priority: 'high' },
+  { id: 't2', title: 'Review and respond to client emails', category: 'Communication', priority: 'medium' },
+  { id: 't3', title: 'Update social media content calendar', category: 'Marketing', priority: 'medium' },
+  { id: 't4', title: 'Submit weekly progress report', category: 'Admin', priority: 'low' }
+];
+
+const BADGES = [
+  { id: 'b1', name: 'On Time', icon: '⏰', condition: 'Complete 5 targets on time' },
+  { id: 'b2', name: 'Night Owl', icon: '🌙', condition: 'Log work after 8 PM' },
+  { id: 'b3', name: 'Productive', icon: '🚀', condition: 'Complete 10+ work logs in a week' },
+  { id: 'b4', name: 'Perfect Week', icon: '✨', condition: 'Complete all targets for a week' },
+  { id: 'b5', name: 'Communication Expert', icon: '💬', condition: 'Complete 5+ communication tasks' },
+  { id: 'b6', name: 'Code Master', icon: '💻', condition: 'Complete 10+ development tasks' }
+];
+
+// ========== APP STATE ==========
+let currentEmployee = null;
+let currentEmployeeId = null;
+let allRecords = [];
+let inactivityTimer = null;
+let lastActivityTime = Date.now();
+let charts = {};
+
+// ========== DEFAULT CONFIG ==========
+const defaultConfig = {
+  company_name: 'Dozera',
+  welcome_message: 'Welcome back to Dozera HR',
+  salary_message: 'Your salary is under processing',
+  inactivity_minutes: '30',
+  background_color: '#0f172a',
+  surface_color: '#1e293b',
+  text_color: '#f8fafc',
+  primary_action_color: '#22c55e',
+  secondary_action_color: '#64748b',
+  font_family: 'DM Sans',
+  font_size: 14
+};
+
+// ========== ELEMENT SDK ==========
+window.elementSdk.init({
+  defaultConfig,
+  onConfigChange: async (config) => {
+    const c = (k) => config[k] || defaultConfig[k];
+    const firebaseKey = c('firebase_api_key');
+    
+    if (firebaseKey && firebaseKey.length > 10 && !firebaseEnabled) {
+      initFirebase(firebaseKey);
+    }
+
+    const font = c('font_family');
+    const baseSize = c('font_size');
+    const baseFontStack = `${font}, 'DM Sans', sans-serif`;
+
+    document.body.style.fontFamily = baseFontStack;
+
+    const bg = c('background_color');
+    const surface = c('surface_color');
+    const text = c('text_color');
+    const primary = c('primary_action_color');
+    const secondary = c('secondary_action_color');
+
+    const root = document.getElementById('app-root');
+    root.style.background = `linear-gradient(135deg, ${bg} 0%, ${surface} 40%, ${bg} 100%)`;
+
+    const companyName = c('company_name');
+    const el = (id) => document.getElementById(id);
+    el('login-company-name').textContent = companyName;
+    el('nav-company').textContent = companyName;
+    el('login-welcome').textContent = c('welcome_message');
+    el('salary-msg').textContent = c('salary_message');
+
+    document.querySelectorAll('.font-display').forEach(e => {
+      e.style.fontFamily = `'Playfair Display', ${baseFontStack}`;
+    });
+    el('login-company-name').style.fontSize = `${baseSize * 2.1}px`;
+    el('dash-welcome').style.fontSize = `${baseSize * 1.8}px`;
+
+    document.querySelectorAll('#login-btn, #wl-submit, #save-profile-btn').forEach(btn => {
+      btn.style.background = `linear-gradient(135deg, ${primary}, ${primary}dd)`;
+    });
+
+    document.querySelectorAll('#profile-name, #dash-welcome').forEach(e => {
+      e.style.color = text;
+    });
+
+    document.querySelectorAll('#logout-btn, .tab-inactive').forEach(e => {
+      e.style.color = secondary;
+    });
+  },
+  mapToCapabilities: (config) => ({
+    recolorables: [
+      { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); }},
+      { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); }},
+      { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); }},
+      { get: () => config.primary_action_color || defaultConfig.primary_action_color, set: (v) => { config.primary_action_color = v; window.elementSdk.setConfig({ primary_action_color: v }); }},
+      { get: () => config.secondary_action_color || defaultConfig.secondary_action_color, set: (v) => { config.secondary_action_color = v; window.elementSdk.setConfig({ secondary_action_color: v }); }}
+    ],
+    borderables: [],
+    fontEditable: {
+      get: () => config.font_family || defaultConfig.font_family,
+      set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+    },
+    fontSizeable: {
+      get: () => config.font_size || defaultConfig.font_size,
+      set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+    }
+  }),
+  mapToEditPanelValues: (config) => new Map([
+    ['company_name', config.company_name || defaultConfig.company_name],
+    ['welcome_message', config.welcome_message || defaultConfig.welcome_message],
+    ['salary_message', config.salary_message || defaultConfig.salary_message],
+    ['firebase_api_key', config.firebase_api_key || ''],
+    ['inactivity_minutes', config.inactivity_minutes || defaultConfig.inactivity_minutes]
+  ])
+});
+
+// ========== DATA SDK ==========
+const dataHandler = {
+  onDataChanged(data) {
+    allRecords = data;
+    if (currentEmployeeId) {
+      renderDashboardData();
+    }
+  }
+};
+
+(async () => {
+  const res = await window.dataSdk.init(dataHandler);
+  if (!res.isOk) console.error('Data SDK init failed');
+})();
+
+// ========== HELPERS ==========
+function showToast(msg, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  const colors = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+  toast.className = `${colors} text-white px-4 py-3 rounded-xl text-sm font-medium shadow-lg anim-slide flex items-center gap-2`;
+  const icon = type === 'success' ? 'check-circle-2' : type === 'error' ? 'alert-circle' : 'info';
+  toast.innerHTML = `<i data-lucide="${icon}" style="width:16px;height:16px;"></i> ${msg}`;
+  container.appendChild(toast);
+  lucide.createIcons({ nodes: [toast] });
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+function todayStr() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function getWeekStart(date = new Date()) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day;
+  return new Date(d.setDate(diff));
+}
+
+function getMyRecords() {
+  return allRecords.filter(r => r.employee_id === currentEmployeeId);
+}
+
+function resetInactivityTimer() {
+  lastActivityTime = Date.now();
+  clearTimeout(inactivityTimer);
+  const cfg = window.elementSdk.config || defaultConfig;
+  const timeout = (parseInt(cfg.inactivity_minutes) || 30) * 60 * 1000;
+  
+  inactivityTimer = setTimeout(() => {
+    showToast('Session expired. Please log in again.', 'error');
+    performLogout();
+  }, timeout);
+}
+
+// ========== TIME ==========
+function updateTime() {
+  // Time display removed for privacy
+}
+
+// ========== INACTIVITY DETECTION ==========
+document.addEventListener('click', resetInactivityTimer);
+document.addEventListener('keypress', resetInactivityTimer);
+document.addEventListener('scroll', resetInactivityTimer);
+
+// ========== LOGIN ==========
+document.getElementById('login-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const empId = document.getElementById('emp-id-input').value.trim();
+  const errorEl = document.getElementById('login-error');
+
+  if (!EMPLOYEES[empId]) {
+    errorEl.classList.remove('hidden');
+    return;
+  }
+
+  errorEl.classList.add('hidden');
+  currentEmployeeId = empId;
+  currentEmployee = EMPLOYEES[empId];
+  showDashboard();
+});
+
+function showDashboard() {
+  document.getElementById('login-screen').classList.add('hidden');
+  const dash = document.getElementById('dashboard-screen');
+  dash.classList.remove('hidden');
+
+  const initials = currentEmployee.name.split(' ').map(n => n[0]).join('');
+  document.getElementById('profile-avatar').textContent = initials;
+  document.getElementById('profile-name').textContent = currentEmployee.name;
+  document.getElementById('profile-id').textContent = 'ID: ' + currentEmployeeId;
+  document.getElementById('profile-dob').textContent = currentEmployee.dob;
+  document.getElementById('profile-gender').textContent = currentEmployee.gender;
+  document.getElementById('profile-contact').textContent = currentEmployee.contact;
+  document.getElementById('profile-email').textContent = currentEmployee.email;
+
+  document.getElementById('dash-welcome').textContent = `Welcome, ${currentEmployee.name.split(' ')[0]}`;
+  document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('target-date').textContent = todayStr();
+
+  renderTargets();
+  renderDashboardData();
+  resetInactivityTimer();
+  lucide.createIcons();
+}
+
+// ========== LOGOUT ==========
+function performLogout() {
+  currentEmployee = null;
+  currentEmployeeId = null;
+  document.getElementById('dashboard-screen').classList.add('hidden');
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('emp-id-input').value = '';
+  switchTab('profile');
+  clearTimeout(inactivityTimer);
+}
+
+document.getElementById('logout-btn').addEventListener('click', performLogout);
+
+// ========== TABS ==========
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    switchTab(tab);
+    if (tab === 'analytics') setTimeout(initCharts, 100);
+  });
+});
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.remove('tab-active');
+    b.classList.add('tab-inactive');
+  });
+  document.querySelector(`[data-tab="${tab}"]`).classList.remove('tab-inactive');
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('tab-active');
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+  document.getElementById(`tab-${tab}`).classList.remove('hidden');
+}
+
+// ========== PROFILE EDIT ==========
+document.getElementById('edit-profile-btn').addEventListener('click', () => {
+  document.getElementById('profile-view').classList.add('hidden');
+  document.getElementById('profile-edit').classList.remove('hidden');
+  document.getElementById('edit-contact').value = currentEmployee.contact;
+  document.getElementById('edit-email').value = currentEmployee.email;
+});
+
+document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+  document.getElementById('profile-edit').classList.add('hidden');
+  document.getElementById('profile-view').classList.remove('hidden');
+});
+
+document.getElementById('edit-profile-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const contact = document.getElementById('edit-contact').value.trim();
+  const email = document.getElementById('edit-email').value.trim();
+
+  if (!contact || !email) { showToast('Please fill all fields', 'error'); return; }
+
+  currentEmployee.contact = contact;
+  currentEmployee.email = email;
+
+  document.getElementById('profile-contact').textContent = contact;
+  document.getElementById('profile-email').textContent = email;
+
+  // Save employee updates to Firebase if enabled
+  if (firebaseEnabled && firebaseDB) {
+    const fbPath = `employees/${currentEmployeeId}/profile`;
+    saveToFirebase(fbPath, {
+      name: currentEmployee.name,
+      dob: currentEmployee.dob,
+      gender: currentEmployee.gender,
+      contact: contact,
+      email: email
+    }).catch(err => console.error('Firebase save failed:', err));
+  }
+
+  showToast('Profile updated successfully!');
+  document.getElementById('profile-edit').classList.add('hidden');
+  document.getElementById('profile-view').classList.remove('hidden');
+});
+
+// ========== TARGETS ==========
+function renderTargets() {
+  const container = document.getElementById('targets-list');
+  const myTargets = getMyRecords().filter(r => r.type === 'target' && r.date === todayStr());
+  const completedIds = myTargets.filter(r => r.status === 'completed').map(r => r.task_name);
+
+  container.innerHTML = '';
+  DAILY_TARGETS.forEach((target, i) => {
+    const done = completedIds.includes(target.id);
+    const card = document.createElement('div');
+    card.className = `target-card flex items-center justify-between p-4 rounded-xl ${done ? 'bg-green-500/10 border border-green-500/20' : 'bg-slate-800/40 border border-slate-700/30'}`;
+    card.dataset.targetId = target.id;
+    
+    const priorityBadge = `<span class="badge badge-${target.priority}"><i data-lucide="zap" style="width:10px;height:10px;"></i> ${target.priority}</span>`;
+    
+    card.innerHTML = `
+      <div class="flex items-center gap-3 flex-1 min-w-0">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${done ? 'bg-green-500/20' : 'bg-slate-700/50'}">
+          <i data-lucide="${done ? 'check-circle-2' : 'circle'}" style="width:16px;height:16px;color:${done ? '#22c55e' : '#64748b'};"></i>
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-medium truncate ${done ? 'text-green-400 line-through' : 'text-white'}">${target.title}</p>
+          <div class="flex items-center gap-2 mt-1">
+            <span class="text-xs ${done ? 'text-green-500/60' : 'text-slate-500'}">${target.category}</span>
+            ${!done ? priorityBadge : ''}
+          </div>
+        </div>
+      </div>
+      ${done
+        ? '<span class="text-green-500 text-xs font-medium ml-2 flex-shrink-0">Done</span>'
+        : `<button onclick="completeTarget('${target.id}')" class="ml-2 px-3 py-1.5 rounded-lg text-xs font-medium text-white flex-shrink-0 transition-all hover:opacity-90" style="background: linear-gradient(135deg, #22c55e, #16a34a);">Complete</button>`
+      }
+    `;
+    container.appendChild(card);
+  });
+
+  lucide.createIcons({ nodes: [container] });
+
+  const allDone = DAILY_TARGETS.every(t => completedIds.includes(t.id));
+  document.getElementById('salary-banner').classList.toggle('hidden', !allDone);
+}
+
+async function completeTarget(targetId) {
+  if (getMyRecords().length >= 999) {
+    showToast('Record limit reached. Please contact HR.', 'error');
+    return;
+  }
+
+  const card = document.querySelector(`[data-target-id="${targetId}"]`);
+  const btn = card?.querySelector('button');
+  if (btn) { btn.disabled = true; btn.textContent = '...'; }
+
+  const recordData = {
+    type: 'target',
+    employee_id: currentEmployeeId,
+    task_name: targetId,
+    date: todayStr(),
+    status: 'completed',
+    website: '',
+    notes: '',
+    priority: '',
+    deadline: ''
+  };
+
+  // Save to Canva Sheets
+  const result = await window.dataSdk.create(recordData);
+
+  if (result.isOk) {
+    // Also save to Firebase if enabled
+    if (firebaseEnabled && firebaseDB) {
+      const fbPath = `employees/${currentEmployeeId}/targets/${Date.now()}`;
+      saveToFirebase(fbPath, recordData).catch(err => console.error('Firebase save failed:', err));
+    }
+    showToast('Target marked as complete! 🎉');
+    checkAndAwardBadges();
+  } else {
+    showToast('Failed to save. Try again.', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = 'Complete'; }
+  }
+}
+
+// ========== WORK LOG ==========
+document.getElementById('worklog-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const task = document.getElementById('wl-task').value;
+  const priority = document.getElementById('wl-priority').value;
+  const notes = document.getElementById('wl-notes').value.trim();
+
+  if (!task) { showToast('Please select a task', 'error'); return; }
+
+  if (getMyRecords().length >= 999) {
+    showToast('Record limit reached. Please contact HR.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('wl-submit');
+  const btnText = document.getElementById('wl-btn-text');
+  btn.disabled = true;
+  btnText.textContent = 'Saving...';
+
+  const recordData = {
+    type: 'worklog',
+    employee_id: currentEmployeeId,
+    task_name: task,
+    date: new Date().toISOString(),
+    status: 'completed',
+    website: task,
+    notes: notes,
+    priority: priority,
+    deadline: ''
+  };
+
+  const result = await window.dataSdk.create(recordData);
+
+  btn.disabled = false;
+  btnText.textContent = 'Save Work Log';
+
+  if (result.isOk) {
+    // Also save to Firebase if enabled
+    if (firebaseEnabled && firebaseDB) {
+      const fbPath = `employees/${currentEmployeeId}/worklogs/${Date.now()}`;
+      saveToFirebase(fbPath, recordData).catch(err => console.error('Firebase save failed:', err));
+    }
+    showToast('Work log saved! 📝');
+    document.getElementById('wl-task').value = '';
+    document.getElementById('wl-notes').value = '';
+    document.getElementById('wl-priority').value = 'medium';
+    checkAndAwardBadges();
+  } else {
+    showToast('Failed to save. Try again.', 'error');
+  }
+});
+
+// Filter work logs
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      b.classList.remove('active', 'bg-green-500/30', 'text-green-400');
+      b.classList.add('text-slate-400');
+    });
+    btn.classList.add('active', 'bg-green-500/30', 'text-green-400');
+    renderDashboardData();
+  });
+});
+
+// ========== RENDER DASHBOARD DATA ==========
+function renderDashboardData() {
+  const myRecs = getMyRecords();
+  const targets = myRecs.filter(r => r.type === 'target' && r.date === todayStr());
+  const worklogs = myRecs.filter(r => r.type === 'worklog');
+
+  const filterValue = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+  let filteredLogs = worklogs;
+  if (filterValue !== 'all') {
+    filteredLogs = worklogs.filter(r => r.priority === filterValue);
+  }
+
+  document.getElementById('stat-completed').textContent = targets.length;
+  document.getElementById('stat-tasks').textContent = worklogs.length;
+  document.getElementById('stat-pending').textContent = Math.max(0, DAILY_TARGETS.length - targets.length);
+
+  const earnedBadges = getEarnedBadges();
+  document.getElementById('stat-badges').textContent = earnedBadges.length;
+
+  const allDone = targets.length >= DAILY_TARGETS.length;
+  const salaryEl = document.getElementById('stat-salary');
+  const cfg = window.elementSdk.config || defaultConfig;
+  salaryEl.textContent = allDone ? (cfg.salary_message || defaultConfig.salary_message) : 'In Progress';
+  salaryEl.className = allDone ? 'text-green-400 text-xs font-medium mt-1' : 'text-amber-400 text-xs font-medium mt-1';
+
+  renderTargets();
+  renderWorklogList(filteredLogs);
+  renderActivityLog();
+  renderBadges();
+}
+
+function renderWorklogList(worklogs) {
+  const container = document.getElementById('worklog-list');
+  if (worklogs.length === 0) {
+    container.innerHTML = '<p class="text-slate-500 text-sm text-center py-4">No work logs</p>';
+    return;
+  }
+
+  const sorted = [...worklogs].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const existingMap = new Map([...container.children].filter(el => el.dataset.logId).map(el => [el.dataset.logId, el]));
+  const newIds = new Set(sorted.map(r => r.__backendId));
+
+  existingMap.forEach((el, id) => { if (!newIds.has(id)) el.remove(); });
+
+  sorted.forEach((log) => {
+    const existing = existingMap.get(log.__backendId);
+    if (!existing) {
+      const div = document.createElement('div');
+      div.dataset.logId = log.__backendId;
+      div.className = 'flex items-start gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/30 anim-slide';
+      const priorityColor = log.priority === 'high' ? '#ef4444' : log.priority === 'medium' ? '#f59e0b' : '#3b82f6';
+      div.innerHTML = `
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style="background: ${priorityColor}/15;">
+          <i data-lucide="clipboard-check" style="width:14px;height:14px;color:${priorityColor};"></i>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2">
+            <p class="text-white text-sm font-medium truncate">${log.task_name}</p>
+            <span class="badge badge-${log.priority || 'low'}" style="padding: 2px 8px; font-size: 10px;">${(log.priority || 'low').toUpperCase()}</span>
+          </div>
+          <p class="text-slate-500 text-xs mt-0.5">${new Date(log.date).toLocaleString()}</p>
+          ${log.notes ? `<p class="text-slate-400 text-xs mt-1">${log.notes}</p>` : ''}
+        </div>
+        <span class="text-green-500 text-xs font-medium flex-shrink-0">✓</span>
+      `;
+      container.appendChild(div);
+      lucide.createIcons({ nodes: [div] });
+    }
+  });
+}
+
+function renderActivityLog() {
+  const myRecs = getMyRecords().sort((a, b) => {
+    const aTime = a.type === 'worklog' ? new Date(a.date) : new Date();
+    const bTime = b.type === 'worklog' ? new Date(b.date) : new Date();
+    return bTime - aTime;
+  }).slice(0, 10);
+
+  const container = document.getElementById('activity-log');
+  if (myRecs.length === 0) {
+    container.innerHTML = '<p class="text-slate-500 text-sm text-center py-4">No recent activity</p>';
+    return;
+  }
+
+  const existingMap = new Map([...container.children].filter(el => el.dataset.actId).map(el => [el.dataset.actId, el]));
+  const newIds = new Set(myRecs.map(r => r.__backendId));
+
+  existingMap.forEach((el, id) => { if (!newIds.has(id)) el.remove(); });
+
+  myRecs.forEach((rec) => {
+    if (!existingMap.has(rec.__backendId)) {
+      const div = document.createElement('div');
+      div.dataset.actId = rec.__backendId;
+      div.className = 'flex items-center gap-3 p-3 rounded-lg bg-slate-800/30 border border-slate-700/20 anim-slide text-xs';
+      const icon = rec.type === 'target' ? 'target' : 'clipboard-check';
+      const color = rec.type === 'target' ? '#22c55e' : '#3b82f6';
+      const text = rec.type === 'target' ? `Completed target: ${DAILY_TARGETS.find(t => t.id === rec.task_name)?.title || 'Unknown'}` : `Logged work: ${rec.task_name}`;
+      const time = rec.type === 'worklog' ? new Date(rec.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Today';
+      div.innerHTML = `
+        <div style="background: ${color}/15;" class="w-6 h-6 rounded flex items-center justify-center flex-shrink-0">
+          <i data-lucide="${icon}" style="width:12px;height:12px;color:${color};"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-slate-300 truncate">${text}</p>
+          <p class="text-slate-500 text-xs mt-0.5">${time}</p>
+        </div>
+      `;
+      container.appendChild(div);
+      lucide.createIcons({ nodes: [div] });
+    }
+  });
+}
+
+function renderBadges() {
+  const earnedBadges = getEarnedBadges();
+  const container = document.getElementById('badges-list');
+  
+  if (earnedBadges.length === 0) {
+    container.innerHTML = '<p class="text-slate-500 text-xs col-span-full text-center py-4">Complete tasks to earn badges!</p>';
+    return;
+  }
+
+  container.innerHTML = earnedBadges.map(badge => `
+    <div class="p-3 rounded-xl bg-slate-800/40 border border-amber-500/30 text-center">
+      <p class="text-3xl mb-1">${badge.icon}</p>
+      <p class="text-white text-xs font-semibold">${badge.name}</p>
+      <p class="text-slate-500 text-xs mt-1">${badge.condition}</p>
+    </div>
+  `).join('');
+}
+
+// ========== BADGE SYSTEM ==========
+function getEarnedBadges() {
+  const myRecs = getMyRecords();
+  const targetRecs = myRecs.filter(r => r.type === 'target');
+  const worklogRecs = myRecs.filter(r => r.type === 'worklog');
+  const weekStart = getWeekStart();
+  const weekTargets = targetRecs.filter(r => new Date(r.date) >= weekStart);
+  const weekWorklogs = worklogRecs.filter(r => new Date(r.date) >= weekStart);
+
+  const earned = [];
+
+  if (targetRecs.length >= 5) earned.push(BADGES[0]); // On Time
+  if (worklogRecs.some(r => new Date(r.date).getHours() >= 20)) earned.push(BADGES[1]); // Night Owl
+  if (weekWorklogs.length >= 10) earned.push(BADGES[2]); // Productive
+  if (weekTargets.length >= DAILY_TARGETS.length) earned.push(BADGES[3]); // Perfect Week
+  if (worklogRecs.filter(r => r.website === 'Client Communication').length >= 5) earned.push(BADGES[4]); // Comm Expert
+  if (worklogRecs.filter(r => r.website === 'Website Development').length >= 10) earned.push(BADGES[5]); // Code Master
+
+  return [...new Map(earned.map(b => [b.id, b])).values()];
+}
+
+function checkAndAwardBadges() {
+  getEarnedBadges();
+}
+
+// ========== CHARTS ==========
+function initCharts() {
+  if (charts.weekly) return; // Already initialized
+
+  const myRecs = getMyRecords();
+  const weekStart = getWeekStart();
+
+  // Weekly targets
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const targetData = [0, 0, 0, 0, 0, 0, 0];
+
+  myRecs.filter(r => r.type === 'target' && new Date(r.date) >= weekStart).forEach(rec => {
+    const day = new Date(rec.date).getDay();
+    targetData[day === 0 ? 6 : day - 1]++;
+  });
+
+  const ctx1 = document.getElementById('chart-weekly');
+  if (ctx1) {
+    charts.weekly = new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: days,
+        datasets: [{
+          label: 'Targets Completed',
+          data: targetData,
+          backgroundColor: '#22c55e',
+          borderRadius: 4,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#cbd5e1', stepSize: 1 },
+            grid: { color: '#334155' }
+          },
+          x: { ticks: { color: '#cbd5e1' }, grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // Work distribution
+  const taskCounts = {};
+  myRecs.filter(r => r.type === 'worklog').forEach(rec => {
+    taskCounts[rec.task_name] = (taskCounts[rec.task_name] || 0) + 1;
+  });
+
+  const ctx2 = document.getElementById('chart-distribution');
+  if (ctx2) {
+    charts.distribution = new Chart(ctx2, {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(taskCounts),
+        datasets: [{
+          data: Object.values(taskCounts),
+          backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            labels: { color: '#cbd5e1', padding: 15, font: { size: 11 } }
+          }
+        }
+      }
+    });
+  }
+}
+
+// ========== REPORTS ==========
+function downloadReport(type) {
+  const myRecs = getMyRecords();
+  const targets = myRecs.filter(r => r.type === 'target');
+  const worklogs = myRecs.filter(r => r.type === 'worklog');
+
+  let csv = 'Employee,ID,Type,Task,Date,Status,Priority\n';
+
+  if (type === 'weekly') {
+    const weekStart = getWeekStart();
+    const weekRecs = [...targets, ...worklogs].filter(r => new Date(r.date) >= weekStart);
+    weekRecs.forEach(r => {
+      csv += `"${currentEmployee.name}","${currentEmployeeId}","${r.type}","${r.task_name}","${r.date}","${r.status}","${r.priority || 'N/A'}"\n`;
+    });
+  } else {
+    [...targets, ...worklogs].forEach(r => {
+      csv += `"${currentEmployee.name}","${currentEmployeeId}","${r.type}","${r.task_name}","${r.date}","${r.status}","${r.priority || 'N/A'}"\n`;
+    });
+  }
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `dozera-report-${type}-${Date.now()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  showToast(`${type === 'weekly' ? 'Weekly' : 'Monthly'} report downloaded!`);
+}
+
+// Init icons
+lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dcb9d08456d4bda',t:'MTc3MzU3ODcwOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
